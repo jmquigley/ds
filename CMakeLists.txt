@@ -50,21 +50,21 @@ set(TEST_HEADERS
 )
 
 add_executable(
-  ds_unit_tests
+  ds-unit-tests
   ${TEST_SOURCES}
   ${TEST_HEADERS}
 )
 
 target_link_libraries(
-  ds_unit_tests
+  ds-unit-tests
   GTest::gtest_main
   ds
 )
 
-target_compile_definitions(ds_unit_tests
+target_compile_definitions(ds-unit-tests
     PRIVATE CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
     PRIVATE ROOT_DIR="${ROOT_DIR}"
 )
 
 include(GoogleTest)
-gtest_discover_tests(ds_unit_tests)
+gtest_discover_tests(ds-unit-tests)
