@@ -1,0 +1,6 @@
+#pragma once
+
+namespace constants {
+    const unsigned int BUFSIZE = 1024;
+    const unsigned int READBUFSIZE = 8 * BUFSIZE;
+}

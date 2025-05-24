@@ -1,0 +1,23 @@
+include(FetchContent)
+
+find_package(PkgConfig REQUIRED)
+find_package(Threads REQUIRED)
+
+pkg_search_module(EVENT REQUIRED libevent)
+
+find_library(LIBEVENT_LIB event REQUIRED)
+find_library(LIBEVENT_EXTRA event_extra REQUIRED)
+find_library(LIBEVENT_PTHREAD_LIB event_pthreads REQUIRED)
+
+#
+# Googletest library
+#
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest
+    GIT_TAG v1.16.0
+)
+FetchContent_MakeAvailable(googletest)
+include_directories(${googletest_SOURCE_DIR}/include)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+enable_testing()
