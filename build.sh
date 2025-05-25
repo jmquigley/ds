@@ -14,5 +14,6 @@ fi
 
 cmake --build .
 ctest --output-on-failure -j 10 --output-log ./log/unit-tests.log
+cmake --install . --prefix=/usr/local
 
 popd
