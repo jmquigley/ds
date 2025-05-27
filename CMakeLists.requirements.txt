@@ -1,3 +1,4 @@
+include(GNUInstallDirs)
 include(FetchContent)
 
 find_package(PkgConfig REQUIRED)
@@ -8,6 +9,9 @@ pkg_search_module(EVENT REQUIRED libevent)
 find_library(LIBEVENT_LIB event REQUIRED)
 find_library(LIBEVENT_EXTRA event_extra REQUIRED)
 find_library(LIBEVENT_PTHREAD_LIB event_pthreads REQUIRED)
+
+# find_library(LIBUUID_LIB uuid HINTS /usr/lib/x86_64-linux-gnu REQUIRED)
+find_library(LIBUUID_LIB uuid REQUIRED)
 
 #
 # Googletest library

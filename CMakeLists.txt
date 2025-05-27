@@ -1,54 +1,64 @@
 cmake_minimum_required(VERSION 3.28)
 
-file(READ "version.txt" APP_VERSION)
-
-string(REGEX MATCH "([0-9]+)\\.([0-9]+)\\.([0-9]+)" VERSION_MATCH "${APP_VERSION}")
-if(VERSION_MATCH)
-    set(VERSION_MAJOR "${CMAKE_MATCH_1}")
-    set(VERSION_MINOR "${CMAKE_MATCH_2}")
-    set(VERSION_PATCH "${CMAKE_MATCH_3}")
-endif()
-
-set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
-
+file(STRINGS "version.txt" APP_VERSION)
 project(
 	ds
-	VERSION ${VERSION}
+	VERSION "${APP_VERSION}"
 	DESCRIPTION "Data structures and algorithms implemented in C++"
 	LANGUAGES CXX
 )
 
+message(STATUS "PROJECT_BINARY_DIR: ${PROJECT_BINARY_DIR}")
+message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
+message(STATUS "PROJECT_NAME: ${PROJECT_NAME}")
+message(STATUS "PROJECT_VERSION: ${PROJECT_VERSION}")
+
 # Adds all 3rd party dependencies to the project
 include("CMakeLists.requirements.txt")
 
-# Set the output folder where your program will be created
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(CMAKE_LIBS_DIR ${CMAKE_SOURCE_DIR}/build/lib)
-set(LIBRARY_OUTPUT_PATH ${CMAKE_LIBS_DIR})
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_C_COMPILER "clang")
+set(CMAKE_CXX_COMPILER "clang++")
+set(HEADER_FILES /usr/include/c++/14 /usr/include/x86_64-linux-gnu/c++/14)
+set(ROOT_DIR CMAKE_SOURCE_DIR)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/lib)
 
-set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-set(TESTING_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/tests)
-
-include_directories("${PROJECT_INCLUDE_DIR}" "${TESTING_INCLUDE_DIR}")
+include_directories(
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/tests
+)
 
 set(DS_SOURCES
-    src/node.cpp
+    src/collection.cpp
+    src/stack.cpp
 )
 
 set(DS_HEADERS
+    include/collection.h
+    include/comparator.h
+    include/constants.h
     include/iterable.h
     include/node.h
-    include/constants.h
     include/property.h
+    include/stack.h
 )
 
-add_library(ds SHARED ${DS_SOURCES} ${DS_HEADERS})
+add_library(${PROJECT_NAME} SHARED ${DS_SOURCES} ${DS_HEADERS})
 
-set_target_properties(ds PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib
-    VERSION ${VERSION}
-    SOVERSION ${VERSION_MAJOR}
+target_link_libraries(${PROJECT_NAME}
+    ${LIBUUID_LIB}
+)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
+)
+
+install(TARGETS ${PROJECT_NAME}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 #
@@ -61,6 +71,7 @@ set(TEST_SOURCES
 
 set(TEST_HEADERS
   tests/testing_base.h
+  tests/test_node.h
 )
 
 add_executable(
@@ -69,10 +80,9 @@ add_executable(
   ${TEST_HEADERS}
 )
 
-target_link_libraries(
-  ds-unit-tests
+target_link_libraries(ds-unit-tests
   GTest::gtest_main
-  ds
+  ${PROJECT_NAME}
 )
 
 target_compile_definitions(ds-unit-tests
@@ -83,13 +93,13 @@ target_compile_definitions(ds-unit-tests
 include(GoogleTest)
 gtest_discover_tests(ds-unit-tests)
 
-#
-# Installation configuration
-#
+# #
+# # Installation configuration
+# #
 
-set(TOOL_DST "bin")
-set(INCLUDE_DST "include/ds")
-set(MAIN_LIB_DST "lib")
+# # set(TOOL_DST "bin")
+# # set(INCLUDE_DST "include/ds")
+# # set(MAIN_LIB_DST "lib")
 
-install(TARGETS ds DESTINATION "${MAIN_LIB_DST}")
-install(FILES ${DS_HEADERS} DESTINATION "${INCLUDE_DST}")
+# # install(TARGETS ds DESTINATION "${MAIN_LIB_DST}")
+# # install(FILES ${DS_HEADERS} DESTINATION "${INCLUDE_DST}")
