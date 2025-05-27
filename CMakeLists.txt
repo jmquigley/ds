@@ -26,24 +26,35 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBS_DIR ${CMAKE_SOURCE_DIR}/build/lib)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_LIBS_DIR})
+set(ROOT_DIR ${CMAKE_SOURCE_DIR})
 
 set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(TESTING_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/tests)
 
 include_directories("${PROJECT_INCLUDE_DIR}" "${TESTING_INCLUDE_DIR}")
+link_directories("{CMAKE_SOURCE_DIR}/lib")
 
 set(DS_SOURCES
+    src/collection.cpp
     src/node.cpp
+    src/stack.cpp
 )
 
 set(DS_HEADERS
+    include/collection.h
+    include/comparator.h
+    include/constants.h
     include/iterable.h
     include/node.h
-    include/constants.h
     include/property.h
+    include/stack.h
 )
 
 add_library(ds SHARED ${DS_SOURCES} ${DS_HEADERS})
+
+target_link_libraries(ds
+    uuid::uuid
+)
 
 set_target_properties(ds PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib
@@ -61,6 +72,7 @@ set(TEST_SOURCES
 
 set(TEST_HEADERS
   tests/testing_base.h
+  tests/test_node.h
 )
 
 add_executable(
@@ -69,9 +81,9 @@ add_executable(
   ${TEST_HEADERS}
 )
 
-target_link_libraries(
-  ds-unit-tests
+target_link_libraries(ds-unit-tests
   GTest::gtest_main
+  gtest
   ds
 )
 
