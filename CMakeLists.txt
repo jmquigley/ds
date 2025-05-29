@@ -22,7 +22,6 @@ set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")
 set(HEADER_FILES /usr/include/c++/14 /usr/include/x86_64-linux-gnu/c++/14)
 set(ROOT_DIR CMAKE_SOURCE_DIR)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/lib)
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
@@ -31,18 +30,18 @@ include_directories(
 )
 
 set(DS_SOURCES
-    src/collection.cpp
-    src/stack.cpp
+    src/entry.cpp
 )
 
 set(DS_HEADERS
-    include/collection.h
-    include/comparator.h
-    include/constants.h
-    include/iterable.h
-    include/node.h
-    include/property.h
-    include/stack.h
+    include/collection.hpp
+    include/comparator.hpp
+    include/ds.h
+    include/constants.hpp
+    include/iterable.hpp
+    include/node.hpp
+    include/property.hpp
+    include/stack.hpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${DS_SOURCES} ${DS_HEADERS})
@@ -54,11 +53,6 @@ target_link_libraries(${PROJECT_NAME}
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
-)
-
-install(TARGETS ${PROJECT_NAME}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 #
@@ -93,13 +87,9 @@ target_compile_definitions(ds-unit-tests
 include(GoogleTest)
 gtest_discover_tests(ds-unit-tests)
 
-# #
-# # Installation configuration
-# #
+#
+# Installation statements
+#
 
-# # set(TOOL_DST "bin")
-# # set(INCLUDE_DST "include/ds")
-# # set(MAIN_LIB_DST "lib")
-
-# # install(TARGETS ds DESTINATION "${MAIN_LIB_DST}")
-# # install(FILES ${DS_HEADERS} DESTINATION "${INCLUDE_DST}")
+install(TARGETS ${PROJECT_NAME} DESTINATION "lib")
+install(FILES ${DS_HEADERS} DESTINATION "include/ds")

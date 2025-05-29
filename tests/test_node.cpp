@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "node.h"
+#include "node.hpp"
 
 TestNode::TestNode() {
   memset(temp, 0, sizeof(temp));
@@ -10,6 +10,6 @@ TestNode::TestNode() {
 };
 
 TEST_F(TestNode, NodeCreate) {
-    Node<int> node;
-    EXPECT_TRUE(true);
+  Node<int> node;
+  EXPECT_TRUE(true);
 };

@@ -1,6 +1,8 @@
 #!/usr/bin/env -S bash -l
 
-echo "Building dt api library"
+SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
+
+echo "Building dt api library from ${SCRIPT_DIR}"
 
 [[ ! -d "build" ]] && mkdir -p build
 
@@ -15,6 +17,9 @@ fi
 cmake --build .
 ctest --output-on-failure -j 10 --output-log ./log/unit-tests.log
 
-# cmake --install . --prefix=/usr/local
+
+if [ ${DEBUG} = false ]; then
+   cmake --install . --prefix=/usr/local
+fi
 
 popd
