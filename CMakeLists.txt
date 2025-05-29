@@ -59,7 +59,6 @@ target_sources(${PROJECT_NAME}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
 )
@@ -100,5 +99,4 @@ gtest_discover_tests(ds-unit-tests)
 # Installation statements
 #
 
-install(TARGETS ${PROJECT_NAME} DESTINATION "lib")
 install(FILES ${DS_HEADERS} DESTINATION "include/ds")
