@@ -18,7 +18,9 @@ cmake --build .
 ctest --output-on-failure -j 10 --output-log ./log/unit-tests.log
 
 
-if [ ${DEBUG} = false ]; then
+if [ ${DEBUG} = true ]; then
+   cmake --install . --prefix=${SCRIPT_DIR}/build
+else
    cmake --install . --prefix=/usr/local
 fi
 

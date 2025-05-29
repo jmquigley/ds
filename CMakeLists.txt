@@ -46,11 +46,20 @@ set(DS_HEADERS
 
 add_library(${PROJECT_NAME} SHARED ${DS_SOURCES} ${DS_HEADERS})
 
+target_include_directories(${PROJECT_NAME}
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
 target_link_libraries(${PROJECT_NAME}
     ${LIBUUID_LIB}
 )
 
+target_sources(${PROJECT_NAME}
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/ds.h
+)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
 )
