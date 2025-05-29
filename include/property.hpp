@@ -34,10 +34,16 @@
  * Returns:
  *     n/a
  */
-#define PROPERTY_D(variable, fn, dtype, def) \
-    private: dtype variable def; \
+#define PROPERTY_SCOPED_D(variable, fn, dtype, scope, def) \
+    scope dtype variable def; \
     ACCESSOR(variable, fn); \
     MUTATOR(variable, fn, dtype);
+
+#define PROPERTY_SCOPED(variable, fn, dtype, scope) \
+    PROPERTY_SCOPED_D(variable, fn, dtype, scope, );
+
+#define PROPERTY_D(variable, fn, dtype, def) \
+    PROPERTY_SCOPED_D(variable, fn, dtype, private:, def);
 
 #define PROPERTY(variable, fn, dtype) \
     PROPERTY_D(variable, fn, dtype, );

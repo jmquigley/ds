@@ -5,18 +5,25 @@
 #include "property.hpp"
 #include "stdlib.h"
 
-template <typename T>
+template<typename T>
 class Collection {
-  PROPERTY(first, First, T *);
-  PROPERTY(last, Last, T *);
-  PROPERTY(length, Length, size_t);
+	PROPERTY(first, First, Node<T> *);
+	PROPERTY(last, Last, Node<T> *);
+	PROPERTY(length, Length, size_t);
+	PROPERTY_READONLY(root, Root, Node<T> *);
 
- protected:
-  Comparator<T> *comparator;
-  Node<T> nil;
-  Node<T> *root = nullptr;
+protected:
 
- public:
-  Collection() : length(0) {}
-  ~Collection() {}
+	Comparator<T> comparator;
+	Node<T> nil;
+
+public:
+
+	Collection() : first(nullptr), last(nullptr), length(0), root(nullptr) {}
+
+	Collection(Comparator<T> comparator) : Collection() {
+		this->comparator = comparator;
+	}
+
+	~Collection() {}
 };

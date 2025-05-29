@@ -7,8 +7,13 @@
 #include "constants.hpp"
 
 class TestingBase : public testing::Test {
- protected:
-  std::string resourceDirectory;
+protected:
 
-  TestingBase() { resourceDirectory = "./tests/resources/"; };
+	std::string resourceDirectory;
+	char temp[constants::BUFSIZE];
+	char *bufptr = nullptr;
+
+	TestingBase() {
+		resourceDirectory = "./tests/resources/";
+	};
 };
