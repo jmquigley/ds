@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.31)
 
 file(STRINGS "version.txt" APP_VERSION)
 project(
@@ -13,13 +13,27 @@ message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 message(STATUS "PROJECT_NAME: ${PROJECT_NAME}")
 message(STATUS "PROJECT_VERSION: ${PROJECT_VERSION}")
 
+# Setup memory testing parameters
+set(MEMORYCHECK_COMMAND_OPTIONS "")
+string(JOIN " " MEMORYCHECK_COMMAND_OPTIONS
+    "--tool=memcheck"
+    "--error-exitcode=1"
+    "--leak-check=full"
+    "--errors-for-leak-kinds=definite"
+    "--show-leak-kinds=definite"
+)
+message(STATUS "MEMORYCHECK_COMMAND_OPTIONS: " ${MEMORYCHECK_COMMAND_OPTIONS})
+
+set(CTEST_MEMORYCHECK_TYPE Valgrind)
+set(CTEST_MEMORYCHECK_COMMAND valgrind)
+
 # Adds all 3rd party dependencies to the project
 include("CMakeLists.requirements.txt")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_C_COMPILER "clang")
-set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_C_COMPILER "/usr/bin/clang")
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 set(HEADER_FILES /usr/include/c++/14 /usr/include/x86_64-linux-gnu/c++/14)
 set(ROOT_DIR CMAKE_SOURCE_DIR)
 
