@@ -7,7 +7,6 @@ function exitOnError() {
     fi
 }
 
-
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
 echo "Building dt api library from ${SCRIPT_DIR}"
