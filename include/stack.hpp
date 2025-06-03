@@ -1,3 +1,8 @@
+/**
+ * @file stack.hpp
+ * @brief Defines the Stack data structure, a LIFO (Last In, First Out) collection.
+ */
+
 #pragma once
 
 #include <exception>
@@ -5,7 +10,22 @@
 
 #include "collection.hpp"
 
+/**
+ * @namespace ds
+ * @brief Contains data structure related classes.
+ */
 namespace ds {
+
+/**
+ * @class Stack
+ * @brief A generic stack class template for tree-like data structures.
+ *
+ * This class represents a stack data structure.  A stack is a fundamental abstract
+ * data type (ADT) that serves as a collection of elements, operating on a **Last In,
+ * First Out (LIFO)** principle.
+ *
+ * @tparam T The type of data stored within the stack.
+ */
 template<typename T>
 class Stack : public Collection<T> {
 public:
@@ -16,6 +36,15 @@ public:
 		clear();
 	}
 
+	/**
+	 * @brief Overloads the stream insertion operator for Stack objects.
+	 *
+	 * Allows printing a Stack object directly to an output stream, using its
+	 * `str()` method for representation.
+	 * @param st (`std::ostream`) the output stream
+	 * @param stack (`Stack<T> &`) the Stack object to print
+	 * @returns a reference to the `std::ostream` object
+	 */
 	friend std::ostream &operator<<(std::ostream &st, const Stack<T> &stack) {
 		return st << stack.str();
 	}
@@ -43,10 +72,8 @@ public:
 	}
 
 	/**
-	 * A convenience wrapper for the top function.
-	 *
-	 * Returns:
-	 *     A copy of the data element at the top of the stack
+	 * @brief A convenience wrapper for the top function.
+	 * @returns A copy of the data element at the top of the stack
 	 */
 	T peek() {
 		return top();
@@ -56,8 +83,7 @@ public:
 	 * Retrieves the top item from the stack and returns it.  An item is
 	 * is removed from the stack.
 	 *
-	 * Returns:
-	 *    The data at the stop of the stack
+	 * @returns the data at the stop of the stack
 	 */
 	T pop() {
 		T data;
@@ -77,12 +103,7 @@ public:
 
 	/**
 	 * Puts a data element on the top of the stack.
-	 *
-	 * Arguments:
-	 *     - data (`T`) -- the data element to store in the stack
-	 *
-	 * Returns:
-	 *     Nothing
+	 * @param data (`T`) the data element to store in the stack
 	 */
 	void push(T data) {
 		std::shared_ptr<Node<T>> node = std::make_shared<Node<T>>(data);
@@ -100,6 +121,12 @@ public:
 		this->length++;
 	}
 
+	/**
+	 * @brief Returns a string representation of the stack.
+	 *
+	 * Currently, it formats the stack's data into a simple JSON-like string.
+	 * @return A string representing the node's content.
+	 */
 	std::string str() const override {
 		std::stringstream ss;
 
@@ -122,9 +149,8 @@ public:
 	}
 
 	/**
-	 * Returns:
-	 *    The data element on the top of the stack.  This does not remove the item from
-	 *    the top.
+	 * @returns: The data element on the top of the stack.  This does not remove
+	 * the item from the top.
 	 */
 	T top() {
 		if (this->length == 0) {

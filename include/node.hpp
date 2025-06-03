@@ -138,7 +138,7 @@ public:
 	 * - `std::vector<T>` member (`children`) is deep copied (its elements are copied).
 	 * - The `T` member (`data`) is copied according to `T`'s own copy semantics.
 	 *
-	 * @param node The existing Node object to copy from.
+	 * @param node (`Node<T> &`) The existing Node object to copy from.
 	 */
 	Node(Node<T> &node) {
 		this->data = node.data;
