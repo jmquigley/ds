@@ -53,6 +53,7 @@ set(DS_HEADERS
     include/ds.h
     include/constants.hpp
     include/iterable.hpp
+    include/list.hpp
     include/node.hpp
     include/property.hpp
     include/stack.hpp
@@ -82,14 +83,15 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 #
 
 set(TEST_SOURCES
+  tests/test_comparator.cpp
+  tests/test_list.cpp
   tests/test_node.cpp
   tests/test_stack.cpp
 )
 
 set(TEST_HEADERS
   tests/testing_base.h
-  tests/test_node.h
-  tests/test_stack.h
+  tests/test_objects.h
 )
 
 add_executable(

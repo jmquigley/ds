@@ -71,6 +71,31 @@ public:
 		this->root = nullptr;
 	}
 
+    /**
+     * @brief returns the contents of the stack as a JSON string
+     * @returns a string that holds the stack in a JSON string
+     */
+	std::string json() const override {
+		std::stringstream ss;
+
+		if (this->root != nullptr) {
+			std::shared_ptr<Node<T>> node = this->root;
+			std::shared_ptr<Node<T>> next;
+
+			ss << "[";
+			std::string comma = "";
+			while (node) {
+				next = node->getRight();
+				ss << comma << *node;
+				node = next;
+				comma = ",";
+			}
+			ss << "]";
+		}
+
+		return ss.str();
+	}
+
 	/**
 	 * @brief A convenience wrapper for the top function.
 	 * @returns A copy of the data element at the top of the stack
@@ -128,24 +153,7 @@ public:
 	 * @return A string representing the node's content.
 	 */
 	std::string str() const override {
-		std::stringstream ss;
-
-		if (this->root != nullptr) {
-			std::shared_ptr<Node<T>> node = this->root;
-			std::shared_ptr<Node<T>> next;
-
-			ss << "[";
-			std::string comma = "";
-			while (node) {
-				next = node->getRight();
-				ss << comma << *node;
-				node = next;
-				comma = ",";
-			}
-			ss << "]";
-		}
-
-		return ss.str();
+        return json();
 	}
 
 	/**

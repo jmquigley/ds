@@ -1,4 +1,4 @@
-#include "test_stack.h"
+#include "test_objects.h"
 
 #include <exception>
 #include <fstream>
@@ -6,7 +6,7 @@
 
 #include "stack.hpp"
 
-TestStack::TestStack() {
+TestStack::TestStack(): TestingBase() {
 	memset(temp, 0, sizeof(temp));
 	bufptr = nullptr;
 };

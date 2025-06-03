@@ -15,5 +15,6 @@ protected:
 
 	TestingBase() {
 		resourceDirectory = "./tests/resources/";
+        bufptr = &temp[0];
 	};
 };

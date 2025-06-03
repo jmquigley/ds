@@ -1,11 +1,11 @@
-#include "test_node.h"
+#include "test_objects.h"
 
 #include <iostream>
 #include <string>
 
 #include "node.hpp"
 
-TestNode::TestNode() {
+TestNode::TestNode(): TestingBase() {
 	memset(temp, 0, sizeof(temp));
 	bufptr = nullptr;
 };
