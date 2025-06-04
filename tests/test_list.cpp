@@ -11,5 +11,9 @@ TestList::TestList(): TestingBase() {
 };
 
 TEST_F(TestList, ListCreate) {
-    EXPECT_TRUE(true);
+    ds::List<int> list;
+    EXPECT_EQ(list.getLength(), 0);
+
+    list.insert(1);
+    EXPECT_EQ(list.getLength(), 1);
 };

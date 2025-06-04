@@ -8,12 +8,18 @@
 
 //
 // Holds the base class for each test case suite
-
+//
 
 class TestComparator : public TestingBase {
 public:
 
 	TestComparator();
+};
+
+class TestHelpers : public TestingBase {
+public:
+
+	TestHelpers();
 };
 
 class TestList : public TestingBase {

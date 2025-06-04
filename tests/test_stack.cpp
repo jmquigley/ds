@@ -1,12 +1,11 @@
-#include "test_objects.h"
-
 #include <exception>
 #include <fstream>
 #include <string>
 
 #include "stack.hpp"
+#include "test_objects.h"
 
-TestStack::TestStack(): TestingBase() {
+TestStack::TestStack() : TestingBase() {
 	memset(temp, 0, sizeof(temp));
 	bufptr = nullptr;
 };
@@ -33,6 +32,17 @@ TEST_F(TestStack, StackCreate) {
 	EXPECT_EQ(data, 10);
 	EXPECT_EQ(stack.getLength(), 0);
 };
+
+TEST_F(TestStack, StackClear) {
+	ds::Stack<int> stack;
+
+	EXPECT_EQ(stack.getLength(), 0);
+	stack.push(10);
+	stack.push(20);
+	EXPECT_EQ(stack.getLength(), 2);
+	stack.clear();
+	EXPECT_EQ(stack.getLength(), 0);
+}
 
 TEST_F(TestStack, StackErrors) {
 	ds::Stack<int> stack;
