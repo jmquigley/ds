@@ -11,6 +11,11 @@
  */
 namespace ds {
 
+enum class Position:int {
+    FRONT = 0,
+    BACK = -1
+};
+
 /**
  * @class Iterable
  * @brief An interface definition for all iterable collections.
@@ -22,24 +27,27 @@ class Iterable {
 
 public:
 
+    inline static char FRONT = 0;
+    inline static char BACK = -1;
+
     /**
      * @brief Find function for iterable collection classes.
      * @pure
      */
-    Node<T> find(T data) = 0;
+    virtual Node<T> find(T data) = 0;
 
     /**
      * @brief insert the given data into a collection.
      * @pure
      */
-    void insert(T data) = 0;
+    virtual void insert(T data, ssize_t idx = 0, Position position = Position::BACK) = 0;
 
     /**
      * @brief Removes the given data element from the structure if it
      *        exists.
      * @pure
      */
-    void remove(T data) = 0;
+    virtual void remove(T data) = 0;
 
 };
 }
