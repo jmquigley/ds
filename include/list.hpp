@@ -70,42 +70,44 @@ public:
 
 	virtual Node<T> find(T data) override {
 		// TODO: add find() to List
-        Node<T> node;
-        return node;
+		Node<T> node;
+		return node;
 	}
 
 	virtual void insert(T data, ssize_t idx = -1, Position position = Position::BACK) override {
 		std::shared_ptr<Node<T>> node = std::make_shared<Node<T>>(data);
 
 		if (this->root == nullptr) {
-            // empty list, first value
-			this->root = node;
+			// empty list, first value
+			this->root = this->first = this->last = node;
 		} else if (idx == as_integer(Position::BACK)) {
-            // add a new element to the end of the list
+			// add a new element to the end of the list
 			node->setLeft(this->last);
 			this->last->setRight(node);
 			this->last = node;
 		} else if (idx == as_integer(Position::FRONT)) {
-            // add a new element to the front of the list
+			// add a new element to the front of the list
 			node->setRight(this->root);
 			this->root->setLeft(node);
 			this->root = this->first = node;
 		} else if (idx >= 0) {
-            // add a new element to a arbitrary position in the list
+			// add a new element to a arbitrary position in the list
 			std::shared_ptr<Node<T>> tnode = getNodeByIndex(idx);
-			node->setRight(tnode);
-			node->setLeft(tnode->getLeft());
-			tnode->getLeft()->setRight(node);
-			tnode->setLeft(node);
+			if (tnode != nullptr) {
+				node->setRight(tnode);
+				node->setLeft(tnode->getLeft());
+				tnode->getLeft()->setRight(node);
+				tnode->setLeft(node);
+			}
 		}
 
 		this->length++;
 	}
 
-    virtual std::string json() const override {
-        // TODO: add json() to List
-        return "";
-    }
+	virtual std::string json() const override {
+		// TODO: add json() to List
+		return "";
+	}
 
 	virtual void remove(T data) override {
 		// TODO: add remove() to List
@@ -117,7 +119,7 @@ public:
 
 	virtual std::string str() const override {
 		// TODO: add str() to List
-        return "";
+		return "";
 	}
 };
 }  // namespace ds

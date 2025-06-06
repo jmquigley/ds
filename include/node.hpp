@@ -102,7 +102,7 @@ public:
 	 * @param parent The parent node (copied by value).
 	 * @param data The data to be stored in the node.
 	 */
-	Node(Node<T> parent, T data) : Node(parent, nullptr, nullptr, data) {}
+	Node(std::shared_ptr<Node<T>> parent, T data) : Node(parent, nullptr, nullptr, data) {}
 
 	/**
 	 * @brief Full constructor for Node.
@@ -114,7 +114,8 @@ public:
 	 * @param right A pointer to the right child node. Can be nullptr.
 	 * @param data The data to be stored in the node.
 	 */
-	Node(Node<T> *parent, Node<T> *left, Node<T> *right, T data)
+	Node(std::shared_ptr<Node<T>> parent, std::shared_ptr<Node<T>> left,
+		 std::shared_ptr<Node<T>> right, T data)
 		: parent(parent), left(left), right(right), data(data) {
 		init();
 		if (parent) {
@@ -252,7 +253,7 @@ public:
 	 */
 	NodeBuilder &withParent(std::shared_ptr<Node<T>> parent) {
 		node.setParent(parent);
-		return *this;  // Note: Original code was missing return *this;
+		return *this;
 	}
 
 	/**
@@ -262,7 +263,7 @@ public:
 	 */
 	NodeBuilder &withRight(std::shared_ptr<Node<T>> right) {
 		node.setRight(right);
-		return *this;  // Note: Original code was missing return *this;
+		return *this;
 	}
 
 	/**
@@ -272,7 +273,7 @@ public:
 	 */
 	NodeBuilder &withLeft(std::shared_ptr<Node<T>> left) {
 		node.setLeft(left);
-		return *this;  // Note: Original code was missing return *this;
+		return *this;
 	}
 
 	/**

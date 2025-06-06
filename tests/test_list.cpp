@@ -15,5 +15,8 @@ TEST_F(TestList, ListCreate) {
     EXPECT_EQ(list.getLength(), 0);
 
     list.insert(1);
-    EXPECT_EQ(list.getLength(), 1);
+    EXPECT_EQ(list.getLength(), 1);  // root insert
+
+    list.insert(2);
+    EXPECT_EQ(list.getLength(), 2);  // second insert
 };
