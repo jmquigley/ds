@@ -17,6 +17,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "property.hpp"
@@ -119,7 +120,7 @@ public:
 		: parent(parent), left(left), right(right), data(data) {
 		init();
 		if (parent) {
-			parentId = parent->getParentId();
+			parentId = parent->getId();
 		}
 	}
 
@@ -131,24 +132,30 @@ public:
 	~Node() {}
 
 	/**
-	 * @brief Copy constructor for Node.
+	 * @brief Move constructor for Node.
 	 *
-	 * Creates a new Node object by performing a member-wise copy of an existing Node.
-	 * - `std::string` members (`id`, `parentId`) are deep copied.
-	 * - `std::shared_ptr` members (`parent`, `left`, `right`) result in shared ownership.
-	 * - `std::vector<T>` member (`children`) is deep copied (its elements are copied).
-	 * - The `T` member (`data`) is copied according to `T`'s own copy semantics.
+	 * Creates a new node by transferring ownership of resources from another node.
+	 * The source node will be left in a valid but unspecified state after the move.
 	 *
-	 * @param node (`Node<T> &`) The existing Node object to copy from.
+	 * @param other The source Node object to move resources from
 	 */
-	Node(Node<T> &node) {
-		this->data = node.data;
-		this->id = node.id;
-		this->parentId = node.parentId;
-		this->parent = node.parent;
-		this->right = node.right;
-		this->left = node.left;
-		this->children = node.children;
+	Node(const Node<T> &other) {
+		copy(other);
+	}
+
+	/**
+	 * @brief Move constructor for Node.
+	 *
+	 * Efficiently transfers ownership of resources from the source node to this node.
+	 * - Preserves the generated ID of the moved-from node
+	 * - Transfers data and relationship pointers
+	 * - Updates parent-child relationships to maintain tree integrity
+	 *
+	 * @param other (`Node<T>`) The Node object to move from (will be left in a valid but
+	 * unspecified state)
+	 */
+	Node(Node<T> &&other) {
+		move(std::move(other));
 	}
 
 	/**
@@ -165,19 +172,94 @@ public:
 	}
 
 	/**
+	 * @brief Copy assignment operator.
+	 *
+	 * Assigns the contents of another node to this node using deep copying.
+	 * This operator creates a new deep copy of the right-hand side node,
+	 * maintaining the unique identity of this node while adopting all data
+	 * and relationships from the source node.
+	 *
+	 * @param rhs The right-hand side Node object to copy from
+	 * @return Reference to this node after the assignment
+	 */
+	Node<T> &operator=(const Node<T> &rhs) {
+		copy(rhs);
+		return *this;
+	}
+
+	/**
+	 * @brief Move assignment operator.
+	 *
+	 * Transfers ownership of all resources from the right-hand side node to this node.
+	 * This is more efficient than copy assignment as it avoids deep copying by
+	 * moving resources from the source node, leaving it in a valid but unspecified state.
+	 *
+	 * @param rhs The right-hand side Node object to move resources from
+	 * @return Reference to this node after the assignment
+	 */
+	Node<T> &operator=(Node<T> &&rhs) {
+		move(std::move(rhs));
+		return *this;
+	}
+
+	/**
 	 * @brief Clears the node's identifiers and pointers, then re-initializes a new ID.
 	 *
 	 * Sets ID and parentId to empty, parent, right, left to nullptr,
 	 * clears the children vector, and generates a new unique ID for the node.
 	 */
 	void clear() {
-		this->id = "";
 		this->parentId = "";
 		this->parent = nullptr;
 		this->right = nullptr;
 		this->left = nullptr;
 		this->children.clear();
-		init();	 // Generate a new ID after clearing
+	}
+
+	/**
+	 * @brief Copy assignment helper function.
+	 *
+	 * Creates a deep copy of the source node into this node. The current node
+	 * is initialized with a new ID before copying all properties from the source.
+	 * This ensures that the resulting node is a distinct entity with the same
+	 * content as the source.
+	 *
+	 * @param src The source Node object to copy from
+	 * @return Reference to this node after the copy operation
+	 */
+	Node<T> &copy(const Node<T> &src) {
+		init();
+
+		this->data = src.data;
+		this->parentId = src.parentId;
+		this->parent = src.parent;
+		this->right = src.right;
+		this->left = src.left;
+		this->children = src.children;
+
+		return *this;
+	}
+
+	/**
+	 * @brief Helper function to implement move semantics.
+	 *
+	 * Transfers ownership of all resources from the source node to this node,
+	 * including ID, data, parent references, and child nodes. This operation
+	 * is more efficient than copying as it avoids deep copying of resources.
+	 *
+	 * @param src The source Node object to move resources from
+	 * @return Reference to this node after the move operation
+	 */
+	Node<T> &move(Node<T> &&src) {
+		this->id = std::move(src.id);
+		this->data = std::move(src.data);
+		this->parentId = std::move(src.parentId);
+		this->parent = std::move(src.parent);
+		this->right = std::move(src.right);
+		this->left = std::move(src.left);
+		this->children = std::move(src.children);
+
+		return *this;
 	}
 
 	/**
@@ -223,16 +305,6 @@ public:
 	 */
 	NodeBuilder &withData(T data) {
 		node.setData(data);
-		return *this;
-	}
-
-	/**
-	 * @brief Sets the ID for the Node being built.
-	 * @param id The ID to set.
-	 * @return A reference to the NodeBuilder for chaining.
-	 */
-	NodeBuilder &withId(std::string id) {
-		node.setId(id);
 		return *this;
 	}
 

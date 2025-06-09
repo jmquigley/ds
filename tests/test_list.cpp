@@ -19,4 +19,32 @@ TEST_F(TestList, ListCreate) {
 
     list.insert(2);
     EXPECT_EQ(list.getLength(), 2);  // second insert
+
+    ds::List<int>::Iterator it(list.getFirst());
+
+    std::cout << "(1): " << it << ", *: " << *it << std::endl;
+    std::cout << "(2): " << it.next() << ", *: " << *it << std::endl;
+
+    std::cout << "begin: " << list.begin() << ", end: " << list.end() << std::endl;
+
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        std::cout << "val: " << it << ", *: " << *it << std::endl;
+    }
+
+    for (auto it : list) {
+        std::cout << "it: " << it << std::endl;
+    }
+
+    int i = 0;
+    for (it = list.begin(); it != list.end(); it++) {
+        std::cout << "it: " << *it << std::endl;
+
+        if (i == 0) {
+            EXPECT_EQ(*it, 1);
+        } else if (i == 1) {
+            EXPECT_EQ(*it, 2);
+        }
+
+        i++;
+     }
 };

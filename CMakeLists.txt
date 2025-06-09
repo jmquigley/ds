@@ -55,6 +55,7 @@ set(DS_HEADERS
     include/constants.hpp
     include/helpers.hpp
     include/iterable.hpp
+    include/iterator.hpp
     include/list.hpp
     include/node.hpp
     include/property.hpp

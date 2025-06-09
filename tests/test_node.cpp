@@ -1,11 +1,10 @@
-#include "test_objects.h"
-
 #include <iostream>
 #include <string>
 
 #include "node.hpp"
+#include "test_objects.h"
 
-TestNode::TestNode(): TestingBase() {
+TestNode::TestNode() : TestingBase() {
 	memset(temp, 0, sizeof(temp));
 	bufptr = nullptr;
 };
@@ -31,13 +30,12 @@ TEST_F(TestNode, NodeBuilder) {
 	ds::Node<int> node;
 	ds::NodeBuilder<int> builder;
 
-	builder.withData(42).withId("abc").withParentId("xyz");
-
-	node = builder.build();
+	builder.withData(42).withParentId("xyz");
+	node = std::move(builder.build());
 
 	EXPECT_EQ(node.getData(), 42);
-	EXPECT_EQ(node.getId(), "abc");
 	EXPECT_EQ(node.getParentId(), "xyz");
+	EXPECT_EQ(node.getId().length(), 36);
 }
 
 TEST_F(TestNode, NodeToString) {

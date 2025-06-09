@@ -28,14 +28,14 @@ template<typename T>
 class Comparator {
 public:
 
-    /**
-     * @brief Compares two data values and returns an integer that
-     * represents their relationship.
-     * @param o1 (`T`) left hand side of the comparison
-     * @param 02 (`T`) right hand side of the comparison
-     * @returns 0 if `o1` and `o2` are equal, 1 if `o1` is greater
-     * than `o2`, or -1 if `o1` is less than `o2`.
-     */
+	/**
+	 * @brief Compares two data values and returns an integer that
+	 * represents their relationship.
+	 * @param o1 (`T`) left hand side of the comparison
+	 * @param o2 (`T`) right hand side of the comparison
+	 * @returns 0 if `o1` and `o2` are equal, 1 if `o1` is greater
+	 * than `o2`, or -1 if `o1` is less than `o2`.
+	 */
 	virtual int compare(T o1, T o2) {
 		if (o1 == o2) {
 			return 0;
@@ -46,4 +46,4 @@ public:
 		return -1;
 	}
 };
-}
+}  // namespace ds

@@ -10,6 +10,7 @@
 #include "collection.hpp"
 #include "helpers.hpp"
 #include "iterable.hpp"
+#include "iterator.hpp"
 #include "property.hpp"
 
 /**
@@ -50,6 +51,12 @@ private:
 
 public:
 
+	class Iterator : public IteratorBase<T> {
+	public:
+
+		Iterator(std::shared_ptr<Node<T>> lp) : IteratorBase<T>(lp) {}
+	};
+
 	List() : Collection<T>() {}
 
 	List(Comparator<T> comparator) : Collection<T>(comparator) {}
@@ -62,6 +69,14 @@ public:
 
 	std::vector<T> array(void) {
 		// TODO: add array() to List
+	}
+
+	Iterator begin() {
+		return Iterator(this->first);
+	}
+
+	Iterator end() {
+		return Iterator(nullptr);
 	}
 
 	virtual void clear() override {
