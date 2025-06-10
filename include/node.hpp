@@ -129,7 +129,9 @@ public:
 	 *
 	 * Currently empty, but can be extended for cleanup if needed.
 	 */
-	~Node() {}
+	~Node() {
+        this->clear();
+    }
 
 	/**
 	 * @brief Move constructor for Node.
@@ -210,9 +212,9 @@ public:
 	 */
 	void clear() {
 		this->parentId = "";
-		this->parent = nullptr;
-		this->right = nullptr;
-		this->left = nullptr;
+		this->parent.reset();
+		this->right.reset();
+		this->left.reset();
 		this->children.clear();
 	}
 

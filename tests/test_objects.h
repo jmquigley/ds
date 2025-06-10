@@ -22,6 +22,12 @@ public:
 	TestHelpers();
 };
 
+class TestIterator : public TestingBase {
+public:
+
+	TestIterator();
+};
+
 class TestList : public TestingBase {
 public:
 

@@ -22,16 +22,22 @@ namespace ds {
  */
 template<typename T>
 class IteratorBase {
-	PROPERTY(lp, Lp, std::shared_ptr<Node<T>>);
+	PROPERTY(lp, Lp, std::weak_ptr<Node<T>>);
 
 public:
+
+    IteratorBase(): IteratorBase(std::weak_ptr<Node<T>>()) {};
 
 	/**
 	 * @brief Constructor that initializes the iterator with a node pointer.
 	 *
 	 * @param lp Shared pointer to the starting node for iteration
 	 */
-	IteratorBase(std::shared_ptr<Node<T>> lp) : lp(lp) {}
+	IteratorBase(std::weak_ptr<Node<T>> lp) : lp(lp) {}
+
+    ~IteratorBase() {
+        reset();
+    }
 
 	/**
 	 * @brief Pre-increment operator.
@@ -65,7 +71,9 @@ public:
 	 * @return true if both iterators point to the same node, false otherwise
 	 */
 	bool operator==(const IteratorBase &rhs) const {
-		return this->lp == rhs.lp;
+        //return this->lp.owner_equal(rhs.lp);
+		// TODO: fix
+		return false;
 	}
 
 	/**
@@ -77,7 +85,9 @@ public:
 	 * @return true if the iterators point to different nodes, false otherwise
 	 */
 	bool operator!=(const IteratorBase &rhs) const {
-		return this->lp != rhs.lp;
+        //return !this->lp.owner_equal(rhs.lp);
+		// TODO: fix
+		return false;
 	}
 
 	/**
@@ -91,8 +101,8 @@ public:
 	T operator*() const {
 		T nil;
 
-		if (this->lp) {
-			return this->lp->getData();
+		if (!lp.expired()) {
+			return lp.lock()->getData();
 		}
 
 		return nil;
@@ -108,7 +118,8 @@ public:
 	 * @return Reference to the output stream after writing
 	 */
 	friend std::ostream &operator<<(std::ostream &st, const IteratorBase &it) {
-		return st << it.lp << " : " << *it;
+        auto p = it.lp.lock();
+		return st << p << " : " << *p;
 	}
 
 	/**
@@ -121,11 +132,19 @@ public:
 	 * @return Reference to this iterator after advancing
 	 */
 	IteratorBase &next() {
-		if (lp) {
-			lp = lp->getRight();
+        auto p = this->lp.lock();
+
+		if (p) {
+			lp = p->getRight();
 		}
 
 		return *this;
+	}
+
+	void reset() {
+		if (lp.lock()) {
+			lp.reset();
+		}
 	}
 };
 }  // namespace ds

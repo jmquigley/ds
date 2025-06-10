@@ -54,14 +54,17 @@ public:
 	class Iterator : public IteratorBase<T> {
 	public:
 
-		Iterator(std::shared_ptr<Node<T>> lp) : IteratorBase<T>(lp) {}
+        Iterator(): IteratorBase<T>() {}
+		Iterator(std::weak_ptr<Node<T>> lp) : IteratorBase<T>(lp) {}
 	};
 
 	List() : Collection<T>() {}
 
 	List(Comparator<T> comparator) : Collection<T>(comparator) {}
 
-	~List() {}
+	~List() {
+        clear();
+    }
 
 	T at(size_t pos) {
 		// TODO: add at() to List
@@ -76,11 +79,24 @@ public:
 	}
 
 	Iterator end() {
-		return Iterator(nullptr);
+		return Iterator();
 	}
 
 	virtual void clear() override {
-		// TODO: add clear() to List
+        std::shared_ptr<Node<T>> lp = this->root;
+        std::shared_ptr<Node<T>> next;
+
+        while (lp) {
+            next = lp->getRight();
+            lp->clear();
+            lp.reset();
+            lp = next;
+        }
+
+        this->root.reset();
+        this->first.reset();
+        this->last.reset();
+        this->length = 0;
 	}
 
 	virtual Node<T> find(T data) override {

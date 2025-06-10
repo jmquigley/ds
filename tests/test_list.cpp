@@ -22,19 +22,23 @@ TEST_F(TestList, ListCreate) {
 
     ds::List<int>::Iterator it(list.getFirst());
 
-    std::cout << "(1): " << it << ", *: " << *it << std::endl;
-    std::cout << "(2): " << it.next() << ", *: " << *it << std::endl;
+    auto it1 = list.begin();
+    auto it2 = list.end();
 
-    std::cout << "begin: " << list.begin() << ", end: " << list.end() << std::endl;
+    // std::cout << "(1): " << it << ", *: " << *it << std::endl;
+    // std::cout << "(2): " << it.next() << ", *: " << *it << std::endl;
+
+    // std::cout << "begin: " << list.begin() << ", end: " << list.end() << std::endl;
 
     for (auto it = list.begin(); it != list.end(); ++it) {
-        std::cout << "val: " << it << ", *: " << *it << std::endl;
+        // std::cout << "val: " << it << ", *: " << *it << std::endl;
     }
 
     for (auto it : list) {
-        std::cout << "it: " << it << std::endl;
+        // std::cout << "it: " << it << std::endl;
     }
 
+/*
     int i = 0;
     for (it = list.begin(); it != list.end(); it++) {
         std::cout << "it: " << *it << std::endl;
@@ -47,4 +51,7 @@ TEST_F(TestList, ListCreate) {
 
         i++;
      }
+*/
+
+    list.clear();
 };

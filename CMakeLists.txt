@@ -88,6 +88,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 set(TEST_SOURCES
   tests/test_comparator.cpp
   tests/test_helpers.cpp
+  tests/test_iterator.cpp
   tests/test_list.cpp
   tests/test_node.cpp
   tests/test_stack.cpp
