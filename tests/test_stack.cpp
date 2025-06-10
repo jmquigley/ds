@@ -3,11 +3,12 @@
 #include <string>
 
 #include "stack.hpp"
-#include "test_objects.h"
+#include "testing_base.h"
 
-TestStack::TestStack() : TestingBase() {
-	memset(temp, 0, sizeof(temp));
-	bufptr = nullptr;
+class TestStack : public TestingBase {
+protected:
+
+	TestStack() : TestingBase() {}
 };
 
 TEST_F(TestStack, StackCreate) {

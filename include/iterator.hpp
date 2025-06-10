@@ -26,7 +26,7 @@ class IteratorBase {
 
 public:
 
-    IteratorBase(): IteratorBase(std::weak_ptr<Node<T>>()) {};
+	IteratorBase() : IteratorBase(std::weak_ptr<Node<T>>()) {};
 
 	/**
 	 * @brief Constructor that initializes the iterator with a node pointer.
@@ -35,9 +35,11 @@ public:
 	 */
 	IteratorBase(std::weak_ptr<Node<T>> lp) : lp(lp) {}
 
-    ~IteratorBase() {
-        reset();
-    }
+	~IteratorBase() {
+		if (lp.lock()) {
+			lp.reset();
+		}
+	}
 
 	/**
 	 * @brief Pre-increment operator.
@@ -71,9 +73,10 @@ public:
 	 * @return true if both iterators point to the same node, false otherwise
 	 */
 	bool operator==(const IteratorBase &rhs) const {
-        //return this->lp.owner_equal(rhs.lp);
-		// TODO: fix
-		return false;
+		auto p = this->lp.lock();
+		auto rp = rhs.lp.lock();
+
+		return p == rp;
 	}
 
 	/**
@@ -85,9 +88,10 @@ public:
 	 * @return true if the iterators point to different nodes, false otherwise
 	 */
 	bool operator!=(const IteratorBase &rhs) const {
-        //return !this->lp.owner_equal(rhs.lp);
-		// TODO: fix
-		return false;
+		auto p = this->lp.lock();
+		auto rp = rhs.lp.lock();
+
+		return p != rp;
 	}
 
 	/**
@@ -118,8 +122,7 @@ public:
 	 * @return Reference to the output stream after writing
 	 */
 	friend std::ostream &operator<<(std::ostream &st, const IteratorBase &it) {
-        auto p = it.lp.lock();
-		return st << p << " : " << *p;
+		return st << it.lp.lock();
 	}
 
 	/**
@@ -132,7 +135,7 @@ public:
 	 * @return Reference to this iterator after advancing
 	 */
 	IteratorBase &next() {
-        auto p = this->lp.lock();
+		auto p = this->lp.lock();
 
 		if (p) {
 			lp = p->getRight();

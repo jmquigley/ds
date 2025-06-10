@@ -96,7 +96,6 @@ set(TEST_SOURCES
 
 set(TEST_HEADERS
   tests/testing_base.h
-  tests/test_objects.h
 )
 
 add_executable(

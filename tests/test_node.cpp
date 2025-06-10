@@ -2,11 +2,12 @@
 #include <string>
 
 #include "node.hpp"
-#include "test_objects.h"
+#include "testing_base.h"
 
-TestNode::TestNode() : TestingBase() {
-	memset(temp, 0, sizeof(temp));
-	bufptr = nullptr;
+class TestNode : public TestingBase {
+public:
+
+	TestNode() : TestingBase() {}
 };
 
 TEST_F(TestNode, NodeCreate) {

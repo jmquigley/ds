@@ -15,6 +15,9 @@ protected:
 
 	TestingBase() {
 		resourceDirectory = "./tests/resources/";
-        bufptr = &temp[0];
+		bufptr = &temp[0];
+
+		memset(temp, 0, sizeof(temp));
+		bufptr = nullptr;
 	};
 };

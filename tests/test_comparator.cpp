@@ -1,24 +1,24 @@
-#include "test_objects.h"
-
 #include <iostream>
 #include <string>
 
 #include "comparator.hpp"
+#include "testing_base.h"
 
-TestComparator::TestComparator() {
-	memset(temp, 0, sizeof(temp));
-	bufptr = nullptr;
+class TestComparator : public TestingBase {
+public:
+
+	TestComparator() : TestingBase() {}
 };
 
 TEST_F(TestComparator, ComparatorCreate) {
-    ds::Comparator<int> comparator;
+	ds::Comparator<int> comparator;
 
-    EXPECT_EQ(comparator.compare(1,2), -1);
-    EXPECT_EQ(comparator.compare(2,1), 1);
-    EXPECT_EQ(comparator.compare(1,1), 0);
+	EXPECT_EQ(comparator.compare(1, 2), -1);
+	EXPECT_EQ(comparator.compare(2, 1), 1);
+	EXPECT_EQ(comparator.compare(1, 1), 0);
 };
 
-template <typename T>
+template<typename T>
 class CustomComparator : public ds::Comparator<T> {
 public:
 
@@ -34,9 +34,9 @@ public:
 };
 
 TEST_F(TestComparator, ComparatorCustomStruct) {
-    CustomComparator<int> comparator;
+	CustomComparator<int> comparator;
 
-    EXPECT_EQ(comparator.compare(1,2), 99);
-    EXPECT_EQ(comparator.compare(2,1), 101);
-    EXPECT_EQ(comparator.compare(1,1), 100);
+	EXPECT_EQ(comparator.compare(1, 2), 99);
+	EXPECT_EQ(comparator.compare(2, 1), 101);
+	EXPECT_EQ(comparator.compare(1, 1), 100);
 }
