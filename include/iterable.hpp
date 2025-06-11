@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <limits>
+
 #include "match.hpp"
 
 /**
@@ -13,10 +15,20 @@
  */
 namespace ds {
 
-enum class Position:int {
-    FRONT = 0,
-    BACK = -1
-};
+/**
+ * @enum Position
+ * @brief Defines standard positions for insertion operations.
+ *
+ * This enum provides constants for common insertion positions
+ * that can be used across different data structures.
+ *
+ * @var Position::FRONT
+ * @brief Represents the front/beginning position (value 0).
+ *
+ * @var Position::BACK
+ * @brief Represents the back/end position (value -1).
+ */
+enum class Position : int { FRONT = 0, BACK = -1 };
 
 /**
  * @class Iterable
@@ -24,32 +36,45 @@ enum class Position:int {
  *
  * @tparam T The type of data stored within the collection.
  */
-template <typename T>
+template<typename T>
 class Iterable {
-
 public:
 
-    inline static char FRONT = 0;
-    inline static char BACK = -1;
+	/**
+	 * @brief Find function for iterable collection classes.
+	 * @param data The element to search for in the collection
+	 * @return Match<T> A match object indicating whether the element was found
+	 * @pure
+	 */
+	virtual Match<T> find(T data) = 0;
 
-    /**
-     * @brief Find function for iterable collection classes.
-     * @pure
-     */
-    virtual Match<T> find(T data) = 0;
+	/**
+	 * @brief Insert the given data into a collection at specified position.
+	 * @param data The element to insert
+	 * @param position The position to insert at (FRONT or BACK, default is BACK)
+	 * @throws std::runtime_error If an invalid position is specified
+	 * @pure
+	 */
+	virtual void insert(T data, Position position = Position::BACK) = 0;
 
-    /**
-     * @brief insert the given data into a collection.
-     * @pure
-     */
-    virtual void insert(T data, ssize_t idx = 0, Position position = Position::BACK) = 0;
+	/**
+	 * @brief Insert the given data into a collection at specified index.
+	 * @param data The element to insert
+	 * @param index The index at which to insert the element (default is max size_t, which typically
+	 * inserts at the end)
+	 * @pure
+	 */
+	virtual void insert(T data, size_t index = std::numeric_limits<std::size_t>::max()) = 0;
 
-    /**
-     * @brief Removes the given data element from the structure if it
-     *        exists.
-     * @pure
-     */
-    virtual void remove(T data) = 0;
+	/**
+	 * @brief Removes the given data element from the structure if it exists.
+	 * @pure
+	 */
+	virtual void remove(T data) = 0;
 
+	/**
+	 * @brief Removes the given data element by its index location
+	 */
+	virtual void remove(size_t index) = 0;
 };
-}
+}  // namespace ds

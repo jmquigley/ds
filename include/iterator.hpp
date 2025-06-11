@@ -1,3 +1,8 @@
+/**
+ * @file iterator.hpp
+ * @brief Defines a base class iterator for all collection classes
+ */
+
 #pragma once
 
 #include <memory>
@@ -142,12 +147,6 @@ public:
 		}
 
 		return *this;
-	}
-
-	void reset() {
-		if (lp.lock()) {
-			lp.reset();
-		}
 	}
 };
 }  // namespace ds
