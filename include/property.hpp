@@ -17,18 +17,22 @@
  * once the macro finishes the current scope after the macro will be
  * public.
  *
+ * The accessor/mutators are always public
+ *
  * Example:
  *
  *    class Foo {
  *        PROPERTY(bar, Bar, unsigned int);
  *        PROPERTY_D(baz, Baz, std::string, ="something");
  *        PROPERTY_D(zab, Zab, int, =99);
+ *        PROPERTY_SCOPED(foo, Foo, unsigned int, properties:);
  *    }
  *
  * Parameters:
  *     - variable (`string`) -- the name of the variable to create
  *     - fn (`string`) -- the Pascal case function name of the get/set function
  *     - dtype (`string`) -- the data type for the variable
+ *     - scope (``) -- the access scope level of the variable
  *     - def (`string`) -- a default value initializer for the variable
  *
  * Returns:

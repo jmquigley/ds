@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "list.hpp"
 #include "testing_base.h"
@@ -12,15 +13,46 @@ public:
 
 TEST_F(TestList, ListCreate) {
 	ds::List<int> list;
-	EXPECT_EQ(list.getLength(), 0);
+	EXPECT_EQ(list.getSize(), 0);
 
 	list.insert(1);
-	EXPECT_EQ(list.getLength(), 1);	 // root insert
+	EXPECT_EQ(list.getSize(), 1);	 // root insert
 
 	list.insert(2);
-	EXPECT_EQ(list.getLength(), 2);	 // second insert
+	EXPECT_EQ(list.getSize(), 2);	 // second insert
 
-	ds::List<int>::Iterator it(list.getFirst());
+	list.insert(3);
+	EXPECT_EQ(list.getSize(), 3);	 // third insert
+
+    EXPECT_EQ(**list.getFront(), 1);
+    EXPECT_EQ(**list.getBack(), 3);
+}
+
+TEST_F(TestList, ListToVector) {
+    ds::List<int> list;
+
+    list.insert(1);
+    list.insert(2);
+    list.insert(3);
+
+	EXPECT_EQ(list.getSize(), 3);
+
+    std::vector<int> v = list.array();
+    EXPECT_EQ(v.size(), 3);
+    EXPECT_EQ(v[0], 1);
+    EXPECT_EQ(v[1], 2);
+    EXPECT_EQ(v[2], 3);
+}
+
+TEST_F(TestList, ListIterator) {
+	ds::List<int> list;
+
+	list.insert(1);
+	list.insert(2);
+
+    EXPECT_EQ(list.getSize(), 2);
+
+	ds::List<int>::Iterator it(list.getFront());
 
 	auto it1 = list.begin();
 	auto it2 = list.end();
@@ -53,3 +85,33 @@ TEST_F(TestList, ListCreate) {
 
 	list.clear();
 };
+
+TEST_F(TestList, ListClear) {
+    ds::List<int> list;
+
+    list.insert(1);
+    list.insert(2);
+    list.insert(3);
+
+    EXPECT_EQ(list.getSize(), 3);
+
+    // TODO: finish clear test
+}
+
+
+TEST_F(TestList, ListAt) {
+    ds::List<int> list;
+
+    list.insert(1);
+    list.insert(2);
+    list.insert(3);
+
+    EXPECT_EQ(list.getSize(), 3);
+    EXPECT_EQ(list.at(0), 1);
+    EXPECT_EQ(list.at(1), 2);
+    EXPECT_EQ(list.at(2), 3);
+
+    EXPECT_THROW(list.at(999), std::runtime_error) << "Can't request invalid location";
+
+    list.clear();
+}

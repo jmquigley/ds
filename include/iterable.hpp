@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "match.hpp"
+
 /**
  * @namespace ds
  * @brief Contains data structure related classes.
@@ -34,7 +36,7 @@ public:
      * @brief Find function for iterable collection classes.
      * @pure
      */
-    virtual Node<T> find(T data) = 0;
+    virtual Match<T> find(T data) = 0;
 
     /**
      * @brief insert the given data into a collection.

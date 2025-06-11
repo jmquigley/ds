@@ -204,13 +204,22 @@ public:
 		return *this;
 	}
 
+    /**
+     * @brief When dereferencing a node this operator will return the data in the node
+     * @returns The `T` data that is associated with this node.
+     */
+    T &operator*() {
+        return this->data;
+    }
+
 	/**
 	 * @brief Clears the node's identifiers and pointers, then re-initializes a new ID.
 	 *
-	 * Sets ID and parentId to empty, parent, right, left to nullptr,
+	 * Sets parentId to empty, parent, right, left to nullptr,
 	 * clears the children vector, and generates a new unique ID for the node.
 	 */
 	void clear() {
+        init();
 		this->parentId = "";
 		this->parent.reset();
 		this->right.reset();

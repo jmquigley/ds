@@ -22,7 +22,6 @@ namespace ds {
 /**
  * @class List
  * @brief A generic doubly linked list class.
- *
  * @tparam T The type of data stored within the list.
  */
 template<typename T>
@@ -33,7 +32,7 @@ private:
 		std::shared_ptr<Node<T>> tnode = this->root;
 
 		if (idx == as_integer(Position::BACK)) {
-			idx = this->getLength() - 1;
+			idx = this->getSize() - 1;
 		} else if (idx == as_integer(Position::FRONT)) {
 			idx = 0;
 		}
@@ -54,7 +53,8 @@ public:
 	class Iterator : public IteratorBase<T> {
 	public:
 
-        Iterator(): IteratorBase<T>() {}
+		Iterator() : IteratorBase<T>() {}
+
 		Iterator(std::weak_ptr<Node<T>> lp) : IteratorBase<T>(lp) {}
 	};
 
@@ -63,46 +63,97 @@ public:
 	List(Comparator<T> comparator) : Collection<T>(comparator) {}
 
 	~List() {
-        clear();
+		clear();
+	}
+
+    T operator[](size_t index) {
+        return this->at(index);
     }
 
-	T at(size_t pos) {
-		// TODO: add at() to List
+    /**
+     * @brief Retrieves the data from the list at the given index position
+     * @param pos (`size_t`) the index position within the list where the
+     * data is located.
+     * @returns the data element located at the given index
+     * @throws std::runtime_error if an invalid index is requested
+     */
+	T at(size_t index) {
+		if (index < 0 or index > this->size) {
+			throw std::runtime_error("Invalid list position index requested");
+		}
+
+		std::shared_ptr<Node<T>> lp = this->root;
+
+		for (int i = 0; i < index; i++) {
+			lp = lp->getRight();
+		}
+
+		return lp->getData();
 	}
 
+    /**
+     * @brief copies the current list into an array vector and returns it.
+     * @returns a `vector<T>` collection that contains each element of the list
+     */
 	std::vector<T> array(void) {
-		// TODO: add array() to List
+		std::shared_ptr<Node<T>> lp = this->root;
+		std::shared_ptr<Node<T>> next;
+        std::vector<T> v;
+
+		while (lp) {
+			next = lp->getRight();
+            v.push_back(lp->getData());
+			lp = next;
+		}
+
+        return v;
 	}
 
+    /**
+     * @brief Retrieves an iterator to the front of the list
+     * @returns A new Iterator object that points to the front of the list
+     */
 	Iterator begin() {
-		return Iterator(this->first);
+		return Iterator(this->front);
 	}
 
+    /**
+     * @brief Retrieves an iterator to the back of the list
+     * @returns A new Iterator object that points to the end of the list
+     */
 	Iterator end() {
 		return Iterator();
 	}
 
+    /**
+     * @brief deletes everything from the current list and resets it to its
+     * initialized state.
+     */
 	virtual void clear() override {
-        std::shared_ptr<Node<T>> lp = this->root;
-        std::shared_ptr<Node<T>> next;
+		std::shared_ptr<Node<T>> lp = this->root;
+		std::shared_ptr<Node<T>> next;
 
-        while (lp) {
-            next = lp->getRight();
-            lp->clear();
-            lp.reset();
-            lp = next;
-        }
+		while (lp) {
+			next = lp->getRight();
+			lp->clear();
+			lp.reset();
+			lp = next;
+		}
 
-        this->root.reset();
-        this->first.reset();
-        this->last.reset();
-        this->length = 0;
+		this->root.reset();
+		this->front.reset();
+		this->back.reset();
+		this->size = 0;
 	}
 
-	virtual Node<T> find(T data) override {
+    /**
+     * @brief Performs a linear search through list to find the given data
+     * element.
+     */
+	virtual Match<T> find(T data) override {
 		// TODO: add find() to List
-		Node<T> node;
-		return node;
+		Match<T> match;
+		return match;
 	}
 
 	virtual void insert(T data, ssize_t idx = -1, Position position = Position::BACK) override {
@@ -110,17 +161,17 @@ public:
 
 		if (this->root == nullptr) {
 			// empty list, first value
-			this->root = this->first = this->last = node;
+			this->root = this->front = this->back = node;
 		} else if (idx == as_integer(Position::BACK)) {
 			// add a new element to the end of the list
-			node->setLeft(this->last);
-			this->last->setRight(node);
-			this->last = node;
+			node->setLeft(this->back);
+			this->back->setRight(node);
+			this->back = node;
 		} else if (idx == as_integer(Position::FRONT)) {
 			// add a new element to the front of the list
 			node->setRight(this->root);
 			this->root->setLeft(node);
-			this->root = this->first = node;
+			this->root = this->front = node;
 		} else if (idx >= 0) {
 			// add a new element to a arbitrary position in the list
 			std::shared_ptr<Node<T>> tnode = getNodeByIndex(idx);
@@ -130,9 +181,11 @@ public:
 				tnode->getLeft()->setRight(node);
 				tnode->setLeft(node);
 			}
+		} else {
+			throw std::runtime_error("Invalid list insert requested");
 		}
 
-		this->length++;
+		this->size++;
 	}
 
 	virtual std::string json() const override {

@@ -16,6 +16,14 @@ protected:
 		this->root->getRight()->setRight(std::make_shared<ds::Node<int>>(3));
 	}
 
+    void TearDown() override {
+        if (this->root) {
+            this->root->getRight()->getRight().reset();
+            this->root->getRight().reset();
+            this->root.reset();
+        }
+    }
+
 public:
 
 	TestIterator() : TestingBase() {};

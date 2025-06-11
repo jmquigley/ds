@@ -65,10 +65,10 @@ public:
 			}
 		}
 
-		this->length = 0;
-		this->first = nullptr;
-		this->last = nullptr;
-		this->root = nullptr;
+		this->size = 0;
+		this->front.reset();
+		this->back.reset();
+		this->root.reset();
 	}
 
     /**
@@ -98,7 +98,7 @@ public:
 
 	/**
 	 * @brief A convenience wrapper for the top function.
-	 * @returns A copy of the data element at the top of the stack
+	 * @returns A copy of the data element `T` at the top of the stack
 	 */
 	T peek() {
 		return top();
@@ -117,9 +117,9 @@ public:
 			data = this->root->getData();
 			std::shared_ptr<Node<T>> topNode = this->root;
 			this->root = this->root->getRight();
-			this->first = this->root;
+			this->front = this->root;
 			topNode = nullptr;
-			this->length--;
+			this->size--;
 			return data;
 		}
 
@@ -135,15 +135,15 @@ public:
 
 		if (this->root == nullptr) {
 			this->root = node;
-			this->last = this->root;
+			this->back = this->root;
 		} else {
 			node->setRight(this->root);
 			this->root->setParentId(node->getId());
 			this->root = node;
 		}
 
-		this->first = node;
-		this->length++;
+		this->front = node;
+		this->size++;
 	}
 
 	/**
@@ -161,7 +161,7 @@ public:
 	 * the item from the top.
 	 */
 	T top() {
-		if (this->length == 0) {
+		if (this->size == 0) {
 			throw std::runtime_error("Cannot get the top of an empty stack");
 		}
 

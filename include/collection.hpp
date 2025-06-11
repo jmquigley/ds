@@ -19,20 +19,20 @@ namespace ds {
 template<typename T>
 class Collection {
 	/**
-	 * @brief Pointer to the first element in the collection.
+	 * @brief Pointer to the first/front element in the collection.
 	 * @protected
 	 */
-	PROPERTY_SCOPED(first, First, std::shared_ptr<Node<T>>, protected:);
+	PROPERTY_SCOPED(front, Front, std::shared_ptr<Node<T>>, protected:);
 	/**
-	 * @brief Pointer to the last element in the collection.
+	 * @brief Pointer to the last/back element in the collection.
 	 * @protected
 	 */
-	PROPERTY_SCOPED(last, Last, std::shared_ptr<Node<T>>, protected:);
+	PROPERTY_SCOPED(back, Back, std::shared_ptr<Node<T>>, protected:);
 	/**
 	 * @brief The number of elements currently in the collection.
 	 * @protected
 	 */
-	PROPERTY_SCOPED(length, Length, size_t, protected:);
+	PROPERTY_SCOPED(size, Size, size_t, protected:);
 	/**
 	 * @brief Pointer to the root element of tree-like collections.
 	 * @protected
@@ -61,7 +61,7 @@ public:
 	 * @brief Default constructor for Collection.
 	 * Initializes pointers to nullptr and length to 0.
 	 */
-	Collection() : first(nullptr), last(nullptr), length(0), root(nullptr) {}
+	Collection() : front(nullptr), back(nullptr), size(0), root(nullptr) {}
 
 	/**
 	 * @brief Constructor for Collection that takes a custom comparator.
