@@ -34,6 +34,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_C_COMPILER "/usr/bin/clang")
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+# set(CMAKE_CXX_FLAGS "-g -O0 -Wall -fprofile-instr-generate -fcoverage-mapping")
 set(HEADER_FILES /usr/include/c++/14 /usr/include/x86_64-linux-gnu/c++/14)
 set(ROOT_DIR CMAKE_SOURCE_DIR)
 
@@ -64,6 +65,11 @@ set(DS_HEADERS
 )
 
 add_library(${PROJECT_NAME} SHARED ${DS_SOURCES} ${DS_HEADERS})
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+  $<$<CONFIG:Debug>:-g>
+  $<$<CONFIG:Release>:-O3>
+)
 
 target_include_directories(${PROJECT_NAME}
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -117,6 +123,14 @@ target_compile_definitions(ds-unit-tests
 
 include(GoogleTest)
 gtest_discover_tests(ds-unit-tests)
+
+target_compile_options(ds-unit-tests PRIVATE
+  -g
+  -O0
+  -Wall
+  -fprofile-instr-generate
+  -fcoverage-mapping
+)
 
 #
 # Installation statements

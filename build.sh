@@ -18,7 +18,7 @@ pushd build
 cmake ..
 exitOnError $? "Failed to create cmake build files!"
 
-cmake --build .
+cmake --build . -v
 exitOnError $? "Error building project, terminating"
 
 ctest -T memcheck --output-on-failure -j 10 --output-log ./log/unit-tests.log
