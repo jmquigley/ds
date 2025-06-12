@@ -10,14 +10,6 @@ public:
 	TestComparator() : TestingBase() {}
 };
 
-TEST_F(TestComparator, ComparatorCreate) {
-	ds::Comparator<int> comparator;
-
-	EXPECT_EQ(comparator.compare(1, 2), -1);
-	EXPECT_EQ(comparator.compare(2, 1), 1);
-	EXPECT_EQ(comparator.compare(1, 1), 0);
-};
-
 template<typename T>
 class CustomComparator : public ds::Comparator<T> {
 public:
@@ -32,6 +24,14 @@ public:
 		return 99;
 	}
 };
+
+TEST_F(TestComparator, ComparatorCreate) {
+	ds::Comparator<int> comparator;
+
+	EXPECT_EQ(comparator.compare(1, 2), -1);
+	EXPECT_EQ(comparator.compare(2, 1), 1);
+	EXPECT_EQ(comparator.compare(1, 1), 0);
+}
 
 TEST_F(TestComparator, ComparatorCustomStruct) {
 	CustomComparator<int> comparator;

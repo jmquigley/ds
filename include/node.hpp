@@ -47,10 +47,10 @@ class Node {
 	PROPERTY(id, Id, std::string);
 	/// @brief A shared pointer to the left child node.
 	PROPERTY(left, Left, std::shared_ptr<Node<T>>);
-	/// @brief The ID of the parent node.
-	PROPERTY(parentId, ParentId, std::string);
 	/// @brief A shared pointer to the right child node.
 	PROPERTY(right, Right, std::shared_ptr<Node<T>>);
+	/// @brief The ID of the parent node.
+	PROPERTY(parentId, ParentId, std::string);
 	/// @brief A shared pointer to the parent node.
 	PROPERTY(parent, Parent, std::shared_ptr<Node<T>>);
 
@@ -81,7 +81,7 @@ public:
 	 * Initializes parentId to empty, parent, left, and right to nullptr,
 	 * and generates a unique ID.
 	 */
-	Node() : parentId(""), parent(nullptr), left(nullptr), right(nullptr) {
+	Node() : left(nullptr), right(nullptr), parentId(""), parent(nullptr) {
 		init();
 	}
 
@@ -117,7 +117,7 @@ public:
 	 */
 	Node(std::shared_ptr<Node<T>> parent, std::shared_ptr<Node<T>> left,
 		 std::shared_ptr<Node<T>> right, T data)
-		: parent(parent), left(left), right(right), data(data) {
+		: data(data), left(left), right(right), parent(parent) {
 		init();
 		if (parent) {
 			parentId = parent->getId();
@@ -130,8 +130,8 @@ public:
 	 * Currently empty, but can be extended for cleanup if needed.
 	 */
 	~Node() {
-        this->clear();
-    }
+		this->clear();
+	}
 
 	/**
 	 * @brief Move constructor for Node.
@@ -204,13 +204,13 @@ public:
 		return *this;
 	}
 
-    /**
-     * @brief When dereferencing a node this operator will return the data in the node
-     * @returns The `T` data that is associated with this node.
-     */
-    T &operator*() {
-        return this->data;
-    }
+	/**
+	 * @brief When dereferencing a node this operator will return the data in the node
+	 * @returns The `T` data that is associated with this node.
+	 */
+	T &operator*() {
+		return this->data;
+	}
 
 	/**
 	 * @brief Clears the node's identifiers and pointers, then re-initializes a new ID.
@@ -219,7 +219,7 @@ public:
 	 * clears the children vector, and generates a new unique ID for the node.
 	 */
 	void clear() {
-        init();
+		init();
 		this->parentId = "";
 		this->parent.reset();
 		this->right.reset();

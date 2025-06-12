@@ -28,7 +28,7 @@ namespace ds {
  * @var Position::BACK
  * @brief Represents the back/end position (value -1).
  */
-enum class Position : int { FRONT = 0, BACK = -1 };
+enum class Position : size_t { FRONT = 0, BACK = std::numeric_limits<std::size_t>::max() };
 
 /**
  * @class Iterable

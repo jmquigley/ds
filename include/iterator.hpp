@@ -108,7 +108,7 @@ public:
 	 * @return The data of the current node, or a default T value if no node
 	 */
 	T operator*() const {
-		T nil;
+		T nil = 0;
 
 		if (!lp.expired()) {
 			return lp.lock()->getData();

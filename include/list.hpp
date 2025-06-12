@@ -136,7 +136,7 @@ public:
 
 		std::shared_ptr<Node<T>> lp = this->root;
 
-		for (int i = 0; i < index; i++) {
+		for (size_t i = 0; i < index; i++) {
 			lp = lp->getRight();
 		}
 

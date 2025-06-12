@@ -32,9 +32,6 @@ include("CMakeLists.requirements.txt")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_C_COMPILER "/usr/bin/clang")
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-# set(CMAKE_CXX_FLAGS "-g -O0 -Wall -fprofile-instr-generate -fcoverage-mapping")
 set(HEADER_FILES /usr/include/c++/14 /usr/include/x86_64-linux-gnu/c++/14)
 set(ROOT_DIR CMAKE_SOURCE_DIR)
 
@@ -68,7 +65,13 @@ add_library(${PROJECT_NAME} SHARED ${DS_SOURCES} ${DS_HEADERS})
 
 target_compile_options(${PROJECT_NAME} PRIVATE
   $<$<CONFIG:Debug>:-g>
-  $<$<CONFIG:Release>:-O3>
+  $<$<CONFIG:Debug>:-O0>
+  $<$<CONFIG:Debug>:-Wall>
+  $<$<CONFIG:Debug>:--coverage>
+)
+
+target_link_options(${PROJECT_NAME} PRIVATE
+  $<$<CONFIG:Debug>:--coverage>
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -105,24 +108,36 @@ set(TEST_HEADERS
   tests/testing_base.h
 )
 
+set(TEST_EXE ds-unit-tests)
+
 add_executable(
-  ds-unit-tests
+  ${TEST_EXE}
   ${TEST_SOURCES}
   ${TEST_HEADERS}
 )
 
-target_link_libraries(ds-unit-tests
+target_compile_options(${TEST_EXE} PRIVATE
+  $<$<CONFIG:Debug>:-O0>
+  $<$<CONFIG:Debug>:-Wall>
+  $<$<CONFIG:Debug>:-coverage>
+)
+
+target_link_options(${TEST_EXE} PRIVATE
+  $<$<CONFIG:Debug>:-coverage>
+)
+
+target_link_libraries(${TEST_EXE}
   GTest::gtest_main
   ${PROJECT_NAME}
 )
 
-target_compile_definitions(ds-unit-tests
+target_compile_definitions(${TEST_EXE}
     PRIVATE CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
     PRIVATE ROOT_DIR="${ROOT_DIR}"
 )
 
 include(GoogleTest)
-gtest_discover_tests(ds-unit-tests)
+gtest_discover_tests(${TEST_EXE})
 
 target_compile_options(ds-unit-tests PRIVATE
   -g

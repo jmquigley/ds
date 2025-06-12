@@ -21,8 +21,8 @@ namespace ds {
  */
 template<typename T>
 class Match {
-	PROPERTY(data, Data, T);
-    PROPERTY(found, found, bool);
-	PROPERTY(index, Index, size_t);
+	PROPERTY_D(data, Data, T, = 0);
+	PROPERTY_D(found, found, bool, = false);
+	PROPERTY_D(index, Index, size_t, = 0);
 };
 }  // namespace ds

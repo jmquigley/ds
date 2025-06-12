@@ -43,15 +43,15 @@ protected:
 
 	/**
 	 * @brief A comparator object used for ordering elements within the collection.
-     *
-     * A default comparison object that is available to all classes that are part
-     * of the collection.
+	 *
+	 * A default comparison object that is available to all classes that are part
+	 * of the collection.
 	 */
 	Comparator<T> comparator;
 	/**
 	 * @brief A sentinel node often used in tree-based or linked-list structures.
-     *
-     * An empty node that can be used for comparison as a NIL value.
+	 *
+	 * An empty node that can be used for comparison as a NIL value.
 	 */
 	Node<T> nil;
 
@@ -83,11 +83,11 @@ public:
 	 */
 	virtual void clear() = 0;
 
-    /**
-     * @brief returns a JSON representation of the given collection.
-     * @pure
-     */
-    virtual std::string json() const = 0;
+	/**
+	 * @brief returns a JSON representation of the given collection.
+	 * @pure
+	 */
+	virtual std::string json() const = 0;
 
 	/**
 	 * @brief Returns a string representation of the collection's contents.
