@@ -25,6 +25,9 @@ namespace ds {
 /**
  * @class List
  * @brief A generic doubly linked list class.
+ *
+ * TODO: add expanded description and code sample for a list
+ *
  * @tparam T The type of data stored within the list.
  */
 template<typename T>
@@ -35,25 +38,12 @@ private:
 	 * @brief Retrieves the node at the specified index.
 	 * @param index (`size_t`) The index of the node to retrieve, or a Position enum value
 	 * @return std::shared_ptr<Node<T>> Pointer to the node at the specified index
-	 * @throws std::out_of_range If the index is out of valid range
 	 */
 	std::shared_ptr<Node<T>> getNodeByIndex(size_t index) {
-		// Convert Position enum values to actual indices
-		if (index == as_integer(Position::BACK)) {
-			index = this->getSize() - 1;
-		} else if (index == as_integer(Position::FRONT)) {
-			index = 0;
-		}
-
-		// Check if index is valid
-		if (index >= this->getSize()) {
-			throw std::out_of_range("Index out of range in getNodeByIndex");
-		}
-
 		std::shared_ptr<Node<T>> tnode;
 
 		// Optimize traversal direction based on which end is closer
-		if (index < this->getSize() / 2) {
+		if (index < (this->getSize() / 2)) {
 			// Start from front for indices in the first half
 			tnode = this->front;
 			for (size_t i = 0; i < index; i++) {
@@ -171,11 +161,11 @@ public:
 
 	/**
 	 * @brief Retrieves an iterator to the back of the list
-	 * @returns A new Iterator object that points to the end of the list
+	 * @returns A new Iterator object that points to the back of the list
 	 */
-	Iterator end() {
-		return Iterator();
-	}
+    Iterator rbegin() {
+        return Iterator(this->back);
+    }
 
 	/**
 	 * @brief deletes everything from the current list and resets it to its
@@ -199,12 +189,47 @@ public:
 	}
 
 	/**
+	 * @brief Retrieves an iterator to the back of the list
+	 * @returns A new Iterator object that points to the end of the list
+	 */
+	Iterator end() {
+		return Iterator();
+	}
+
+	/**
+	 * @brief Retrieves an iterator to the front of the list
+	 * @returns A new Iterator object that points to the front of the list
+	 */
+    Iterator rend() {
+        return Iterator();
+    }
+
+	/**
 	 * @brief Performs a linear search through list to find the given data
 	 * element.
+     * @returns a `Match<T>` object that contains information about the `Node`
+     * that was found in the search.
 	 */
 	virtual Match<T> find(T data) override {
-		// TODO: add find() to List
+        size_t index = 0;
+		std::shared_ptr<Node<T>> lp = this->root;
 		Match<T> match;
+		std::shared_ptr<Node<T>> next;
+
+		while (lp) {
+            if (lp->getData() == data) {
+                match.setData(data);
+                match.setFound(true);
+                match.setIndex(index);
+                match.setNode(lp);
+
+                return match;
+            }
+
+            index++;
+            lp = lp->getRight();
+		}
+
 		return match;
 	}
 
@@ -213,15 +238,12 @@ public:
 	 *
 	 * @param data The element to insert
 	 * @param position The position to insert at (default is BACK)
-	 * @throws std::out_of_range If an invalid position is specified
 	 */
 	virtual void insert(T data, Position position = Position::BACK) override {
 		if (position == Position::BACK) {
 			this->insert(data, this->size);
 		} else if (position == Position::FRONT) {
 			this->insert(data, 0);
-		} else {
-			throw std::out_of_range("Unknown position value on list insert");
 		}
 	}
 
@@ -254,7 +276,7 @@ public:
 			node->setRight(this->root);
 			this->root->setLeft(node);
 			this->root = this->front = node;
-		} else if (index > 0 and index < this->size) {
+		} else {
 			// add a new element to a arbitrary position in the list
 			std::shared_ptr<Node<T>> tnode = getNodeByIndex(index);
 			if (tnode != nullptr) {
@@ -263,8 +285,6 @@ public:
 				tnode->getLeft()->setRight(node);
 				tnode->setLeft(node);
 			}
-		} else {
-			throw std::out_of_range("Invalid list insert requested");
 		}
 
 		this->size++;
@@ -299,7 +319,17 @@ public:
 	 * @return std::vector<T> A vector containing copies of all elements in reverse order
 	 */
 	std::vector<T> reverse() {
-		// TODO: add reverse() to List
+		std::shared_ptr<Node<T>> lp = this->back;
+		std::shared_ptr<Node<T>> previous;
+		std::vector<T> v;
+
+		while (lp) {
+			previous = lp->getLeft();
+			v.push_back(lp->getData());
+			lp = previous;
+		}
+
+		return v;
 	}
 
 	/**

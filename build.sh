@@ -58,7 +58,7 @@ exitOnError $? "Error building project, terminating"
 #
 
 banner "Testing"
-ctest -T memcheck --output-on-failure -j 10 --output-log ./log/unit-tests.log -T coverage
+ctest -T memcheck --output-on-failure -j 10 --output-log ./log/unit-tests.log
 rc=$?
 if [ $rc -ne 0 ]; then
     cat Testing/Temporary/MemoryChecker.*.log
@@ -95,5 +95,9 @@ pushd ../docs
 make html
 exitOnError $? "Error creating project documentation, terminating"
 popd
+
+if [ -d /var/www/html ]; then
+    yes | cp -rfv docs/html/* /var/www/html/.
+fi
 
 popd

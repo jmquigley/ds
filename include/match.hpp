@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include "node.hpp"
 #include "property.hpp"
 
@@ -22,7 +24,8 @@ namespace ds {
 template<typename T>
 class Match {
 	PROPERTY_D(data, Data, T, = 0);
-	PROPERTY_D(found, found, bool, = false);
+	PROPERTY_D(found, Found, bool, = false);
 	PROPERTY_D(index, Index, size_t, = 0);
+    PROPERTY(node, Node, std::weak_ptr<Node<T>>);
 };
 }  // namespace ds

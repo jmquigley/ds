@@ -9,19 +9,28 @@ class TestIterator : public TestingBase {
 protected:
 
 	std::shared_ptr<ds::Node<int>> root;
+    std::shared_ptr<ds::Node<int>> n1;
+    std::shared_ptr<ds::Node<int>> n2;
+    std::shared_ptr<ds::Node<int>> n3;
 
 	void SetUp() override {
-		this->root = std::make_shared<ds::Node<int>>(1);
-		this->root->setRight(std::make_shared<ds::Node<int>>(2));
-		this->root->getRight()->setRight(std::make_shared<ds::Node<int>>(3));
+        n1 = std::make_shared<ds::Node<int>>(1);
+        n2 = std::make_shared<ds::Node<int>>(2);
+        n3 = std::make_shared<ds::Node<int>>(3);
+
+        n1->setRight(n2);
+        n2->setRight(n3);
+        n2->setLeft(n1);
+        n3->setLeft(n2);
+
+        this->root = n1;
 	}
 
     void TearDown() override {
-        if (this->root) {
-            this->root->getRight()->getRight().reset();
-            this->root->getRight().reset();
-            this->root.reset();
-        }
+        n3->clear();
+        n2->clear();
+        n1->clear();
+        root.reset();
     }
 
 public:
@@ -33,6 +42,7 @@ class LocalIterator : public ds::IteratorBase<int> {
 public:
 
 	LocalIterator(std::weak_ptr<ds::Node<int>> lp) : ds::IteratorBase<int>(lp) {}
+    LocalIterator() : ds::IteratorBase<int>() {}
 };
 
 TEST_F(TestIterator, CreateIterator) {
@@ -56,6 +66,14 @@ TEST_F(TestIterator, CompareIterators) {
 	EXPECT_FALSE(it1 != it2);
 }
 
+TEST_F(TestIterator, CompareIteratorsOpposite) {
+	LocalIterator it1(n1);
+	LocalIterator it2(n2);
+
+	EXPECT_FALSE(it1 == it2);
+	EXPECT_TRUE(it1 != it2);
+}
+
 TEST_F(TestIterator, IteratorTestIncrement) {
 	LocalIterator it(root);
 
@@ -67,4 +85,22 @@ TEST_F(TestIterator, IteratorTestIncrement) {
 	it++;
 	std::cout << "(3): " << *it << std::endl;
 	EXPECT_EQ(*it, 3);
-};
+}
+
+TEST_F(TestIterator, IteratorTestDecrement) {
+	LocalIterator it(root->getRight()->getRight());
+
+	std::cout << "(1): " << *it << std::endl;
+	EXPECT_EQ(*it, 3);
+	it--;
+	std::cout << "(2): " << *it << std::endl;
+	EXPECT_EQ(*it, 2);
+	it--;
+	std::cout << "(3): " << *it << std::endl;
+	EXPECT_EQ(*it, 1);
+}
+
+TEST_F(TestIterator, Empty) {
+    LocalIterator it;
+    EXPECT_EQ(*it, 0);
+}

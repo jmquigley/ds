@@ -81,6 +81,56 @@ TEST_F(TestList, ListInsertArbitrary) {
 	EXPECT_EQ(list.at(3), 3);
 	EXPECT_EQ(**list.getFront(), 1);
 	EXPECT_EQ(**list.getBack(), 3);
+
+	list.insert(4, 1);
+
+	EXPECT_EQ(list.getSize(), 5);
+	EXPECT_EQ(list.at(0), 1);
+	EXPECT_EQ(list.at(1), 4);
+	EXPECT_EQ(list.at(2), 2);
+	EXPECT_EQ(list.at(3), 5);
+	EXPECT_EQ(list.at(4), 3);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 3);
+
+	list.insert(6, 9999);
+
+	EXPECT_EQ(list.getSize(), 6);
+	EXPECT_EQ(list.at(0), 1);
+	EXPECT_EQ(list.at(1), 4);
+	EXPECT_EQ(list.at(2), 2);
+	EXPECT_EQ(list.at(3), 5);
+	EXPECT_EQ(list.at(4), 3);
+	EXPECT_EQ(list.at(5), 6);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 6);
+
+	list.insert(7, 5);
+
+	EXPECT_EQ(list.getSize(), 7);
+	EXPECT_EQ(list.at(0), 1);
+	EXPECT_EQ(list.at(1), 4);
+	EXPECT_EQ(list.at(2), 2);
+	EXPECT_EQ(list.at(3), 5);
+	EXPECT_EQ(list.at(4), 3);
+	EXPECT_EQ(list.at(5), 7);
+	EXPECT_EQ(list.at(6), 6);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 6);
+
+	list.insert(8, 7);
+
+	EXPECT_EQ(list.getSize(), 8);
+	EXPECT_EQ(list.at(0), 1);
+	EXPECT_EQ(list.at(1), 4);
+	EXPECT_EQ(list.at(2), 2);
+	EXPECT_EQ(list.at(3), 5);
+	EXPECT_EQ(list.at(4), 3);
+	EXPECT_EQ(list.at(5), 7);
+	EXPECT_EQ(list.at(6), 6);
+	EXPECT_EQ(list.at(7), 8);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 8);
 }
 
 TEST_F(TestList, ListInsertOutOfRange) {
@@ -114,13 +164,30 @@ TEST_F(TestList, ListToVector) {
 	EXPECT_EQ(v[2], 3);
 }
 
+TEST_F(TestList, ListToVectorReverse) {
+	ds::List<int> list;
+
+	list.insert(1);
+	list.insert(2);
+	list.insert(3);
+
+	EXPECT_EQ(list.getSize(), 3);
+
+	std::vector<int> v = list.reverse();
+	EXPECT_EQ(v.size(), 3);
+	EXPECT_EQ(v[0], 3);
+	EXPECT_EQ(v[1], 2);
+	EXPECT_EQ(v[2], 1);
+}
+
 TEST_F(TestList, ListIterator) {
 	ds::List<int> list;
 
 	list.insert(1);
 	list.insert(2);
+	list.insert(3);
 
-	EXPECT_EQ(list.getSize(), 2);
+	EXPECT_EQ(list.getSize(), 3);
 
 	ds::List<int>::Iterator it(list.getFront());
 
@@ -148,13 +215,53 @@ TEST_F(TestList, ListIterator) {
 			EXPECT_EQ(*it, 1);
 		} else if (i == 1) {
 			EXPECT_EQ(*it, 2);
-		}
+		} else if (i == 2) {
+			EXPECT_EQ(*it, 3);
+        }
 
 		i++;
 	}
 
 	list.clear();
 };
+
+TEST_F(TestList, ListIteratorReverse) {
+	ds::List<int> list;
+
+	list.insert(1);
+	list.insert(2);
+	list.insert(3);
+
+	EXPECT_EQ(list.getSize(), 3);
+
+	ds::List<int>::Iterator it(list.getBack());
+
+	auto it1 = list.rbegin();
+	auto it2 = list.rend();
+
+	std::cout << "rbegin: " << it1 << ", rend: " << it2 << std::endl;
+
+	for (auto it = list.rbegin(); it != list.rend(); --it) {
+		std::cout << "val: " << it << ", *: " << *it << std::endl;
+	}
+
+	int i = 0;
+	for (it = list.rbegin(); it != list.rend(); it--) {
+		std::cout << "it: " << *it << std::endl;
+
+		if (i == 0) {
+			EXPECT_EQ(*it, 3);
+		} else if (i == 1) {
+			EXPECT_EQ(*it, 2);
+		} else if (i == 2) {
+			EXPECT_EQ(*it, 1);
+        }
+
+		i++;
+	}
+
+	list.clear();
+}
 
 TEST_F(TestList, ListClear) {
 	ds::List<int> list;
@@ -190,11 +297,41 @@ TEST_F(TestList, ListAt) {
 
 TEST_F(TestList, ListToString) {
 	ds::List<int> list;
+    std::string result = "[{\"data\":1},{\"data\":2},{\"data\":3}]";
 
 	list.insert(1);
 	list.insert(2);
 	list.insert(3);
 
 	EXPECT_EQ(list.getSize(), 3);
-	EXPECT_EQ(list.str(), "[{\"data\":1},{\"data\":2},{\"data\":3}]");
+	EXPECT_EQ(list.str(), result);
+    EXPECT_EQ(list.json(), result);
+}
+
+TEST_F(TestList, ListSearch) {
+	ds::List<int> list;
+    ds::Match<int> match;
+
+	list.insert(1);
+	list.insert(2);
+	list.insert(3);
+	EXPECT_EQ(list.getSize(), 3);
+
+    match = list.find(3);
+
+    EXPECT_TRUE(match.getFound());
+    EXPECT_EQ(match.getData(), 3);
+    EXPECT_EQ(match.getIndex(), 2);
+
+    match = list.find(1);
+
+    EXPECT_TRUE(match.getFound());
+    EXPECT_EQ(match.getData(), 1);
+    EXPECT_EQ(match.getIndex(), 0);
+
+    match = list.find(9999);
+
+    EXPECT_FALSE(match.getFound());
+    EXPECT_EQ(match.getData(), 0);
+    EXPECT_EQ(match.getIndex(), 0);
 }

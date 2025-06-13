@@ -35,7 +35,6 @@ public:
 
 	/**
 	 * @brief Constructor that initializes the iterator with a node pointer.
-	 *
 	 * @param lp Shared pointer to the starting node for iteration
 	 */
 	IteratorBase(std::weak_ptr<Node<T>> lp) : lp(lp) {}
@@ -48,9 +47,9 @@ public:
 
 	/**
 	 * @brief Pre-increment operator.
-	 *
+     *
 	 * Advances the iterator to the next node in the sequence.
-	 *
+     *
 	 * @return Reference to this iterator after advancing
 	 */
 	IteratorBase &operator++() {
@@ -68,6 +67,29 @@ public:
 	IteratorBase &operator++(int) {
 		return this->next();
 	}
+
+    /**
+     * @brief Pre-decrement operator.
+     *
+     * Advances the iterator to the previous node in the sequence.
+     *
+     * @return Reference to this iterator after advancing
+     */
+    IteratorBase &operator--() {
+        return this->previous();
+    }
+
+    /**
+     * @brief Post-decrement operator.
+     *
+     * Advances teh iterator to the previous node in the sequence.
+     * Note: This implementation currently behaves like the pre-decrement
+     *
+     * @return Reference to this iterator after advancing
+     */
+    IteratorBase &operator--(int) {
+        return this->previous();
+    }
 
 	/**
 	 * @brief Equality comparison operator.
@@ -147,6 +169,25 @@ public:
 		}
 
 		return *this;
+	}
+
+	/**
+	 * @brief Advances the iterator to the previous node.
+	 *
+	 * Moves the iterator in the reverse direction backward by making it point
+	 * to the left child of the current node.  If the current node is nullptr, this
+	 * operation has no effect.
+	 *
+	 * @return Reference to this iterator after advancing
+	 */
+	IteratorBase &previous() {
+		auto p = this->lp.lock();
+
+		if (p) {
+			lp = p->getLeft();
+		}
+
+        return *this;
 	}
 };
 }  // namespace ds
