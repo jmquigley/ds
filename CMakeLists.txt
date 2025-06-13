@@ -139,14 +139,6 @@ target_compile_definitions(${TEST_EXE}
 include(GoogleTest)
 gtest_discover_tests(${TEST_EXE})
 
-target_compile_options(ds-unit-tests PRIVATE
-  -g
-  -O0
-  -Wall
-  -fprofile-instr-generate
-  -fcoverage-mapping
-)
-
 #
 # Installation statements
 #
