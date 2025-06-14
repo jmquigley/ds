@@ -96,6 +96,18 @@ public:
 	List(Comparator<T> comparator) : Collection<T>(comparator) {}
 
 	/**
+	 * @brief Constructor that takes an initializer_list to insert values into
+	 * the collection.
+	 *
+	 * @param il (`std::initializer_list`) a list of values to see the list
+	 */
+	List(std::initializer_list<T> il) {
+		for (auto it: il) {
+			this->insert(it);
+		}
+	}
+
+	/**
 	 * @brief Destructor that cleans up list resources.
 	 */
 	~List() {
@@ -163,9 +175,9 @@ public:
 	 * @brief Retrieves an iterator to the back of the list
 	 * @returns A new Iterator object that points to the back of the list
 	 */
-    Iterator rbegin() {
-        return Iterator(this->back);
-    }
+	Iterator rbegin() {
+		return Iterator(this->back);
+	}
 
 	/**
 	 * @brief deletes everything from the current list and resets it to its
@@ -200,34 +212,34 @@ public:
 	 * @brief Retrieves an iterator to the front of the list
 	 * @returns A new Iterator object that points to the front of the list
 	 */
-    Iterator rend() {
-        return Iterator();
-    }
+	Iterator rend() {
+		return Iterator();
+	}
 
 	/**
 	 * @brief Performs a linear search through list to find the given data
 	 * element.
-     * @returns a `Match<T>` object that contains information about the `Node`
-     * that was found in the search.
+	 * @returns a `Match<T>` object that contains information about the `Node`
+	 * that was found in the search.
 	 */
 	virtual Match<T> find(T data) override {
-        size_t index = 0;
+		size_t index = 0;
 		std::shared_ptr<Node<T>> lp = this->root;
 		Match<T> match;
 		std::shared_ptr<Node<T>> next;
 
 		while (lp) {
-            if (lp->getData() == data) {
-                match.setData(data);
-                match.setFound(true);
-                match.setIndex(index);
-                match.setNode(lp);
+			if (lp->getData() == data) {
+				match.setData(data);
+				match.setFound(true);
+				match.setIndex(index);
+				match.setNode(lp);
 
-                return match;
-            }
+				return match;
+			}
 
-            index++;
-            lp = lp->getRight();
+			index++;
+			lp = lp->getRight();
 		}
 
 		return match;
@@ -299,19 +311,35 @@ public:
 	}
 
 	/**
-	 * @brief Removes the specified element from the list if it exists.
-	 * @param data The element to remove
-	 */
-	virtual void remove(T data) override {
-		// TODO: add remove() to List
-	}
-
-	/**
 	 * @brief Removes the specified element from the list by its index.
-	 * @param index (``)
+	 * @param index (`size_t`) the position within the list to remove
 	 */
 	virtual void remove(size_t index) override {
-		// TODO: add remove by index to List
+		std::shared_ptr<Node<T>> tnode = nullptr;
+
+		if (this->size == 0) {
+			return;
+		}
+
+		if (index == 0) {
+			// Remove the root node
+			tnode = this->root;
+			this->root = this->root->getRight();
+			this->root->setLeft(nullptr);
+			this->front = this->root;
+		} else if (index >= this->size - 1) {
+			// Removes the last node in the list
+			tnode = this->back;
+			this->back = this->back->getLeft();
+			this->back->setRight(nullptr);
+		} else {
+			tnode = this->getNodeByIndex(index);
+			tnode->getRight()->setLeft(tnode->getLeft());
+			tnode->getLeft()->setRight(tnode->getRight());
+		}
+
+		tnode.reset();
+		this->size--;
 	}
 
 	/**

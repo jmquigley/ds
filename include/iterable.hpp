@@ -67,12 +67,6 @@ public:
 	virtual void insert(T data, size_t index = std::numeric_limits<std::size_t>::max()) = 0;
 
 	/**
-	 * @brief Removes the first instance of the given data element from the structure if it exists.
-	 * @pure
-	 */
-	virtual void remove(T data) = 0;
-
-	/**
 	 * @brief Removes the given data element by its index location
 	 */
 	virtual void remove(size_t index) = 0;

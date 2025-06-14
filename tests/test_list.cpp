@@ -180,6 +180,13 @@ TEST_F(TestList, ListToVectorReverse) {
 	EXPECT_EQ(v[2], 1);
 }
 
+TEST_F(TestList, ListToVectorReverseEmpty) {
+	ds::List<int> list;
+
+	std::vector<int> v = list.reverse();
+	EXPECT_EQ(v.size(), 0);
+}
+
 TEST_F(TestList, ListIterator) {
 	ds::List<int> list;
 
@@ -217,7 +224,7 @@ TEST_F(TestList, ListIterator) {
 			EXPECT_EQ(*it, 2);
 		} else if (i == 2) {
 			EXPECT_EQ(*it, 3);
-        }
+		}
 
 		i++;
 	}
@@ -255,7 +262,7 @@ TEST_F(TestList, ListIteratorReverse) {
 			EXPECT_EQ(*it, 2);
 		} else if (i == 2) {
 			EXPECT_EQ(*it, 1);
-        }
+		}
 
 		i++;
 	}
@@ -297,7 +304,7 @@ TEST_F(TestList, ListAt) {
 
 TEST_F(TestList, ListToString) {
 	ds::List<int> list;
-    std::string result = "[{\"data\":1},{\"data\":2},{\"data\":3}]";
+	std::string result = "[{\"data\":1},{\"data\":2},{\"data\":3}]";
 
 	list.insert(1);
 	list.insert(2);
@@ -305,33 +312,165 @@ TEST_F(TestList, ListToString) {
 
 	EXPECT_EQ(list.getSize(), 3);
 	EXPECT_EQ(list.str(), result);
-    EXPECT_EQ(list.json(), result);
+	EXPECT_EQ(list.json(), result);
+}
+
+TEST_F(TestList, ListToStringEmpty) {
+	ds::List<int> list;
+
+	EXPECT_EQ(list.getSize(), 0);
+	EXPECT_EQ(list.str(), "[]");
 }
 
 TEST_F(TestList, ListSearch) {
 	ds::List<int> list;
-    ds::Match<int> match;
+	ds::Match<int> match;
 
 	list.insert(1);
 	list.insert(2);
 	list.insert(3);
 	EXPECT_EQ(list.getSize(), 3);
 
-    match = list.find(3);
+	match = list.find(3);
 
-    EXPECT_TRUE(match.getFound());
-    EXPECT_EQ(match.getData(), 3);
-    EXPECT_EQ(match.getIndex(), 2);
+	EXPECT_TRUE(match.getFound());
+	EXPECT_EQ(match.getData(), 3);
+	EXPECT_EQ(match.getIndex(), 2);
 
-    match = list.find(1);
+	match = list.find(1);
 
-    EXPECT_TRUE(match.getFound());
-    EXPECT_EQ(match.getData(), 1);
-    EXPECT_EQ(match.getIndex(), 0);
+	EXPECT_TRUE(match.getFound());
+	EXPECT_EQ(match.getData(), 1);
+	EXPECT_EQ(match.getIndex(), 0);
 
-    match = list.find(9999);
+	match = list.find(9999);
 
-    EXPECT_FALSE(match.getFound());
-    EXPECT_EQ(match.getData(), 0);
-    EXPECT_EQ(match.getIndex(), 0);
+	EXPECT_FALSE(match.getFound());
+	EXPECT_EQ(match.getData(), 0);
+	EXPECT_EQ(match.getIndex(), 0);
+}
+
+TEST_F(TestList, ListSearchEmpty) {
+	ds::List<int> list;
+	ds::Match<int> match;
+
+	EXPECT_EQ(list.getSize(), 0);
+
+	match = list.find(0);
+	EXPECT_FALSE(match.getFound());
+
+	match = list.find(999);
+	EXPECT_FALSE(match.getFound());
+}
+
+TEST_F(TestList, ListDeleteFront) {
+	ds::List<int> list;
+
+	list.insert(1);
+	list.insert(2);
+	list.insert(3);
+	list.insert(4);
+	list.insert(5);
+
+	EXPECT_EQ(list.getSize(), 5);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 5);
+
+	list.remove(0);	 // remove front of list
+
+	EXPECT_EQ(list.getSize(), 4);
+	EXPECT_EQ(list.at(0), 2);
+	EXPECT_EQ(list.at(1), 3);
+	EXPECT_EQ(list.at(2), 4);
+	EXPECT_EQ(list.at(3), 5);
+	EXPECT_EQ(**list.getRoot(), 2);
+	EXPECT_EQ(**list.getFront(), 2);
+	EXPECT_EQ(**list.getBack(), 5);
+
+	EXPECT_EQ(list.getRoot()->getLeft(), nullptr);
+}
+
+TEST_F(TestList, ListDeleteBack) {
+	ds::List<int> list;
+
+	list.insert(1);
+	list.insert(2);
+	list.insert(3);
+	list.insert(4);
+	list.insert(5);
+
+	EXPECT_EQ(list.getSize(), 5);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 5);
+
+	list.remove(4);	 // remove front of list
+
+	EXPECT_EQ(list.getSize(), 4);
+	EXPECT_EQ(list.at(0), 1);
+	EXPECT_EQ(list.at(1), 2);
+	EXPECT_EQ(list.at(2), 3);
+	EXPECT_EQ(list.at(3), 4);
+	EXPECT_EQ(**list.getRoot(), 1);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 4);
+
+	EXPECT_EQ(list.getRoot()->getLeft(), nullptr);
+}
+
+TEST_F(TestList, ListDeleteArbitrary) {
+	ds::List<int> list;
+
+	list.insert(1);
+	list.insert(2);
+	list.insert(3);
+	list.insert(4);
+	list.insert(5);
+
+	EXPECT_EQ(list.getSize(), 5);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 5);
+
+	list.remove(1);
+
+	EXPECT_EQ(list.getSize(), 4);
+	EXPECT_EQ(list.at(0), 1);
+	EXPECT_EQ(list.at(1), 3);
+	EXPECT_EQ(list.at(2), 4);
+	EXPECT_EQ(list.at(3), 5);
+	EXPECT_EQ(**list.getRoot(), 1);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 5);
+
+	list.remove(1);
+
+	EXPECT_EQ(list.getSize(), 3);
+	EXPECT_EQ(list.at(0), 1);
+	EXPECT_EQ(list.at(1), 4);
+	EXPECT_EQ(list.at(2), 5);
+	EXPECT_EQ(**list.getRoot(), 1);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 5);
+}
+
+TEST_F(TestList, ListDeleteEmpty) {
+	ds::List<int> list;
+
+	EXPECT_EQ(list.getSize(), 0);
+
+	list.remove(0);
+	list.remove(9999);
+}
+
+TEST_F(TestList, ListInitializer) {
+	ds::List<int> list = {1, 2, 3, 4, 5};
+
+	EXPECT_EQ(list.getSize(), 5);
+	EXPECT_EQ(list.at(0), 1);
+	EXPECT_EQ(list.at(1), 2);
+	EXPECT_EQ(list.at(2), 3);
+	EXPECT_EQ(list.at(3), 4);
+	EXPECT_EQ(list.at(4), 5);
+	EXPECT_EQ(**list.getRoot(), 1);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 5);
 }
