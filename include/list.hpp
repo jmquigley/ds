@@ -1,5 +1,4 @@
 /**
- * @file list.hpp
  * @brief Defines a doubly linked list data structure collection.
  */
 
@@ -32,7 +31,7 @@ namespace ds {
  */
 template<typename T>
 class List : public Collection<T>, public Iterable<T> {
-private:
+protected:
 
 	/**
 	 * @brief Retrieves the node at the specified index.
@@ -132,7 +131,7 @@ public:
 	 * @throws std::out_of_range error if an invalid index is requested
 	 */
 	T at(size_t index) {
-		if (index < 0 or index > this->size) {
+		if (index < 0 or index >= this->size) {
 			throw std::out_of_range("Invalid list position index requested");
 		}
 
@@ -246,12 +245,20 @@ public:
 	}
 
 	/**
+	 * @brief Insert the given data into a collection at back of the collection
+	 * @param data The element to insert
+	 */
+	virtual void insert(T data) override {
+		this->insert(data, Position::BACK);
+	}
+
+	/**
 	 * Inserts an element at the specified position in the list.
 	 *
 	 * @param data The element to insert
 	 * @param position The position to insert at (default is BACK)
 	 */
-	virtual void insert(T data, Position position = Position::BACK) override {
+	void insert(T data, Position position) {
 		if (position == Position::BACK) {
 			this->insert(data, this->size);
 		} else if (position == Position::FRONT) {
@@ -272,7 +279,7 @@ public:
 	 * - If index == 0: Adds element to the beginning
 	 * - Otherwise: Inserts element at the specified position
 	 */
-	virtual void insert(T data, size_t index) override {
+	void insert(T data, size_t index) {
 		std::shared_ptr<Node<T>> node = std::make_shared<Node<T>>(data);
 
 		if (this->root == nullptr) {
@@ -313,10 +320,11 @@ public:
 	/**
 	 * @brief Removes the specified element from the list by its index.
 	 * @param index (`size_t`) the position within the list to remove
+	 * @param tnode (`std::shared_ptr<Node<T>>`) a reference to the node that will
+	 * be deleted.  This is a convenience reference to speed up the search if it has
+	 * already been performed.
 	 */
-	virtual void remove(size_t index) override {
-		std::shared_ptr<Node<T>> tnode = nullptr;
-
+	virtual void removeAt(size_t index, std::shared_ptr<Node<T>> tnode = nullptr) override {
 		if (this->size == 0) {
 			return;
 		}
@@ -333,13 +341,31 @@ public:
 			this->back = this->back->getLeft();
 			this->back->setRight(nullptr);
 		} else {
-			tnode = this->getNodeByIndex(index);
+			if (tnode == nullptr) {
+				tnode = this->getNodeByIndex(index);
+			}
+
 			tnode->getRight()->setLeft(tnode->getLeft());
 			tnode->getLeft()->setRight(tnode->getRight());
 		}
 
 		tnode.reset();
 		this->size--;
+	}
+
+	/**
+	 * @brief Removes the first instance of the given value from the list.
+	 * @param value (`T`) a data value to find and remove from the list
+	 */
+	virtual void removeValue(T value) {
+		if (this->size == 0) {
+			return;
+		}
+
+		Match<T> match = find(value);
+		if (match.found()) {
+			removeAt(match.getIndex(), match.getNode().lock());
+		}
 	}
 
 	/**

@@ -364,19 +364,13 @@ TEST_F(TestList, ListSearchEmpty) {
 }
 
 TEST_F(TestList, ListDeleteFront) {
-	ds::List<int> list;
-
-	list.insert(1);
-	list.insert(2);
-	list.insert(3);
-	list.insert(4);
-	list.insert(5);
+	ds::List<int> list = {1, 2, 3, 4, 5};
 
 	EXPECT_EQ(list.getSize(), 5);
 	EXPECT_EQ(**list.getFront(), 1);
 	EXPECT_EQ(**list.getBack(), 5);
 
-	list.remove(0);	 // remove front of list
+	list.removeAt(0);  // remove front of list
 
 	EXPECT_EQ(list.getSize(), 4);
 	EXPECT_EQ(list.at(0), 2);
@@ -391,19 +385,13 @@ TEST_F(TestList, ListDeleteFront) {
 }
 
 TEST_F(TestList, ListDeleteBack) {
-	ds::List<int> list;
-
-	list.insert(1);
-	list.insert(2);
-	list.insert(3);
-	list.insert(4);
-	list.insert(5);
+	ds::List<int> list = {1, 2, 3, 4, 5};
 
 	EXPECT_EQ(list.getSize(), 5);
 	EXPECT_EQ(**list.getFront(), 1);
 	EXPECT_EQ(**list.getBack(), 5);
 
-	list.remove(4);	 // remove front of list
+	list.removeAt(4);  // remove front of list
 
 	EXPECT_EQ(list.getSize(), 4);
 	EXPECT_EQ(list.at(0), 1);
@@ -418,19 +406,13 @@ TEST_F(TestList, ListDeleteBack) {
 }
 
 TEST_F(TestList, ListDeleteArbitrary) {
-	ds::List<int> list;
-
-	list.insert(1);
-	list.insert(2);
-	list.insert(3);
-	list.insert(4);
-	list.insert(5);
+	ds::List<int> list = {1, 2, 3, 4, 5};
 
 	EXPECT_EQ(list.getSize(), 5);
 	EXPECT_EQ(**list.getFront(), 1);
 	EXPECT_EQ(**list.getBack(), 5);
 
-	list.remove(1);
+	list.removeAt(1);
 
 	EXPECT_EQ(list.getSize(), 4);
 	EXPECT_EQ(list.at(0), 1);
@@ -441,7 +423,7 @@ TEST_F(TestList, ListDeleteArbitrary) {
 	EXPECT_EQ(**list.getFront(), 1);
 	EXPECT_EQ(**list.getBack(), 5);
 
-	list.remove(1);
+	list.removeAt(1);
 
 	EXPECT_EQ(list.getSize(), 3);
 	EXPECT_EQ(list.at(0), 1);
@@ -457,8 +439,8 @@ TEST_F(TestList, ListDeleteEmpty) {
 
 	EXPECT_EQ(list.getSize(), 0);
 
-	list.remove(0);
-	list.remove(9999);
+	list.removeAt(0);
+	list.removeAt(9999);
 }
 
 TEST_F(TestList, ListInitializer) {
@@ -473,4 +455,23 @@ TEST_F(TestList, ListInitializer) {
 	EXPECT_EQ(**list.getRoot(), 1);
 	EXPECT_EQ(**list.getFront(), 1);
 	EXPECT_EQ(**list.getBack(), 5);
+}
+
+TEST_F(TestList, ListDeleteByValue) {
+	ds::List<int> list = {1, 2, 3, 4, 5};
+
+	EXPECT_EQ(list.getSize(), 5);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 5);
+
+	list.removeValue(3);
+
+	EXPECT_EQ(list.getSize(), 4);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 5);
+
+	EXPECT_EQ(list.at(0), 1);
+	EXPECT_EQ(list.at(1), 2);
+	EXPECT_EQ(list.at(2), 4);
+	EXPECT_EQ(list.at(3), 5);
 }

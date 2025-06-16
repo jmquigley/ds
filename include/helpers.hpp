@@ -1,3 +1,7 @@
+/**
+ * @brief generate utility functions shared by all classes
+ */
+
 #pragma once
 
 #include <type_traits>

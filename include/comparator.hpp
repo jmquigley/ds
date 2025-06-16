@@ -1,3 +1,11 @@
+/**
+ * @brief An object that takes the data from nodes and peforms a comparison.
+ *
+ * When the elements in a collection class must be compared for equality
+ * this object is used.  It checks if the objects are equal, greater than
+ * or less than another element.
+ */
+
 #pragma once
 
 /**

@@ -100,6 +100,7 @@ public:
 	 * Note: This constructor makes a copy of the 'parent' Node object,
 	 * it does not take a pointer or shared_ptr. This might be a design
 	 * consideration depending on usage.
+	 *
 	 * @param parent The parent node (copied by value).
 	 * @param data The data to be stored in the node.
 	 */
@@ -110,6 +111,7 @@ public:
 	 *
 	 * Initializes parent, left, right, and data, and generates a unique ID.
 	 * If a parent pointer is provided, its ID is set as the parentId.
+	 *
 	 * @param parent A pointer to the parent node. Can be nullptr.
 	 * @param left A pointer to the left child node. Can be nullptr.
 	 * @param right A pointer to the right child node. Can be nullptr.

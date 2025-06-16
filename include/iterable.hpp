@@ -1,5 +1,4 @@
 /**
- * @file iterable.hpp
  * @brief Defines the interface that is used by all iterable data structures.
  */
 
@@ -49,26 +48,24 @@ public:
 	virtual Match<T> find(T data) = 0;
 
 	/**
-	 * @brief Insert the given data into a collection at specified position.
+	 * @brief Insert the given data into a collection at back of the collection
 	 * @param data The element to insert
-	 * @param position The position to insert at (FRONT or BACK, default is BACK)
-	 * @throws std::runtime_error If an invalid position is specified
 	 * @pure
 	 */
-	virtual void insert(T data, Position position = Position::BACK) = 0;
-
-	/**
-	 * @brief Insert the given data into a collection at specified index.
-	 * @param data The element to insert
-	 * @param index The index at which to insert the element (default is max size_t, which typically
-	 * inserts at the end)
-	 * @pure
-	 */
-	virtual void insert(T data, size_t index = std::numeric_limits<std::size_t>::max()) = 0;
+	virtual void insert(T data) = 0;
 
 	/**
 	 * @brief Removes the given data element by its index location
+	 * @param index (`size_t`) the location within the collection to remove
+	 * @param tnode (`std::shared_ptr<Node<T>>`) a convenience cache node from a search to
+	 * help short circuit a lookup for deletion that has already occurred.
 	 */
-	virtual void remove(size_t index) = 0;
+	virtual void removeAt(size_t index, std::shared_ptr<Node<T>> tnode = nullptr) = 0;
+
+	/**
+	 * @brief Removes the first instance of the given value from the list.
+	 * @param value (`T`) a data value to find and remove from the list
+	 */
+	virtual void removeValue(T value) = 0;
 };
 }  // namespace ds

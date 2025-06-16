@@ -3,6 +3,7 @@
 #include "collection.hpp"
 #include "comparator.hpp"
 #include "constants.hpp"
+#include "cstr.h"
 #include "helpers.hpp"
 #include "iterable.hpp"
 #include "iterator.hpp"
@@ -10,4 +11,5 @@
 #include "match.hpp"
 #include "node.hpp"
 #include "property.hpp"
+#include "sortedlist.hpp"
 #include "stack.hpp"

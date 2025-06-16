@@ -1,5 +1,4 @@
 /**
- * @file match.hpp
  * @brief Defines the object that will hold search/find results
  */
 
@@ -24,8 +23,18 @@ namespace ds {
 template<typename T>
 class Match {
 	PROPERTY_D(data, Data, T, = 0);
-	PROPERTY_D(found, Found, bool, = false);
+	PROPERTY_D(_found, Found, bool, = false);
 	PROPERTY_D(index, Index, size_t, = 0);
-    PROPERTY(node, Node, std::weak_ptr<Node<T>>);
+	PROPERTY(node, Node, std::weak_ptr<Node<T>>);
+
+public:
+
+	/**
+	 * @brief A convenience function to return the found value
+	 * @returns true if this Match object holds a found value, otherwise false
+	 */
+	inline bool found() const {
+		return this->getFound();
+	}
 };
 }  // namespace ds

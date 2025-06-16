@@ -42,6 +42,7 @@ include_directories(
 )
 
 set(DS_SOURCES
+    src/cstr.cpp
     src/entry.cpp
     src/helpers.cpp
 )
@@ -49,6 +50,7 @@ set(DS_SOURCES
 set(DS_HEADERS
     include/collection.hpp
     include/comparator.hpp
+    include/cstr.h
     include/ds.h
     include/constants.hpp
     include/helpers.hpp
@@ -58,6 +60,7 @@ set(DS_HEADERS
     include/match.hpp
     include/node.hpp
     include/property.hpp
+    include/sortedlist.hpp
     include/stack.hpp
 )
 
@@ -97,10 +100,12 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 set(TEST_SOURCES
   tests/test_comparator.cpp
+  tests/test_cstr.cpp
   tests/test_helpers.cpp
   tests/test_iterator.cpp
   tests/test_list.cpp
   tests/test_node.cpp
+  tests/test_sortedlist.cpp
   tests/test_stack.cpp
 )
 

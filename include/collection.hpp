@@ -1,3 +1,9 @@
+/**
+ * @brief the base class for all collection object in the library.
+ *
+ * An abstract class that defines the basic structure of all collection
+ * classes.
+ */
 #pragma once
 
 #include <memory>

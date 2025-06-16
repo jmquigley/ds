@@ -1,5 +1,4 @@
 /**
- * @file iterator.hpp
  * @brief Defines a base class iterator for all collection classes
  */
 
@@ -47,9 +46,9 @@ public:
 
 	/**
 	 * @brief Pre-increment operator.
-     *
+	 *
 	 * Advances the iterator to the next node in the sequence.
-     *
+	 *
 	 * @return Reference to this iterator after advancing
 	 */
 	IteratorBase &operator++() {
@@ -68,28 +67,28 @@ public:
 		return this->next();
 	}
 
-    /**
-     * @brief Pre-decrement operator.
-     *
-     * Advances the iterator to the previous node in the sequence.
-     *
-     * @return Reference to this iterator after advancing
-     */
-    IteratorBase &operator--() {
-        return this->previous();
-    }
+	/**
+	 * @brief Pre-decrement operator.
+	 *
+	 * Advances the iterator to the previous node in the sequence.
+	 *
+	 * @return Reference to this iterator after advancing
+	 */
+	IteratorBase &operator--() {
+		return this->previous();
+	}
 
-    /**
-     * @brief Post-decrement operator.
-     *
-     * Advances teh iterator to the previous node in the sequence.
-     * Note: This implementation currently behaves like the pre-decrement
-     *
-     * @return Reference to this iterator after advancing
-     */
-    IteratorBase &operator--(int) {
-        return this->previous();
-    }
+	/**
+	 * @brief Post-decrement operator.
+	 *
+	 * Advances teh iterator to the previous node in the sequence.
+	 * Note: This implementation currently behaves like the pre-decrement
+	 *
+	 * @return Reference to this iterator after advancing
+	 */
+	IteratorBase &operator--(int) {
+		return this->previous();
+	}
 
 	/**
 	 * @brief Equality comparison operator.
@@ -187,7 +186,7 @@ public:
 			lp = p->getLeft();
 		}
 
-        return *this;
+		return *this;
 	}
 };
 }  // namespace ds
