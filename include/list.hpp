@@ -33,6 +33,28 @@ template<typename T>
 class List : public Collection<T>, public Iterable<T> {
 protected:
 
+    /**
+     * @brief adds a new node to the end of the list
+     * @param node (`std::shared_ptr<Node<T>>`) the node to add to the end
+     */
+    void addBack(std::shared_ptr<Node<T>> node) {
+		// add a new element to the end of the list
+		node->setLeft(this->back);
+		this->back->setRight(node);
+		this->back = node;
+    }
+
+    /**
+     * @brief adds a new node to the front of the list
+     * @param node (`std::shared_ptr<Node<T>>`) the node to add to the front
+     */
+    void addFront(std::shared_ptr<Node<T>> node) {
+        // add a new element to the front of the list
+		node->setRight(this->root);
+		this->root->setLeft(node);
+		this->root = this->front = node;
+    }
+
 	/**
 	 * @brief Retrieves the node at the specified index.
 	 * @param index (`size_t`) The index of the node to retrieve, or a Position enum value
@@ -286,15 +308,9 @@ public:
 			// empty list, first value
 			this->root = this->front = this->back = node;
 		} else if (index >= this->size) {
-			// add a new element to the end of the list
-			node->setLeft(this->back);
-			this->back->setRight(node);
-			this->back = node;
+            addBack(node);
 		} else if (index == 0) {
-			// add a new element to the front of the list
-			node->setRight(this->root);
-			this->root->setLeft(node);
-			this->root = this->front = node;
+            addFront(node);
 		} else {
 			// add a new element to a arbitrary position in the list
 			std::shared_ptr<Node<T>> tnode = getNodeByIndex(index);

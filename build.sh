@@ -21,14 +21,45 @@ function banner() {
 }
 
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
+CLEAN_OPT=0
+BUILD_TYPE=Debug
+export FILTER='*'
 
-echo "Building dt api library from ${SCRIPT_DIR}"
+while :; do
+    case $1 in
+        -c|--clean)
+            CLEAN_OPT=1
+            shift
+            ;;
+
+        -f|--filter)
+            if [ -n "$2" ]; then
+                FILTER="$2"
+                shift
+            else
+                printf 'ERROR: "--filter" requires a non-empty option argument.\n' >&2
+                exit 127
+            fi
+            ;;
+
+        --release)
+            BUILD_TYPE=Release
+            shift
+            ;;
+
+        *) # Default case: If no more options then break out of the loop.
+            break
+    esac
+    shift
+done
+
+echo "Building dt API library from ${SCRIPT_DIR}"
 
 [[ ! -d "build" ]] && mkdir -p build
 
 pushd build
 
-if [[ -z "${DEBUG}" ]]; then
+if [[ "${BUILD_TYPE}" == "Release" ]]; then
     BUILD_TYPE=Release
 else
     BUILD_TYPE=Debug
@@ -36,7 +67,7 @@ fi
 banner ${BUILD_TYPE}
 
 
-if [ "$1" == "--clean" ]; then
+if [ ${CLEAN_OPT} == 1 ]; then
     banner "Cleaning"
     cmake --build . -v --target clean
 fi

@@ -34,6 +34,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Debug)
 set(HEADER_FILES /usr/include/c++/14 /usr/include/x86_64-linux-gnu/c++/14)
 set(ROOT_DIR CMAKE_SOURCE_DIR)
+set(TEST_FILTER $ENV{FILTER})
+
+message(STATUS "TEST_FILTER: ${TEST_FILTER}")
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
@@ -132,6 +135,7 @@ target_link_options(${TEST_EXE} PRIVATE
 )
 
 target_link_libraries(${TEST_EXE}
+  gtest
   GTest::gtest_main
   ${PROJECT_NAME}
 )
@@ -142,7 +146,10 @@ target_compile_definitions(${TEST_EXE}
 )
 
 include(GoogleTest)
-gtest_discover_tests(${TEST_EXE})
+
+gtest_discover_tests(${TEST_EXE}
+    TEST_FILTER ${TEST_FILTER}
+)
 
 #
 # Installation statements

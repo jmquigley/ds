@@ -14,7 +14,7 @@ template<typename T>
 class CustomComparator : public ds::Comparator<T> {
 public:
 
-	int compare(T o1, T o2) override {
+	int compare(const T o1, const T o2) const override {
 		if (o1 == o2) {
 			return 100;
 		} else if (o1 > o2) {
@@ -39,4 +39,12 @@ TEST_F(TestComparator, ComparatorCustomStruct) {
 	EXPECT_EQ(comparator.compare(1, 2), 99);
 	EXPECT_EQ(comparator.compare(2, 1), 101);
 	EXPECT_EQ(comparator.compare(1, 1), 100);
+}
+
+TEST_F(TestComparator, ComparatorOperatorFunction) {
+	CustomComparator<int> comparator;
+
+	EXPECT_EQ(comparator(1, 2), 99);
+	EXPECT_EQ(comparator(2, 1), 101);
+	EXPECT_EQ(comparator(1, 1), 100);
 }
