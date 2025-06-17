@@ -22,6 +22,7 @@ function banner() {
 
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 CLEAN_OPT=0
+NOMEM_OPT=0
 BUILD_TYPE=Debug
 export FILTER='*'
 
@@ -40,6 +41,11 @@ while :; do
                 printf 'ERROR: "--filter" requires a non-empty option argument.\n' >&2
                 exit 127
             fi
+            ;;
+
+        -n|--nomem)
+            NOMEM_OPT=1
+            shift
             ;;
 
         --release)
@@ -89,7 +95,12 @@ exitOnError $? "Error building project, terminating"
 #
 
 banner "Testing"
-ctest -T memcheck --output-on-failure -j 10 --output-log ./log/unit-tests.log
+MEMCHECK='-T memcheck'
+if [ ${NOMEM_OPT} == 1 ]; then
+    MEMCHECK=''
+fi
+
+ctest ${MEMCHECK} --output-on-failure -j 10 --output-log ./log/unit-tests.log
 rc=$?
 if [ $rc -ne 0 ]; then
     cat Testing/Temporary/MemoryChecker.*.log

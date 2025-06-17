@@ -83,6 +83,41 @@ public:
 	 */
 	virtual ~Collection() {}
 
+    /**
+     * @brief Checks if the contents of two given collections are equal
+     * @param col (`Collection &`) the collection to compare against
+     * @return true if both collections have the same values, otherwise false
+     */
+    bool operator==(const Collection<T> &col) const {
+
+        if (this->size != col.getSize()) {
+            return false;
+        }
+
+        std::shared_ptr<Node<T>> r1 = this->root;
+        std::shared_ptr<Node<T>> r2 = col.getRoot();
+
+        while (r1 && r2) {
+            if (this->comparator(r1->getData(), r2->getData()) != 0) {
+                return false;
+            }
+
+            r1 = r1->getRight();
+            r2 = r2->getRight();
+        }
+
+        return true;
+    }
+
+    /**
+     * @brief Checks if the contents of two given collections are not equal
+     * @param list (`Collection &`) the list to compare against
+     * @return false if both lists have the same values, otherwise true
+     */
+    bool operator!=(const Collection<T> &col) const {
+        return !operator==(col);
+    }
+
 	/**
 	 * @brief Operator to clear the buffer.
 	 *

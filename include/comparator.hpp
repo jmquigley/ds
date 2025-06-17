@@ -36,6 +36,13 @@ template<typename T>
 class Comparator {
 public:
 
+    /**
+     * @brief operator that calls the compare function.
+     * @param o1 (`T`) the left side comparison data
+     * @param o2 (`T`) the right side comparison data
+	 * @returns 0 if `o1` and `o2` are equal, 1 if `o1` is greater
+	 * than `o2`, or -1 if `o1` is less than `o2`.
+     */
     int operator()(const T o1, const T o2) const {
         return this->compare(o1, o2);
     }

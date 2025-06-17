@@ -511,3 +511,51 @@ TEST_F(TestList, ListDeleteValueError) {
 	EXPECT_EQ(list.getSize(), 0);
 	EXPECT_THROW(list.removeValue(1), std::out_of_range) << "Can't request invalid location";
 }
+
+TEST_F(TestList, ListEqualityOperator) {
+    ds::List<int> l1 = {1, 2, 3, 4, 5};
+    ds::List<int> l2 = {1, 2, 3, 4, 5};
+    ds::List<int> l3 = {5, 4, 3, 2, 1};
+    ds::List<int> l4 = {1, 3, 5};
+
+    EXPECT_EQ(l1.getSize(), 5);
+    EXPECT_EQ(l2.getSize(), 5);
+
+    EXPECT_TRUE(l1 == l2);
+    EXPECT_FALSE(l1 == l3);
+    EXPECT_FALSE(l1 == l4);
+}
+
+TEST_F(TestList, ListInequalityOperator) {
+    ds::List<int> l1 = {1, 2, 3, 4, 5};
+    ds::List<int> l2 = {1, 2, 3, 4, 5};
+    ds::List<int> l3 = {5, 4, 3, 2, 1};
+    ds::List<int> l4 = {1, 3, 5};
+
+    EXPECT_EQ(l1.getSize(), 5);
+    EXPECT_EQ(l2.getSize(), 5);
+
+    EXPECT_FALSE(l1 != l2);
+    EXPECT_TRUE(l1 != l3);
+    EXPECT_TRUE(l1 != l4);
+}
+
+TEST_F(TestList, ListEqualityOperatorEmpty) {
+    ds::List<int> l1;
+    ds::List<int> l2;
+
+    EXPECT_EQ(l1.getSize(), 0);
+    EXPECT_EQ(l2.getSize(), 0);
+
+    EXPECT_TRUE(l1 == l2);
+}
+
+TEST_F(TestList, ListInequalityOperatorEmpty) {
+    ds::List<int> l1;
+    ds::List<int> l2;
+
+    EXPECT_EQ(l1.getSize(), 0);
+    EXPECT_EQ(l2.getSize(), 0);
+
+    EXPECT_FALSE(l1 != l2);
+}

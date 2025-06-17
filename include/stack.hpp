@@ -32,6 +32,21 @@ public:
 
 	Stack() : Collection<T>() {}
 
+	/**
+	 * @brief Constructor that takes an initializer_list to insert values into
+	 * the collection.
+	 *
+     * The stack initializer will take the items from left to right and push
+     * them into the stack.
+     *
+	 * @param il (`std::initializer_list`) a list of values to see the list
+	 */
+	Stack(std::initializer_list<T> il) {
+		for (auto it: il) {
+			this->push(it);
+		}
+	}
+
 	~Stack() {
 		clear();
 	}

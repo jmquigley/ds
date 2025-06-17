@@ -140,6 +140,7 @@ public:
 	 *
 	 * Allows printing a List object directly to an output stream, using its
 	 * `str()` method for representation.
+     *
 	 * @param st (`std::ostream`) the output stream
 	 * @param list (`List<T> &`) the List object to print
 	 * @returns a reference to the `std::ostream` object
