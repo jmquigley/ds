@@ -87,12 +87,12 @@ public:
 	 * @param tnode (`std::shared_ptr<Node<T>>`) a convenience cache node from a search to
 	 * help short circuit a lookup for deletion that has already occurred.
 	 */
-	virtual void removeAt(size_t index, std::shared_ptr<Node<T>> tnode = nullptr) = 0;
+	virtual T removeAt(size_t index, std::shared_ptr<Node<T>> tnode = nullptr) = 0;
 
 	/**
 	 * @brief Removes the first instance of the given value from the list.
 	 * @param value (`T`) a data value to find and remove from the list
 	 */
-	virtual void removeValue(T value) = 0;
+	virtual T removeValue(T value) = 0;
 };
 }  // namespace ds

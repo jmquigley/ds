@@ -343,10 +343,12 @@ public:
 	 * @param tnode (`std::shared_ptr<Node<T>>`) a reference to the node that will
 	 * be deleted.  This is a convenience reference to speed up the search if it has
 	 * already been performed.
+     * @returns the T value that was removed from the list
+     * @throws an out_of_range exception if the requested index is invalid
 	 */
-	virtual void removeAt(size_t index, std::shared_ptr<Node<T>> tnode = nullptr) override {
+	virtual T removeAt(size_t index, std::shared_ptr<Node<T>> tnode = nullptr) override {
 		if (this->size == 0) {
-			return;
+			throw std::out_of_range("Cannot remove item from an empty list");
 		}
 
 		if (index == 0) {
@@ -369,23 +371,29 @@ public:
 			tnode->getLeft()->setRight(tnode->getRight());
 		}
 
+        T data = tnode->getData();
 		tnode.reset();
 		this->size--;
+
+        return data;
 	}
 
 	/**
 	 * @brief Removes the first instance of the given value from the list.
 	 * @param value (`T`) a data value to find and remove from the list
+     * @returns the T value that was removed from the list
 	 */
-	virtual void removeValue(T value) {
+	virtual T removeValue(T value) {
 		if (this->size == 0) {
 			throw std::out_of_range("Invalid list position requested for remove");
 		}
 
 		Match<T> match = find(value);
 		if (match.found()) {
-			removeAt(match.getIndex(), match.getNode().lock());
+			return removeAt(match.getIndex(), match.getNode().lock());
 		}
+
+        return value;
 	}
 
 	/**

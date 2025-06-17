@@ -11,5 +11,8 @@ public:
 };
 
 TEST_F(TestQueue, CreateQueue) {
+    ds::Queue<int> q;
+
+    EXPECT_EQ(q.getSize(), 0);
     EXPECT_TRUE(true);
 }

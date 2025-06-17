@@ -469,8 +469,8 @@ TEST_F(TestList, ListDeleteEmpty) {
 
 	EXPECT_EQ(list.getSize(), 0);
 
-	list.removeAt(0);
-	list.removeAt(9999);
+    EXPECT_THROW(list.removeAt(0), std::out_of_range);
+    EXPECT_THROW(list.removeAt(999), std::out_of_range);
 }
 
 TEST_F(TestList, ListInitializer) {

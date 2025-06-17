@@ -15,6 +15,7 @@ namespace ds {
 template<typename T>
 class Queue : public List<T> {
 
+public:
 	/**
 	 * @brief Default constructor that initializes an empty queue.
 	 */
@@ -45,6 +46,15 @@ class Queue : public List<T> {
 	~Queue() {
 		this->clear();
 	}
+
+    void enqueue(T data) {
+        this->insert(data, Position::BACK);
+    }
+
+    void push(T data) {
+        this->insert(data, Position::BACK);
+    }
+
 
 };
 
