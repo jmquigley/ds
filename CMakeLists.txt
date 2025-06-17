@@ -63,6 +63,7 @@ set(DS_HEADERS
     include/match.hpp
     include/node.hpp
     include/property.hpp
+    include/queue.hpp
     include/sortedlist.hpp
     include/stack.hpp
 )
@@ -108,6 +109,7 @@ set(TEST_SOURCES
   tests/test_iterator.cpp
   tests/test_list.cpp
   tests/test_node.cpp
+  tests/test_queue.cpp
   tests/test_sortedlist.cpp
   tests/test_stack.cpp
 )
