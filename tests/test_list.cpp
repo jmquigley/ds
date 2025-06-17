@@ -148,6 +148,21 @@ TEST_F(TestList, ListInsertOutOfRange) {
 	EXPECT_EQ(**list.getBack(), 3);
 }
 
+TEST_F(TestList, ListInsertOperator) {
+	ds::List<int> list;
+
+	list += 1;
+	list += 2;
+	list += 3;
+
+	EXPECT_EQ(list.getSize(), 3);
+	EXPECT_EQ(list.at(0), 1);
+	EXPECT_EQ(list.at(1), 2);
+	EXPECT_EQ(list.at(2), 3);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 3);
+}
+
 TEST_F(TestList, ListToVector) {
 	ds::List<int> list;
 
@@ -279,6 +294,21 @@ TEST_F(TestList, ListClear) {
 
 	EXPECT_EQ(list.getSize(), 3);
 	list.clear();
+	EXPECT_EQ(list.getSize(), 0);
+	EXPECT_EQ(list.getFront(), nullptr);
+	EXPECT_EQ(list.getBack(), nullptr);
+	EXPECT_EQ(list.getRoot(), nullptr);
+}
+
+TEST_F(TestList, ListClearOperator) {
+	ds::List<int> list;
+
+	list.insert(1);
+	list.insert(2);
+	list.insert(3);
+
+	EXPECT_EQ(list.getSize(), 3);
+	~list;
 	EXPECT_EQ(list.getSize(), 0);
 	EXPECT_EQ(list.getFront(), nullptr);
 	EXPECT_EQ(list.getBack(), nullptr);
@@ -474,4 +504,10 @@ TEST_F(TestList, ListDeleteByValue) {
 	EXPECT_EQ(list.at(1), 2);
 	EXPECT_EQ(list.at(2), 4);
 	EXPECT_EQ(list.at(3), 5);
+}
+
+TEST_F(TestList, ListDeleteValueError) {
+	ds::List<int> list;
+	EXPECT_EQ(list.getSize(), 0);
+	EXPECT_THROW(list.removeValue(1), std::out_of_range) << "Can't request invalid location";
 }

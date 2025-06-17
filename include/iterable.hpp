@@ -40,6 +40,33 @@ class Iterable {
 public:
 
 	/**
+	 * @brief Array subscript operator for accessing elements by index.
+	 * @param index The index of the element to access
+	 * @return T The element at the specified index
+	 */
+	T operator[](size_t index) {
+		return this->at(index);
+	}
+
+	/**
+	 * @brief adds a single item to the collection
+	 * @param data (`T`) the data element to add to the collection
+	 * @return a reference to the collection
+	 */
+	Iterable<T> &operator+=(const T data) {
+		this->insert(data);
+		return *this;
+	}
+
+	/**
+	 * @brief Retrieves teh data from teh collection at the given index position
+	 * @param index (`size_t`) the index position within the collection
+	 * @returns the data element located at the given index
+	 * @pure
+	 */
+	virtual T at(size_t index) = 0;
+
+	/**
 	 * @brief Find function for iterable collection classes.
 	 * @param data The element to search for in the collection
 	 * @return Match<T> A match object indicating whether the element was found

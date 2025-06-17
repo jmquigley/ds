@@ -33,27 +33,27 @@ template<typename T>
 class List : public Collection<T>, public Iterable<T> {
 protected:
 
-    /**
-     * @brief adds a new node to the end of the list
-     * @param node (`std::shared_ptr<Node<T>>`) the node to add to the end
-     */
-    void addBack(std::shared_ptr<Node<T>> node) {
+	/**
+	 * @brief adds a new node to the end of the list
+	 * @param node (`std::shared_ptr<Node<T>>`) the node to add to the end
+	 */
+	void addBack(std::shared_ptr<Node<T>> node) {
 		// add a new element to the end of the list
 		node->setLeft(this->back);
 		this->back->setRight(node);
 		this->back = node;
-    }
+	}
 
-    /**
-     * @brief adds a new node to the front of the list
-     * @param node (`std::shared_ptr<Node<T>>`) the node to add to the front
-     */
-    void addFront(std::shared_ptr<Node<T>> node) {
-        // add a new element to the front of the list
+	/**
+	 * @brief adds a new node to the front of the list
+	 * @param node (`std::shared_ptr<Node<T>>`) the node to add to the front
+	 */
+	void addFront(std::shared_ptr<Node<T>> node) {
+		// add a new element to the front of the list
 		node->setRight(this->root);
 		this->root->setLeft(node);
 		this->root = this->front = node;
-    }
+	}
 
 	/**
 	 * @brief Retrieves the node at the specified index.
@@ -132,17 +132,20 @@ public:
 	 * @brief Destructor that cleans up list resources.
 	 */
 	~List() {
-		clear();
+		this->clear();
 	}
 
 	/**
-	 * @brief Array subscript operator for accessing elements by index.
-	 * @param index The index of the element to access
-	 * @return T The element at the specified index
-	 * @throws std::out_of_range If an invalid index is requested
+	 * @brief Overloads the stream insertion operator for List objects.
+	 *
+	 * Allows printing a List object directly to an output stream, using its
+	 * `str()` method for representation.
+	 * @param st (`std::ostream`) the output stream
+	 * @param list (`List<T> &`) the List object to print
+	 * @returns a reference to the `std::ostream` object
 	 */
-	T operator[](size_t index) {
-		return this->at(index);
+	friend std::ostream &operator<<(std::ostream &st, const List<T> &list) {
+		return st << list.str();
 	}
 
 	/**
@@ -308,9 +311,9 @@ public:
 			// empty list, first value
 			this->root = this->front = this->back = node;
 		} else if (index >= this->size) {
-            addBack(node);
+			addBack(node);
 		} else if (index == 0) {
-            addFront(node);
+			addFront(node);
 		} else {
 			// add a new element to a arbitrary position in the list
 			std::shared_ptr<Node<T>> tnode = getNodeByIndex(index);
@@ -375,7 +378,7 @@ public:
 	 */
 	virtual void removeValue(T value) {
 		if (this->size == 0) {
-			return;
+			throw std::out_of_range("Invalid list position requested for remove");
 		}
 
 		Match<T> match = find(value);

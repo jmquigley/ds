@@ -45,6 +45,17 @@ TEST_F(TestStack, StackClear) {
 	EXPECT_EQ(stack.getSize(), 0);
 }
 
+TEST_F(TestStack, StackClearOperator) {
+	ds::Stack<int> stack;
+
+	EXPECT_EQ(stack.getSize(), 0);
+	stack.push(10);
+	stack.push(20);
+	EXPECT_EQ(stack.getSize(), 2);
+	~stack;
+	EXPECT_EQ(stack.getSize(), 0);
+}
+
 TEST_F(TestStack, StackErrors) {
 	ds::Stack<int> stack;
 

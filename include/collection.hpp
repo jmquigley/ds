@@ -2,7 +2,7 @@
  * @brief the base class for all collection object in the library.
  *
  * An abstract class that defines the basic structure of all collection
- * classes.
+ * classes
  */
 #pragma once
 
@@ -82,6 +82,19 @@ public:
 	 * Ensures proper cleanup of derived classes.
 	 */
 	virtual ~Collection() {}
+
+	/**
+	 * @brief Operator to clear the buffer.
+	 *
+	 * This is a convenience wrapper for the `clear` function, resetting the
+	 * container's size to zero.
+	 *
+	 * @return A reference to the current object (`*this`).
+	 */
+	Collection<T> &operator~() {
+		this->clear();
+		return *this;
+	}
 
 	/**
 	 * @brief Clears all elements from the collection, making it empty.
