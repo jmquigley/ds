@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <exception>
 #include <limits>
 #include <sstream>
 #include <string>
@@ -397,7 +398,9 @@ public:
 			return removeAt(match.getIndex(), match.getNode().lock());
 		}
 
-		return value;
+        std::stringstream ss;
+        ss << "Invalid value selected for remove (" << value << ")";
+        throw std::range_error(ss.str());
 	}
 
 	/**

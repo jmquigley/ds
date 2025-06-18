@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "list.hpp"
 
 /**
@@ -50,6 +52,16 @@ public:
 	T dequeue() {
 		return this->removeAt(0);
 	}
+
+    std::vector<T> drain() {
+        std::vector<T> all = this->array();
+        this->clear();
+        return all;
+    }
+
+    T eject(T data) {
+        return this->removeValue(data);
+    }
 
 	void enqueue(T data) {
 		this->insert(data, Position::BACK);
