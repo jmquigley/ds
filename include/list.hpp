@@ -140,7 +140,7 @@ public:
 	 *
 	 * Allows printing a List object directly to an output stream, using its
 	 * `str()` method for representation.
-     *
+	 *
 	 * @param st (`std::ostream`) the output stream
 	 * @param list (`List<T> &`) the List object to print
 	 * @returns a reference to the `std::ostream` object
@@ -343,8 +343,8 @@ public:
 	 * @param tnode (`std::shared_ptr<Node<T>>`) a reference to the node that will
 	 * be deleted.  This is a convenience reference to speed up the search if it has
 	 * already been performed.
-     * @returns the T value that was removed from the list
-     * @throws an out_of_range exception if the requested index is invalid
+	 * @returns the T value that was removed from the list
+	 * @throws an out_of_range exception if the requested index is invalid
 	 */
 	virtual T removeAt(size_t index, std::shared_ptr<Node<T>> tnode = nullptr) override {
 		if (this->size == 0) {
@@ -355,7 +355,11 @@ public:
 			// Remove the root node
 			tnode = this->root;
 			this->root = this->root->getRight();
-			this->root->setLeft(nullptr);
+
+			if (this->root) {
+				this->root->setLeft(nullptr);
+			}
+
 			this->front = this->root;
 		} else if (index >= this->size - 1) {
 			// Removes the last node in the list
@@ -371,17 +375,17 @@ public:
 			tnode->getLeft()->setRight(tnode->getRight());
 		}
 
-        T data = tnode->getData();
+		T data = tnode->getData();
 		tnode.reset();
 		this->size--;
 
-        return data;
+		return data;
 	}
 
 	/**
 	 * @brief Removes the first instance of the given value from the list.
 	 * @param value (`T`) a data value to find and remove from the list
-     * @returns the T value that was removed from the list
+	 * @returns the T value that was removed from the list
 	 */
 	virtual T removeValue(T value) {
 		if (this->size == 0) {
@@ -393,7 +397,7 @@ public:
 			return removeAt(match.getIndex(), match.getNode().lock());
 		}
 
-        return value;
+		return value;
 	}
 
 	/**

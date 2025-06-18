@@ -43,6 +43,10 @@ while :; do
             fi
             ;;
 
+        --filter=?*)
+            FILTER=${1#*=}
+            ;;
+
         -n|--nomem)
             NOMEM_OPT=1
             shift
@@ -100,7 +104,7 @@ if [ ${NOMEM_OPT} == 1 ]; then
     MEMCHECK=''
 fi
 
-ctest ${MEMCHECK} --output-on-failure -j 10 --output-log ./log/unit-tests.log
+cmake -E env FILTER=${FILTER} ctest ${MEMCHECK} --output-on-failure -j 10 --output-log ./log/unit-tests.log
 rc=$?
 if [ $rc -ne 0 ]; then
     cat Testing/Temporary/MemoryChecker.*.log

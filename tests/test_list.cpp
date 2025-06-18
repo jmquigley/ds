@@ -469,8 +469,20 @@ TEST_F(TestList, ListDeleteEmpty) {
 
 	EXPECT_EQ(list.getSize(), 0);
 
-    EXPECT_THROW(list.removeAt(0), std::out_of_range);
-    EXPECT_THROW(list.removeAt(999), std::out_of_range);
+	EXPECT_THROW(list.removeAt(0), std::out_of_range);
+	EXPECT_THROW(list.removeAt(999), std::out_of_range);
+}
+
+TEST_F(TestList, ListDeleteLastEntry) {
+	ds::List<int> list = {1};
+
+	EXPECT_EQ(list.getSize(), 1);
+	EXPECT_EQ(**list.getFront(), 1);
+	EXPECT_EQ(**list.getBack(), 1);
+
+	list.removeAt(0);
+
+	EXPECT_EQ(list.getSize(), 0);
 }
 
 TEST_F(TestList, ListInitializer) {
@@ -513,49 +525,49 @@ TEST_F(TestList, ListDeleteValueError) {
 }
 
 TEST_F(TestList, ListEqualityOperator) {
-    ds::List<int> l1 = {1, 2, 3, 4, 5};
-    ds::List<int> l2 = {1, 2, 3, 4, 5};
-    ds::List<int> l3 = {5, 4, 3, 2, 1};
-    ds::List<int> l4 = {1, 3, 5};
+	ds::List<int> l1 = {1, 2, 3, 4, 5};
+	ds::List<int> l2 = {1, 2, 3, 4, 5};
+	ds::List<int> l3 = {5, 4, 3, 2, 1};
+	ds::List<int> l4 = {1, 3, 5};
 
-    EXPECT_EQ(l1.getSize(), 5);
-    EXPECT_EQ(l2.getSize(), 5);
+	EXPECT_EQ(l1.getSize(), 5);
+	EXPECT_EQ(l2.getSize(), 5);
 
-    EXPECT_TRUE(l1 == l2);
-    EXPECT_FALSE(l1 == l3);
-    EXPECT_FALSE(l1 == l4);
+	EXPECT_TRUE(l1 == l2);
+	EXPECT_FALSE(l1 == l3);
+	EXPECT_FALSE(l1 == l4);
 }
 
 TEST_F(TestList, ListInequalityOperator) {
-    ds::List<int> l1 = {1, 2, 3, 4, 5};
-    ds::List<int> l2 = {1, 2, 3, 4, 5};
-    ds::List<int> l3 = {5, 4, 3, 2, 1};
-    ds::List<int> l4 = {1, 3, 5};
+	ds::List<int> l1 = {1, 2, 3, 4, 5};
+	ds::List<int> l2 = {1, 2, 3, 4, 5};
+	ds::List<int> l3 = {5, 4, 3, 2, 1};
+	ds::List<int> l4 = {1, 3, 5};
 
-    EXPECT_EQ(l1.getSize(), 5);
-    EXPECT_EQ(l2.getSize(), 5);
+	EXPECT_EQ(l1.getSize(), 5);
+	EXPECT_EQ(l2.getSize(), 5);
 
-    EXPECT_FALSE(l1 != l2);
-    EXPECT_TRUE(l1 != l3);
-    EXPECT_TRUE(l1 != l4);
+	EXPECT_FALSE(l1 != l2);
+	EXPECT_TRUE(l1 != l3);
+	EXPECT_TRUE(l1 != l4);
 }
 
 TEST_F(TestList, ListEqualityOperatorEmpty) {
-    ds::List<int> l1;
-    ds::List<int> l2;
+	ds::List<int> l1;
+	ds::List<int> l2;
 
-    EXPECT_EQ(l1.getSize(), 0);
-    EXPECT_EQ(l2.getSize(), 0);
+	EXPECT_EQ(l1.getSize(), 0);
+	EXPECT_EQ(l2.getSize(), 0);
 
-    EXPECT_TRUE(l1 == l2);
+	EXPECT_TRUE(l1 == l2);
 }
 
 TEST_F(TestList, ListInequalityOperatorEmpty) {
-    ds::List<int> l1;
-    ds::List<int> l2;
+	ds::List<int> l1;
+	ds::List<int> l2;
 
-    EXPECT_EQ(l1.getSize(), 0);
-    EXPECT_EQ(l2.getSize(), 0);
+	EXPECT_EQ(l1.getSize(), 0);
+	EXPECT_EQ(l2.getSize(), 0);
 
-    EXPECT_FALSE(l1 != l2);
+	EXPECT_FALSE(l1 != l2);
 }
