@@ -53,9 +53,10 @@ set(DS_SOURCES
 set(DS_HEADERS
     include/collection.hpp
     include/comparator.hpp
-    include/cstr.h
-    include/ds.h
     include/constants.hpp
+    include/cstr.h
+    include/deque.hpp
+    include/ds.h
     include/helpers.hpp
     include/iterable.hpp
     include/iterator.hpp
@@ -105,6 +106,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 set(TEST_SOURCES
   tests/test_comparator.cpp
   tests/test_cstr.cpp
+  tests/test_deque.cpp
   tests/test_helpers.cpp
   tests/test_iterator.cpp
   tests/test_list.cpp

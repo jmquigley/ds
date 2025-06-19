@@ -41,8 +41,8 @@ public:
 
 	/**
 	 * @brief Constructor that takes an initializer_list to insert values into
-	 * the collection.
-	 * @param il (`std::initializer_list`) a list of values to see the list
+	 * the queue.
+	 * @param il (`std::initializer_list`) a list of values to seed the queue
 	 */
 	Queue(std::initializer_list<T> il) {
 		for (auto it: il) {
