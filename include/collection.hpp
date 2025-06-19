@@ -130,6 +130,14 @@ public:
 		return *this;
 	}
 
+    /**
+     * @brief retrieves the element at the end of the collection
+     * @return a `T` data element
+     */
+    T back() {
+        return this->_back->getData();
+    }
+
 	/**
 	 * @brief Clears all elements from the collection, making it empty.
 	 * @pure
@@ -143,6 +151,14 @@ public:
 	bool empty() {
 		return this->_size == 0;
 	}
+
+    /**
+     * @brief retrieves the element at the front of the collection
+     * @return a `T` data element
+     */
+    T front() {
+        return this->_front->getData();
+    }
 
 	/**
 	 * @brief returns a JSON representation of the given collection.

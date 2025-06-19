@@ -58,7 +58,8 @@ protected:
 
 	/**
 	 * @brief Retrieves the node at the specified index.
-	 * @param index (`size_t`) The index of the node to retrieve, or a Position enum value
+	 * @param index (`size_t`) The index of the node to retrieve, or a
+     * Position enum value
 	 * @return std::shared_ptr<Node<T>> Pointer to the node at the specified index
 	 */
 	std::shared_ptr<Node<T>> getNodeByIndex(size_t index) {

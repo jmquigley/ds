@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "collection.hpp"
+#include "list.hpp"
 
 /**
  * @namespace ds
@@ -28,10 +28,10 @@ namespace ds {
  * @tparam T The type of data stored within the stack.
  */
 template<typename T>
-class Stack : public Collection<T> {
+class Stack : protected List<T> {
 public:
 
-	Stack() : Collection<T>() {}
+	Stack() : List<T>() {}
 
     /**
      * @brief a copy constructor for Stack object
@@ -61,7 +61,7 @@ public:
 		}
 	}
 
-	virtual ~Stack() {
+	~Stack() {
 		clear();
 	}
 
@@ -78,8 +78,44 @@ public:
 		return st << stack.str();
 	}
 
+	/**
+	 * @brief adds a single item to the stack
+	 * @param data (`T`) the data element to add to the stack
+	 * @return a reference to the stack
+	 */
     Stack<T> &operator+=(const T data) {
         this->push(data);
+        return *this;
+    }
+
+	/**
+	 * @brief Checks if the contents of two given stack objects are equal
+	 * @param stack (`Stack &`) the stackto compare against
+	 * @return true if both stacks have the same values, otherwise false
+	 */
+    bool operator==(const Stack<T> &stack) const {
+        return List<T>::operator==(stack);
+    }
+
+	/**
+	 * @brief Checks if the contents of two given stack objects are not equal
+	 * @param col (`Stack &`) the stack to compare against
+	 * @return false if both lists have the same values, otherwise true
+	 */
+    bool operator!=(const Stack<T> &stack) const {
+        return List<T>::operator!=(stack);
+    }
+
+	/**
+	 * @brief Operator to clear the stack.
+	 *
+	 * This is a convenience wrapper for the `clear` function, resetting the
+	 * stack's size to zero.
+	 *
+	 * @return A reference to the current object (`*this`).
+	 */
+    Stack<T> &operator~() {
+        clear();
         return *this;
     }
 
@@ -94,39 +130,15 @@ public:
 	 * @returns a `vector<T>` collection that contains each element of the stack
 	 */
 	std::vector<T> array(void) {
-		std::shared_ptr<Node<T>> lp = this->_root;
-		std::shared_ptr<Node<T>> next;
-		std::vector<T> v;
-
-		while (lp) {
-			next = lp->getRight();
-			v.push_back(lp->getData());
-			lp = next;
-		}
-
-		return v;
+        return List<T>::array();
 	}
 
 	/**
 	 * Empties the stack and resets it.  It will remove all entries from the
 	 * stack and free up associated memory.
 	 */
-	void clear() override {
-		if (this->_root != nullptr) {
-			std::shared_ptr<Node<T>> node = this->_root;
-			std::shared_ptr<Node<T>> next;
-
-			while (node) {
-				next = node->getRight();
-				node = nullptr;
-				node = next;
-			}
-		}
-
-		this->_size = 0;
-		this->_front.reset();
-		this->_back.reset();
-		this->_root.reset();
+	void clear() {
+        List<T>::clear();
 	}
 
 	/**
@@ -134,24 +146,7 @@ public:
 	 * @returns a string that holds the stack in a JSON string
 	 */
 	std::string json() const override {
-		std::stringstream ss;
-
-		if (this->_root != nullptr) {
-			std::shared_ptr<Node<T>> node = this->_root;
-			std::shared_ptr<Node<T>> next;
-
-			ss << "[";
-			std::string comma = "";
-			while (node) {
-				next = node->getRight();
-				ss << comma << *node;
-				node = next;
-				comma = ",";
-			}
-			ss << "]";
-		}
-
-		return ss.str();
+        return List<T>::json();
 	}
 
 	/**
@@ -169,19 +164,7 @@ public:
 	 * @returns the data at the stop of the stack
 	 */
 	T pop() {
-		T data;
-
-		if (this->_root != nullptr) {
-			data = this->_root->getData();
-			std::shared_ptr<Node<T>> topNode = this->_root;
-			this->_root = this->_root->getRight();
-			this->_front = this->_root;
-			topNode = nullptr;
-			this->_size--;
-			return data;
-		}
-
-		throw std::runtime_error("Trying to remove from empty stack");
+        return List<T>::removeAt(0);
 	}
 
 	/**
@@ -189,19 +172,7 @@ public:
 	 * @param data (`T`) the data element to store in the stack
 	 */
 	void push(T data) {
-		std::shared_ptr<Node<T>> node = std::make_shared<Node<T>>(data);
-
-		if (this->_root == nullptr) {
-			this->_root = node;
-			this->_back = this->_root;
-		} else {
-			node->setRight(this->_root);
-			this->_root->setParentId(node->getId());
-			this->_root = node;
-		}
-
-		this->_front = node;
-		this->_size++;
+        List<T>::insert(data, Position::FRONT);
 	}
 
 	/**
@@ -209,7 +180,7 @@ public:
 	 * @returns a size_t value that represents the size of the stack
 	 */
 	size_t size() const {
-		return this->getSize();
+        return List<T>::size();
 	}
 
 	/**
@@ -219,7 +190,7 @@ public:
 	 * @return A string representing the node's content.
 	 */
 	std::string str() const override {
-		return json();
+        return List<T>::str();
 	}
 
 	/**
@@ -228,10 +199,10 @@ public:
 	 */
 	T top() {
 		if (this->_size == 0) {
-			throw std::runtime_error("Cannot get the top of an empty stack");
+			throw std::out_of_range("Cannot get the top of an empty stack");
 		}
 
-		return this->_root->getData();
+		return List<T>::front();
 	}
 };
 }  // namespace ds
