@@ -1,5 +1,4 @@
 /**
- * @file stack.hpp
  * @brief Defines the Stack data structure, a LIFO (Last In, First Out) collection.
  */
 
@@ -34,13 +33,17 @@ public:
 
 	Stack() : Collection<T>() {}
 
+    /**
+     * @brief a copy constructor for Stack object
+     * @param stack (`Stack<T> &`) the stack that will be copied
+     */
 	Stack(Stack<T> &stack) {
-		std::vector<T> v = this->array();
-		std::reverse(v.begin(), v.end());
+		std::vector<T> v = stack.array();
+        std::reverse(v.begin(), v.end());
 
-		for (auto it: v) {
-			this->push(it);
-		}
+        for (auto it: v) {
+            this->push(it);
+        }
 	}
 
 	/**
@@ -58,7 +61,7 @@ public:
 		}
 	}
 
-	~Stack() {
+	virtual ~Stack() {
 		clear();
 	}
 
@@ -75,8 +78,19 @@ public:
 		return st << stack.str();
 	}
 
+    Stack<T> &operator+=(const T data) {
+        this->push(data);
+        return *this;
+    }
+
 	/**
 	 * @brief copies the current stack into an array vector and returns it.
+     *
+     * This array copy operation does not change the current stack.  This is a
+     * new vector that is a snapshot of the stack in time.  It does not
+     * track any changes once the current statck deviates.  Each call will return
+     * a new vector.
+     *
 	 * @returns a `vector<T>` collection that contains each element of the stack
 	 */
 	std::vector<T> array(void) {

@@ -106,7 +106,7 @@ banner "Building"
 cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ..
 exitOnError $? "Failed to create cmake build files!"
 
-cmake --build . -v
+cmake --build . -v -- -j ${THREADS}
 exitOnError $? "Error building project, terminating"
 
 #
