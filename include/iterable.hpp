@@ -59,7 +59,7 @@ public:
 	}
 
 	/**
-	 * @brief Retrieves teh data from teh collection at the given index position
+	 * @brief Retrieves teh data from the collection at the given index position
 	 * @param index (`size_t`) the index position within the collection
 	 * @returns the data element located at the given index
 	 * @pure

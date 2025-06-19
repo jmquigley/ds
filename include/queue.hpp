@@ -14,8 +14,18 @@
  */
 namespace ds {
 
+/**
+ * @class Queue
+ * @brief A generic FIFO (First-In-First-Out) queue implementation.
+ *
+ * The Queue class provides standard queue operations like enqueue and dequeue,
+ * implementing the FIFO principle where elements are removed in the same order
+ * they were added.
+ *
+ * @tparam T The type of data stored within the queue.
+ */
 template<typename T>
-class Queue : public List<T> {
+class Queue : protected List<T> {
 public:
 
 	/**
@@ -25,7 +35,6 @@ public:
 
 	/**
 	 * @brief Constructor that initializes a queue with a custom comparator.
-	 *
 	 * @param comparator The comparator function to use for element comparison
 	 */
 	Queue(Comparator<T> comparator) : List<T>(comparator) {}
@@ -33,7 +42,6 @@ public:
 	/**
 	 * @brief Constructor that takes an initializer_list to insert values into
 	 * the collection.
-	 *
 	 * @param il (`std::initializer_list`) a list of values to see the list
 	 */
 	Queue(std::initializer_list<T> il) {
@@ -49,26 +57,65 @@ public:
 		this->clear();
 	}
 
+	/**
+	 * @brief returns the item at the end of the queue
+	 * @returns a `T` object at the back of the queue
+	 */
+	T back() {
+		return **this->getBack();
+	}
+
+	/**
+	 * @brief Removes and returns the element at the front of the queue.
+	 * @return The element at the front of the queue
+	 * @throws std::out_of_range if the queue is empty
+	 */
 	T dequeue() {
 		return this->removeAt(0);
 	}
 
-    std::vector<T> drain() {
-        std::vector<T> all = this->array();
-        this->clear();
-        return all;
-    }
+	/**
+	 * @brief Removes all elements from the queue and returns them as a vector.
+	 * @return A vector containing all elements in the queue in order
+	 */
+	std::vector<T> drain() {
+		std::vector<T> all = this->array();
+		this->clear();
+		return all;
+	}
 
-    T eject(T data) {
-        return this->removeValue(data);
-    }
+	/**
+	 * @brief Removes the first occurrence of the specified element from the queue.
+	 * @param data The element to remove
+	 * @return The removed element
+	 * @throws std::range_error if the element is not found in the queue
+	 */
+	T eject(T data) {
+		return this->removeValue(data);
+	}
 
+	/**
+	 * @brief Adds an element to the back of the queue.
+	 * @param data The element to add
+	 */
 	void enqueue(T data) {
 		this->insert(data, Position::BACK);
 	}
 
-	void push(T data) {
-		this->insert(data, Position::BACK);
+	/**
+	 * @brief returns the item at the front of the queue
+	 * @returns a `T` object at the front of the queue
+	 */
+	T front() {
+		return **this->getFront();
+	}
+
+	/**
+	 * @brief the number of elements in the queue
+	 * @returns a `size_t` of the number of elements in the queue
+	 */
+	size_t size() const {
+		return this->_size;
 	}
 };
 

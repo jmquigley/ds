@@ -40,9 +40,9 @@ protected:
 	 */
 	void addBack(std::shared_ptr<Node<T>> node) {
 		// add a new element to the end of the list
-		node->setLeft(this->back);
-		this->back->setRight(node);
-		this->back = node;
+		node->setLeft(this->_back);
+		this->_back->setRight(node);
+		this->_back = node;
 	}
 
 	/**
@@ -51,9 +51,9 @@ protected:
 	 */
 	void addFront(std::shared_ptr<Node<T>> node) {
 		// add a new element to the front of the list
-		node->setRight(this->root);
-		this->root->setLeft(node);
-		this->root = this->front = node;
+		node->setRight(this->_root);
+		this->_root->setLeft(node);
+		this->_root = this->_front = node;
 	}
 
 	/**
@@ -65,16 +65,16 @@ protected:
 		std::shared_ptr<Node<T>> tnode;
 
 		// Optimize traversal direction based on which end is closer
-		if (index < (this->getSize() / 2)) {
+		if (index < (this->_size / 2)) {
 			// Start from front for indices in the first half
-			tnode = this->front;
+			tnode = this->_front;
 			for (size_t i = 0; i < index; i++) {
 				tnode = tnode->getRight();
 			}
 		} else {
 			// Start from back for indices in the second half
-			tnode = this->back;
-			for (size_t i = this->getSize() - 1; i > index; i--) {
+			tnode = this->_back;
+			for (size_t i = this->_size - 1; i > index; i--) {
 				tnode = tnode->getLeft();
 			}
 		}
@@ -118,6 +118,16 @@ public:
 	List(Comparator<T> comparator) : Collection<T>(comparator) {}
 
 	/**
+	 * @brief a List copy constructor
+	 * @param list (`List &`) the list object to copy
+	 */
+	List(List<T> &list) {
+		for (auto it: list) {
+			this->insert(it);
+		}
+	}
+
+	/**
 	 * @brief Constructor that takes an initializer_list to insert values into
 	 * the collection.
 	 *
@@ -158,11 +168,11 @@ public:
 	 * @throws std::out_of_range error if an invalid index is requested
 	 */
 	T at(size_t index) {
-		if (index < 0 or index >= this->size) {
+		if (index < 0 or index >= this->_size) {
 			throw std::out_of_range("Invalid list position index requested");
 		}
 
-		std::shared_ptr<Node<T>> lp = this->root;
+		std::shared_ptr<Node<T>> lp = this->_root;
 
 		for (size_t i = 0; i < index; i++) {
 			lp = lp->getRight();
@@ -176,7 +186,7 @@ public:
 	 * @returns a `vector<T>` collection that contains each element of the list
 	 */
 	std::vector<T> array(void) {
-		std::shared_ptr<Node<T>> lp = this->root;
+		std::shared_ptr<Node<T>> lp = this->_root;
 		std::shared_ptr<Node<T>> next;
 		std::vector<T> v;
 
@@ -194,7 +204,7 @@ public:
 	 * @returns A new Iterator object that points to the front of the list
 	 */
 	Iterator begin() {
-		return Iterator(this->front);
+		return Iterator(this->_front);
 	}
 
 	/**
@@ -202,7 +212,7 @@ public:
 	 * @returns A new Iterator object that points to the back of the list
 	 */
 	Iterator rbegin() {
-		return Iterator(this->back);
+		return Iterator(this->_back);
 	}
 
 	/**
@@ -210,7 +220,7 @@ public:
 	 * initialized state.
 	 */
 	virtual void clear() override {
-		std::shared_ptr<Node<T>> lp = this->root;
+		std::shared_ptr<Node<T>> lp = this->_root;
 		std::shared_ptr<Node<T>> next;
 
 		while (lp) {
@@ -220,10 +230,10 @@ public:
 			lp = next;
 		}
 
-		this->root.reset();
-		this->front.reset();
-		this->back.reset();
-		this->size = 0;
+		this->_root.reset();
+		this->_front.reset();
+		this->_back.reset();
+		this->_size = 0;
 	}
 
 	/**
@@ -250,7 +260,7 @@ public:
 	 */
 	virtual Match<T> find(T data) override {
 		size_t index = 0;
-		std::shared_ptr<Node<T>> lp = this->root;
+		std::shared_ptr<Node<T>> lp = this->_root;
 		Match<T> match;
 		std::shared_ptr<Node<T>> next;
 
@@ -287,7 +297,7 @@ public:
 	 */
 	void insert(T data, Position position) {
 		if (position == Position::BACK) {
-			this->insert(data, this->size);
+			this->insert(data, this->_size);
 		} else if (position == Position::FRONT) {
 			this->insert(data, 0);
 		}
@@ -309,10 +319,10 @@ public:
 	void insert(T data, size_t index) {
 		std::shared_ptr<Node<T>> node = std::make_shared<Node<T>>(data);
 
-		if (this->root == nullptr) {
+		if (this->_root == nullptr) {
 			// empty list, first value
-			this->root = this->front = this->back = node;
-		} else if (index >= this->size) {
+			this->_root = this->_front = this->_back = node;
+		} else if (index >= this->_size) {
 			addBack(node);
 		} else if (index == 0) {
 			addFront(node);
@@ -327,7 +337,7 @@ public:
 			}
 		}
 
-		this->size++;
+		this->_size++;
 	}
 
 	/**
@@ -348,25 +358,25 @@ public:
 	 * @throws an out_of_range exception if the requested index is invalid
 	 */
 	virtual T removeAt(size_t index, std::shared_ptr<Node<T>> tnode = nullptr) override {
-		if (this->size == 0) {
+		if (this->_size == 0) {
 			throw std::out_of_range("Cannot remove item from an empty list");
 		}
 
 		if (index == 0) {
 			// Remove the root node
-			tnode = this->root;
-			this->root = this->root->getRight();
+			tnode = this->_root;
+			this->_root = this->_root->getRight();
 
-			if (this->root) {
-				this->root->setLeft(nullptr);
+			if (this->_root) {
+				this->_root->setLeft(nullptr);
 			}
 
-			this->front = this->root;
-		} else if (index >= this->size - 1) {
+			this->_front = this->_root;
+		} else if (index >= this->_size - 1) {
 			// Removes the last node in the list
-			tnode = this->back;
-			this->back = this->back->getLeft();
-			this->back->setRight(nullptr);
+			tnode = this->_back;
+			this->_back = this->_back->getLeft();
+			this->_back->setRight(nullptr);
 		} else {
 			if (tnode == nullptr) {
 				tnode = this->getNodeByIndex(index);
@@ -378,7 +388,7 @@ public:
 
 		T data = tnode->getData();
 		tnode.reset();
-		this->size--;
+		this->_size--;
 
 		return data;
 	}
@@ -389,7 +399,7 @@ public:
 	 * @returns the T value that was removed from the list
 	 */
 	virtual T removeValue(T value) {
-		if (this->size == 0) {
+		if (this->_size == 0) {
 			throw std::out_of_range("Invalid list position requested for remove");
 		}
 
@@ -398,9 +408,9 @@ public:
 			return removeAt(match.getIndex(), match.getNode().lock());
 		}
 
-        std::stringstream ss;
-        ss << "Invalid value selected for remove (" << value << ")";
-        throw std::range_error(ss.str());
+		std::stringstream ss;
+		ss << "Invalid value selected for remove (" << value << ")";
+		throw std::range_error(ss.str());
 	}
 
 	/**
@@ -408,7 +418,7 @@ public:
 	 * @return std::vector<T> A vector containing copies of all elements in reverse order
 	 */
 	std::vector<T> reverse() {
-		std::shared_ptr<Node<T>> lp = this->back;
+		std::shared_ptr<Node<T>> lp = this->_back;
 		std::shared_ptr<Node<T>> previous;
 		std::vector<T> v;
 
@@ -427,7 +437,7 @@ public:
 	 */
 	virtual std::string str() const override {
 		std::stringstream ss;
-		std::shared_ptr<Node<T>> lp = this->root;
+		std::shared_ptr<Node<T>> lp = this->_root;
 		std::shared_ptr<Node<T>> next;
 		std::string comma = "";
 

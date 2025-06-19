@@ -5,8 +5,10 @@
 
 #pragma once
 
+#include <algorithm>
 #include <exception>
 #include <memory>
+#include <vector>
 
 #include "collection.hpp"
 
@@ -32,13 +34,22 @@ public:
 
 	Stack() : Collection<T>() {}
 
+	Stack(Stack<T> &stack) {
+		std::vector<T> v = this->array();
+		std::reverse(v.begin(), v.end());
+
+		for (auto it: v) {
+			this->push(it);
+		}
+	}
+
 	/**
 	 * @brief Constructor that takes an initializer_list to insert values into
 	 * the collection.
 	 *
-     * The stack initializer will take the items from left to right and push
-     * them into the stack.
-     *
+	 * The stack initializer will take the items from left to right and push
+	 * them into the stack.
+	 *
 	 * @param il (`std::initializer_list`) a list of values to see the list
 	 */
 	Stack(std::initializer_list<T> il) {
@@ -65,12 +76,30 @@ public:
 	}
 
 	/**
+	 * @brief copies the current stack into an array vector and returns it.
+	 * @returns a `vector<T>` collection that contains each element of the stack
+	 */
+	std::vector<T> array(void) {
+		std::shared_ptr<Node<T>> lp = this->_root;
+		std::shared_ptr<Node<T>> next;
+		std::vector<T> v;
+
+		while (lp) {
+			next = lp->getRight();
+			v.push_back(lp->getData());
+			lp = next;
+		}
+
+		return v;
+	}
+
+	/**
 	 * Empties the stack and resets it.  It will remove all entries from the
 	 * stack and free up associated memory.
 	 */
 	void clear() override {
-		if (this->root != nullptr) {
-			std::shared_ptr<Node<T>> node = this->root;
+		if (this->_root != nullptr) {
+			std::shared_ptr<Node<T>> node = this->_root;
 			std::shared_ptr<Node<T>> next;
 
 			while (node) {
@@ -80,21 +109,21 @@ public:
 			}
 		}
 
-		this->size = 0;
-		this->front.reset();
-		this->back.reset();
-		this->root.reset();
+		this->_size = 0;
+		this->_front.reset();
+		this->_back.reset();
+		this->_root.reset();
 	}
 
-    /**
-     * @brief returns the contents of the stack as a JSON string
-     * @returns a string that holds the stack in a JSON string
-     */
+	/**
+	 * @brief returns the contents of the stack as a JSON string
+	 * @returns a string that holds the stack in a JSON string
+	 */
 	std::string json() const override {
 		std::stringstream ss;
 
-		if (this->root != nullptr) {
-			std::shared_ptr<Node<T>> node = this->root;
+		if (this->_root != nullptr) {
+			std::shared_ptr<Node<T>> node = this->_root;
 			std::shared_ptr<Node<T>> next;
 
 			ss << "[";
@@ -128,13 +157,13 @@ public:
 	T pop() {
 		T data;
 
-		if (this->root != nullptr) {
-			data = this->root->getData();
-			std::shared_ptr<Node<T>> topNode = this->root;
-			this->root = this->root->getRight();
-			this->front = this->root;
+		if (this->_root != nullptr) {
+			data = this->_root->getData();
+			std::shared_ptr<Node<T>> topNode = this->_root;
+			this->_root = this->_root->getRight();
+			this->_front = this->_root;
 			topNode = nullptr;
-			this->size--;
+			this->_size--;
 			return data;
 		}
 
@@ -148,17 +177,25 @@ public:
 	void push(T data) {
 		std::shared_ptr<Node<T>> node = std::make_shared<Node<T>>(data);
 
-		if (this->root == nullptr) {
-			this->root = node;
-			this->back = this->root;
+		if (this->_root == nullptr) {
+			this->_root = node;
+			this->_back = this->_root;
 		} else {
-			node->setRight(this->root);
-			this->root->setParentId(node->getId());
-			this->root = node;
+			node->setRight(this->_root);
+			this->_root->setParentId(node->getId());
+			this->_root = node;
 		}
 
-		this->front = node;
-		this->size++;
+		this->_front = node;
+		this->_size++;
+	}
+
+	/**
+	 * The current size of the stack
+	 * @returns a size_t value that represents the size of the stack
+	 */
+	size_t size() const {
+		return this->getSize();
 	}
 
 	/**
@@ -168,7 +205,7 @@ public:
 	 * @return A string representing the node's content.
 	 */
 	std::string str() const override {
-        return json();
+		return json();
 	}
 
 	/**
@@ -176,11 +213,11 @@ public:
 	 * the item from the top.
 	 */
 	T top() {
-		if (this->size == 0) {
+		if (this->_size == 0) {
 			throw std::runtime_error("Cannot get the top of an empty stack");
 		}
 
-		return this->root->getData();
+		return this->_root->getData();
 	}
 };
 }  // namespace ds

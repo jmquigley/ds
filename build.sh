@@ -25,6 +25,7 @@ CLEAN_OPT=0
 NOMEM_OPT=0
 BUILD_TYPE=Debug
 export FILTER='*'
+export THREADS=10
 
 while :; do
     case $1 in
@@ -45,6 +46,20 @@ while :; do
 
         --filter=?*)
             FILTER=${1#*=}
+            ;;
+
+        -j|--jobs)
+            if [ -n "$2" ]; then
+                THREADS="$2"
+                shift
+            else
+                printf 'ERROR: "--jobs" requires a non-empty option argument.\n' >&2
+                exit 127
+            fi
+            ;;
+
+        --jobs=?*)
+            THREADS=${1#*=}
             ;;
 
         -n|--nomem)
@@ -104,7 +119,7 @@ if [ ${NOMEM_OPT} == 1 ]; then
     MEMCHECK=''
 fi
 
-cmake -E env FILTER=${FILTER} ctest ${MEMCHECK} --output-on-failure -j 10 --output-log ./log/unit-tests.log
+cmake -E env FILTER=${FILTER} ctest ${MEMCHECK} --output-on-failure -j ${THREADS} --output-log ./log/unit-tests.log
 rc=$?
 if [ $rc -ne 0 ]; then
     cat Testing/Temporary/MemoryChecker.*.log
