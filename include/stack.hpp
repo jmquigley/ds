@@ -33,17 +33,17 @@ public:
 
 	Stack() : List<T>() {}
 
-    /**
-     * @brief a copy constructor for Stack object
-     * @param stack (`Stack<T> &`) the stack that will be copied
-     */
-	Stack(Stack<T> &stack) {
+	/**
+	 * @brief a copy constructor for Stack object
+	 * @param stack (`Stack<T> &`) the stack that will be copied
+	 */
+	Stack(Stack<T> &stack) : List<T>() {
 		std::vector<T> v = stack.array();
-        std::reverse(v.begin(), v.end());
+		std::reverse(v.begin(), v.end());
 
-        for (auto it: v) {
-            this->push(it);
-        }
+		for (auto it: v) {
+			this->push(it);
+		}
 	}
 
 	/**
@@ -55,7 +55,7 @@ public:
 	 *
 	 * @param il (`std::initializer_list`) a list of values to see the list
 	 */
-	Stack(std::initializer_list<T> il) {
+	Stack(std::initializer_list<T> il) : List<T>() {
 		for (auto it: il) {
 			this->push(it);
 		}
@@ -83,28 +83,28 @@ public:
 	 * @param data (`T`) the data element to add to the stack
 	 * @return a reference to the stack
 	 */
-    Stack<T> &operator+=(const T data) {
-        this->push(data);
-        return *this;
-    }
+	Stack<T> &operator+=(const T data) {
+		this->push(data);
+		return *this;
+	}
 
 	/**
 	 * @brief Checks if the contents of two given stack objects are equal
-	 * @param stack (`Stack &`) the stackto compare against
+	 * @param stack (`Stack &`) the stack to compare against
 	 * @return true if both stacks have the same values, otherwise false
 	 */
-    bool operator==(const Stack<T> &stack) const {
-        return List<T>::operator==(stack);
-    }
+	bool operator==(const Stack<T> &stack) const {
+		return List<T>::operator==(stack);
+	}
 
 	/**
 	 * @brief Checks if the contents of two given stack objects are not equal
-	 * @param col (`Stack &`) the stack to compare against
+	 * @param stack (`Stack &`) the stack to compare against
 	 * @return false if both lists have the same values, otherwise true
 	 */
-    bool operator!=(const Stack<T> &stack) const {
-        return List<T>::operator!=(stack);
-    }
+	bool operator!=(const Stack<T> &stack) const {
+		return List<T>::operator!=(stack);
+	}
 
 	/**
 	 * @brief Operator to clear the stack.
@@ -114,23 +114,23 @@ public:
 	 *
 	 * @return A reference to the current object (`*this`).
 	 */
-    Stack<T> &operator~() {
-        clear();
-        return *this;
-    }
+	Stack<T> &operator~() {
+		clear();
+		return *this;
+	}
 
 	/**
 	 * @brief copies the current stack into an array vector and returns it.
-     *
-     * This array copy operation does not change the current stack.  This is a
-     * new vector that is a snapshot of the stack in time.  It does not
-     * track any changes once the current statck deviates.  Each call will return
-     * a new vector.
-     *
+	 *
+	 * This array copy operation does not change the current stack.  This is a
+	 * new vector that is a snapshot of the stack in time.  It does not
+	 * track any changes once the current statck deviates.  Each call will return
+	 * a new vector.
+	 *
 	 * @returns a `vector<T>` collection that contains each element of the stack
 	 */
 	std::vector<T> array(void) {
-        return List<T>::array();
+		return List<T>::array();
 	}
 
 	/**
@@ -138,7 +138,7 @@ public:
 	 * stack and free up associated memory.
 	 */
 	void clear() {
-        List<T>::clear();
+		List<T>::clear();
 	}
 
 	/**
@@ -146,7 +146,7 @@ public:
 	 * @returns a string that holds the stack in a JSON string
 	 */
 	std::string json() const override {
-        return List<T>::json();
+		return List<T>::json();
 	}
 
 	/**
@@ -164,7 +164,7 @@ public:
 	 * @returns the data at the stop of the stack
 	 */
 	T pop() {
-        return List<T>::removeAt(0);
+		return List<T>::removeAt(0);
 	}
 
 	/**
@@ -172,7 +172,7 @@ public:
 	 * @param data (`T`) the data element to store in the stack
 	 */
 	void push(T data) {
-        List<T>::insert(data, Position::FRONT);
+		List<T>::insert(data, Position::FRONT);
 	}
 
 	/**
@@ -180,7 +180,7 @@ public:
 	 * @returns a size_t value that represents the size of the stack
 	 */
 	size_t size() const {
-        return List<T>::size();
+		return List<T>::size();
 	}
 
 	/**
@@ -190,7 +190,7 @@ public:
 	 * @return A string representing the node's content.
 	 */
 	std::string str() const override {
-        return List<T>::str();
+		return List<T>::str();
 	}
 
 	/**

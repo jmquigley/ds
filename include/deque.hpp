@@ -8,9 +8,12 @@
 
 #pragma once
 
+#include <limits>
 #include <vector>
 
+#include "property.hpp"
 #include "queue.hpp"
+#include "stddef.h"
 
 /**
  * @namespace ds
@@ -29,12 +32,37 @@ namespace ds {
  */
 template<typename T>
 class Deque : public Queue<T> {
+	/// @brief The maximum size of the Deque
+	PROPERTY_D(_maxSize, MaxSize, size_t, = std::numeric_limits<std::size_t>::max());
+
+private:
+
+private:
+
+	/**
+	 * @brief Checks the current internals for an overflow condition.
+	 *
+	 * An overflow occurs when the maxSize storage size will be exceeded
+	 * on the next insert operation.
+	 *
+	 * @returns `boolean` true if in an overflow condition, otherwise false.
+	 */
+	bool overflow() {
+		return this->_size >= this->_maxSize;
+	}
+
 public:
 
 	/**
-	 * @brief Default constructor that initializes an empty deque.
+	 * @brief Default constructor that initializes an empty Deque.
 	 */
 	Deque() : Queue<T>() {}
+
+	/**
+	 * @brief Constructor to set the maximum size of the Deque
+	 * @param maxSize (`size_t`) the maximum size of the queue
+	 */
+	Deque(size_t maxSize) : Queue<T>(), _maxSize(maxSize) {}
 
 	/**
 	 * @brief Constructor that initializes a deque with a custom comparator.
@@ -43,21 +71,94 @@ public:
 	Deque(Comparator<T> comparator) : Queue<T>(comparator) {}
 
 	/**
+	 * @brief Constructor that initializes a deque with a custom comparator.
+	 * and sets a default size
+	 * @param maxSize (`size_t`) the maximum size of the queue
+	 * @param comparator The comparator function to use for element comparison
+	 */
+	Deque(size_t maxSize, Comparator<T> comparator) : Queue<T>(comparator), _maxSize(maxSize) {}
+
+	/**
 	 * @brief Constructor that takes an initializer_list to insert values into
 	 * the queue.
 	 * @param il (`std::initializer_list`) a list of values to see the list
 	 */
-	Deque(std::initializer_list<T> il) {
-		for (auto it: il) {
-			this->insert(it);
-		}
-	}
+	Deque(std::initializer_list<T> il) : Queue<T>(il) {}
+
+	/**
+	 * @brief Constructor that takes an initializer_list to insert values into
+	 * the queue.
+	 * @param maxSize (`size_t`) the maximum size of the queue
+	 * @param il (`std::initializer_list`) a list of values to see the list
+	 */
+	Deque(size_t maxSize, std::initializer_list<T> il) : Queue<T>(il), _maxSize(maxSize) {}
 
 	/**
 	 * @brief Destructor that cleans up deque resources.
 	 */
 	~Deque() {
-		this->clear();
+		Queue<T>::clear();
+	}
+
+	/**
+	 * @brief deletes everything from the current deque and resets it to its
+	 * initialized state.
+	 */
+	void clear() {
+		Queue<T>::clear();
+	}
+
+	/**
+	 * Adds an item to the end of the deque.  Checks for an overflow condition
+	 * and acts if one is detected.
+	 * @param data (``) the data item to add to the queue.
+	 */
+	void enqueue(T data) {
+		if (overflow()) {
+			Queue<T>::dequeue();
+		}
+
+		Queue<T>::enqueue(data);
+	}
+
+	/**
+	 * @brief removes the last item in the deque
+	 * @returns the last `T` data element in the list
+	 */
+	T popBack() {
+		return Queue<T>::removeAt(Position::BACK);
+	}
+
+	/**
+	 * @brief removes the first item in the Deque
+	 * @returns the first `T` data element in the Deque
+	 */
+	T popFront() {
+		return Queue<T>::dequeue();
+	}
+
+	/**
+	 * @brief places an item at the end of the Deque
+	 * @param data (`T`) element to add to the Deque
+	 */
+	void pushBack(T data) {
+		if (overflow()) {
+			Queue<T>::dequeue();
+		}
+
+		Queue<T>::insert(data, Position::BACK);
+	}
+
+	/**
+	 * @brief places an item at the end of the front of the Deque
+	 * @param data (`T`) element to add to the Deque
+	 */
+	void pushFront(T data) {
+		if (overflow()) {
+			Queue<T>::dequeue();
+		}
+
+		Queue<T>::insert(data, Position::FRONT);
 	}
 };
 

@@ -44,17 +44,13 @@ public:
 	 * the queue.
 	 * @param il (`std::initializer_list`) a list of values to seed the queue
 	 */
-	Queue(std::initializer_list<T> il) {
-		for (auto it: il) {
-			this->insert(it);
-		}
-	}
+	Queue(std::initializer_list<T> il) : List<T>(il) {}
 
 	/**
 	 * @brief Destructor that cleans up queue resources.
 	 */
 	~Queue() {
-		this->clear();
+		List<T>::clear();
 	}
 
 	/**
@@ -63,6 +59,32 @@ public:
 	 */
 	T back() {
 		return **this->getBack();
+	}
+
+	/**
+	 * @brief Checks if the contents of two given queue objects are equal
+	 * @param q (`Queue &`) the queue to compare against
+	 * @return true if both queues have the same values, otherwise false
+	 */
+	bool operator==(const Queue<T> &q) const {
+		return List<T>::operator==(q);
+	}
+
+	/**
+	 * @brief Creates a copy of the Queue as a vector
+	 * @returns a `vector<T>` of the Queue contents
+	 */
+	std::vector<T> array() {
+		return List<T>::array();
+	}
+
+	/**
+	 * @brief Checks if the contents of two given queue objects are not equal
+	 * @param q (`Queue &`) the queue to compare against
+	 * @return false if both queues have the same values, otherwise true
+	 */
+	bool operator!=(const Queue<T> &q) const {
+		return List<T>::operator!=(q);
 	}
 
 	/**

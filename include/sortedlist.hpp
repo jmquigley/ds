@@ -41,7 +41,7 @@ public:
 	 * the collection.
 	 * @param il (`std::initializer_list`) a list of values to see the list
 	 */
-	SortedList(std::initializer_list<T> il) {
+	SortedList(std::initializer_list<T> il) : List<T>() {
 		for (auto it: il) {
 			this->insert(it);
 		}

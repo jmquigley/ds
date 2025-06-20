@@ -61,6 +61,11 @@ TEST_F(TestQueue, DrainQueue) {
 
 	EXPECT_EQ(q.size(), 0);
 	EXPECT_EQ(a.size(), 4);
+
+	EXPECT_EQ(a[0], 1);
+	EXPECT_EQ(a[1], 2);
+	EXPECT_EQ(a[2], 3);
+	EXPECT_EQ(a[3], 4);
 }
 
 TEST_F(TestQueue, DrainEmptyQueue) {

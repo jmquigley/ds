@@ -59,7 +59,7 @@ protected:
 	/**
 	 * @brief Retrieves the node at the specified index.
 	 * @param index (`size_t`) The index of the node to retrieve, or a
-     * Position enum value
+	 * Position enum value
 	 * @return std::shared_ptr<Node<T>> Pointer to the node at the specified index
 	 */
 	std::shared_ptr<Node<T>> getNodeByIndex(size_t index) {
@@ -134,7 +134,7 @@ public:
 	 *
 	 * @param il (`std::initializer_list`) a list of values to see the list
 	 */
-	List(std::initializer_list<T> il) {
+	List(std::initializer_list<T> il) : Collection<T>() {
 		for (auto it: il) {
 			this->insert(it);
 		}

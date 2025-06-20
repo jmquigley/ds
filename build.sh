@@ -24,6 +24,7 @@ SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 CLEAN_OPT=0
 NOMEM_OPT=0
 BUILD_TYPE=Debug
+export GTEST_SHUFFLE=1
 export FILTER='*'
 export THREADS=10
 
