@@ -113,25 +113,6 @@ TEST_F(TestStack, StackErrors) {
 	EXPECT_THROW(stack.pop(), std::out_of_range) << "Can't pop from empty stack";
 };
 
-TEST_F(TestStack, StackToString) {
-	ds::Stack<int> stack;
-	std::string s;
-
-	EXPECT_EQ(stack.size(), 0);
-
-	stack.push(10);
-	EXPECT_EQ(stack.size(), 1);
-	EXPECT_EQ(stack.top(), 10);
-
-	stack.push(20);
-	EXPECT_EQ(stack.size(), 2);
-	EXPECT_EQ(stack.top(), 20);
-
-    std::cout << stack.str() << std::endl;
-
-	EXPECT_EQ(stack.str(), "[{\"data\":20},{\"data\":10}]");
-}
-
 TEST_F(TestStack, StackInitializerList) {
 	ds::Stack<int> stack = {2, 4, 6, 8};
 
@@ -203,4 +184,15 @@ TEST_F(TestStack, StackInequalityOperatorEmpty) {
 	EXPECT_EQ(s2.size(), 0);
 
 	EXPECT_FALSE(s1 != s2);
+}
+
+TEST_F(TestStack, StackToString) {
+	ds::Stack<int> stack = {10, 20};
+	std::string s;
+
+	EXPECT_EQ(stack.size(), 2);
+	EXPECT_EQ(stack.top(), 20);
+
+	EXPECT_EQ(stack.str(), "[{\"data\":20},{\"data\":10}]");
+	EXPECT_EQ(stack.json(), "[{\"data\":20},{\"data\":10}]");
 }

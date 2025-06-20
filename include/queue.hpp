@@ -54,20 +54,31 @@ public:
 	}
 
 	/**
-	 * @brief returns the item at the end of the queue
-	 * @returns a `T` object at the back of the queue
-	 */
-	T back() {
-		return **this->getBack();
-	}
-
-	/**
 	 * @brief Checks if the contents of two given queue objects are equal
 	 * @param q (`Queue &`) the queue to compare against
 	 * @return true if both queues have the same values, otherwise false
 	 */
 	bool operator==(const Queue<T> &q) const {
 		return List<T>::operator==(q);
+	}
+
+	/**
+	 * @brief Checks if the contents of two given queue objects are not equal
+	 * @param q (`Queue &`) the queue to compare against
+	 * @return false if both queues have the same values, otherwise true
+	 */
+	bool operator!=(const Queue<T> &q) const {
+		return List<T>::operator!=(q);
+	}
+
+ 	/**
+	 * @brief adds a single item to the queue (enqueue)
+	 * @param data (`T`) the data element to add to the queue
+	 * @return a reference to the Queue
+	 */
+	Queue<T> &operator+=(const T data) {
+		this->enqueue(data);
+		return *this;
 	}
 
 	/**
@@ -79,12 +90,11 @@ public:
 	}
 
 	/**
-	 * @brief Checks if the contents of two given queue objects are not equal
-	 * @param q (`Queue &`) the queue to compare against
-	 * @return false if both queues have the same values, otherwise true
+	 * @brief returns the item at the end of the queue
+	 * @returns a `T` object at the back of the queue
 	 */
-	bool operator!=(const Queue<T> &q) const {
-		return List<T>::operator!=(q);
+	T back() {
+		return **this->getBack();
 	}
 
 	/**

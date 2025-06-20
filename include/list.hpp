@@ -366,7 +366,7 @@ public:
 		if (index == 0) {
 			// Remove the root node
 			tnode = this->_root;
-			this->_root = this->_root->getRight();
+            this->_root = this->_root->getRight();
 
 			if (this->_root) {
 				this->_root->setLeft(nullptr);

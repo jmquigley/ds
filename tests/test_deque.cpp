@@ -82,6 +82,20 @@ TEST_F(TestDeque, ConstructorInitializerWithParams) {
 	EXPECT_EQ(a[3], 4);
 }
 
+TEST_F(TestDeque, CheckOverlowInitializer) {
+	ds::Deque<int> q(4, {1, 2, 3, 4, 5});
+
+	EXPECT_EQ(q.size(), 4);
+	EXPECT_EQ(q.getMaxSize(), 4);
+
+	std::vector<int> a = q.array();
+
+	EXPECT_EQ(a[0], 2);
+	EXPECT_EQ(a[1], 3);
+	EXPECT_EQ(a[2], 4);
+	EXPECT_EQ(a[3], 5);
+}
+
 TEST_F(TestDeque, ClearDeque) {
 	ds::Deque<int> q = {1, 2, 3, 4};
 
@@ -100,10 +114,38 @@ TEST_F(TestDeque, OperatorEquality) {
 	EXPECT_TRUE(q1 != q2);
 }
 
-TEST_F(TestDeque, CheckOverflow) {
+TEST_F(TestDeque, OperatorAddElements) {
+    ds::Deque<int> q(4);
+
+    q += 1;
+    q += 2;
+    q += 3;
+    q += 4;
+
+	std::vector<int> a = q.array();
+
+	EXPECT_EQ(q.size(), 4);
+	EXPECT_EQ(a[0], 1);
+	EXPECT_EQ(a[1], 2);
+	EXPECT_EQ(a[2], 3);
+	EXPECT_EQ(a[3], 4);
+
+    q += 5;
+
+	a = q.array();
+
+	EXPECT_EQ(q.size(), 4);
+	EXPECT_EQ(a[0], 2);
+	EXPECT_EQ(a[1], 3);
+	EXPECT_EQ(a[2], 4);
+	EXPECT_EQ(a[3], 5);
+}
+
+TEST_F(TestDeque, CheckOverflowWithPush) {
 	ds::Deque<int> q(4, {2, 3});
 
 	EXPECT_EQ(q.size(), 2);
+	EXPECT_EQ(q.getMaxSize(), 4);
 
 	q.pushFront(1);
 	q.pushBack(4);
@@ -117,7 +159,6 @@ TEST_F(TestDeque, CheckOverflow) {
 	EXPECT_EQ(a[3], 4);
 
 	q.pushBack(5);
-
 	a = q.array();
 
 	EXPECT_EQ(q.size(), 4);
@@ -126,15 +167,47 @@ TEST_F(TestDeque, CheckOverflow) {
 	EXPECT_EQ(a[2], 4);
 	EXPECT_EQ(a[3], 5);
 
-	/*
-  TODO: Bug
-
 	q.pushFront(6);
+	a = q.array();
 
 	EXPECT_EQ(q.size(), 4);
 	EXPECT_EQ(a[0], 6);
 	EXPECT_EQ(a[1], 3);
 	EXPECT_EQ(a[2], 4);
 	EXPECT_EQ(a[3], 5);
-	*/
+}
+
+TEST_F(TestDeque, PopValuesFrontAndBack) {
+	ds::Deque<int> q(4, {1, 2, 3, 4});
+
+	EXPECT_EQ(q.size(), 4);
+	EXPECT_EQ(q.getMaxSize(), 4);
+
+	std::vector<int> a = q.array();
+
+	EXPECT_EQ(a[0], 1);
+	EXPECT_EQ(a[1], 2);
+	EXPECT_EQ(a[2], 3);
+	EXPECT_EQ(a[3], 4);
+
+    int data = q.popFront();
+
+    EXPECT_EQ(data, 1);
+	EXPECT_EQ(q.size(), 3);
+
+	a = q.array();
+
+	EXPECT_EQ(a[0], 2);
+	EXPECT_EQ(a[1], 3);
+	EXPECT_EQ(a[2], 4);
+
+    data = q.popBack();
+
+    EXPECT_EQ(data, 4);
+	EXPECT_EQ(q.size(), 2);
+
+	a = q.array();
+
+	EXPECT_EQ(a[0], 2);
+	EXPECT_EQ(a[1], 3);
 }

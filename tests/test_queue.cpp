@@ -45,6 +45,20 @@ TEST_F(TestQueue, CreateQueue) {
 	EXPECT_THROW(q.dequeue(), std::out_of_range);
 }
 
+TEST_F(TestQueue, OperatorAddElements) {
+    ds::Queue<int> q;
+
+    q += 1;
+    q += 2;
+    q += 3;
+    q += 4;
+    q += 5;
+
+	EXPECT_EQ(q.size(), 5);
+	EXPECT_EQ(q.front(), 1);
+	EXPECT_EQ(q.back(), 5);
+}
+
 TEST_F(TestQueue, DequeueFromEmpty) {
 	ds::Queue<int> q;
 

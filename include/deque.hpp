@@ -11,6 +11,7 @@
 #include <limits>
 #include <vector>
 
+#include "helpers.hpp"
 #include "property.hpp"
 #include "queue.hpp"
 #include "stddef.h"
@@ -51,6 +52,16 @@ private:
 		return this->_size >= this->_maxSize;
 	}
 
+    /**
+     * @brief initializes the Deque with values in an initializer list
+     * @param il (`std::initializer_list<T>`) a list of values to add
+     */
+    void initializer(std::initializer_list<T> il) {
+        for (auto it: il) {
+            this->enqueue(it);
+        }
+    }
+
 public:
 
 	/**
@@ -83,7 +94,9 @@ public:
 	 * the queue.
 	 * @param il (`std::initializer_list`) a list of values to see the list
 	 */
-	Deque(std::initializer_list<T> il) : Queue<T>(il) {}
+	Deque(std::initializer_list<T> il) : Queue<T>() {
+        this->initializer(il);
+    }
 
 	/**
 	 * @brief Constructor that takes an initializer_list to insert values into
@@ -91,13 +104,25 @@ public:
 	 * @param maxSize (`size_t`) the maximum size of the queue
 	 * @param il (`std::initializer_list`) a list of values to see the list
 	 */
-	Deque(size_t maxSize, std::initializer_list<T> il) : Queue<T>(il), _maxSize(maxSize) {}
+	Deque(size_t maxSize, std::initializer_list<T> il) : Queue<T>(), _maxSize(maxSize) {
+        this->initializer(il);
+    }
 
 	/**
 	 * @brief Destructor that cleans up deque resources.
 	 */
 	~Deque() {
 		Queue<T>::clear();
+	}
+
+  	/**
+	 * @brief adds a single item to the deque (enqueue)
+	 * @param data (`T`) the data element to add to the deque
+	 * @return a reference to the Deque
+	 */
+	Deque<T> &operator+=(const T data) {
+		this->enqueue(data);
+		return *this;
 	}
 
 	/**
@@ -126,7 +151,7 @@ public:
 	 * @returns the last `T` data element in the list
 	 */
 	T popBack() {
-		return Queue<T>::removeAt(Position::BACK);
+		return Queue<T>::removeAt(as_integer(Position::BACK));
 	}
 
 	/**
