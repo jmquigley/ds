@@ -71,7 +71,7 @@ public:
 		return List<T>::operator!=(q);
 	}
 
- 	/**
+	/**
 	 * @brief adds a single item to the queue (enqueue)
 	 * @param data (`T`) the data element to add to the queue
 	 * @return a reference to the Queue
@@ -95,6 +95,14 @@ public:
 	 */
 	T back() {
 		return **this->getBack();
+	}
+
+	/**
+	 * @brief Checks if an element exists in the Queue
+	 * @returns true if the item is in the Queue otherwise false
+	 */
+	bool contains(T data) {
+		return List<T>::contains(data);
 	}
 
 	/**

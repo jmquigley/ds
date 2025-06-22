@@ -38,8 +38,6 @@ class Deque : public Queue<T> {
 
 private:
 
-private:
-
 	/**
 	 * @brief Checks the current internals for an overflow condition.
 	 *
@@ -52,15 +50,15 @@ private:
 		return this->_size >= this->_maxSize;
 	}
 
-    /**
-     * @brief initializes the Deque with values in an initializer list
-     * @param il (`std::initializer_list<T>`) a list of values to add
-     */
-    void initializer(std::initializer_list<T> il) {
-        for (auto it: il) {
-            this->enqueue(it);
-        }
-    }
+	/**
+	 * @brief initializes the Deque with values in an initializer list
+	 * @param il (`std::initializer_list<T>`) a list of values to add
+	 */
+	void initializer(std::initializer_list<T> il) {
+		for (auto it: il) {
+			this->enqueue(it);
+		}
+	}
 
 public:
 
@@ -95,8 +93,8 @@ public:
 	 * @param il (`std::initializer_list`) a list of values to see the list
 	 */
 	Deque(std::initializer_list<T> il) : Queue<T>() {
-        this->initializer(il);
-    }
+		this->initializer(il);
+	}
 
 	/**
 	 * @brief Constructor that takes an initializer_list to insert values into
@@ -105,8 +103,8 @@ public:
 	 * @param il (`std::initializer_list`) a list of values to see the list
 	 */
 	Deque(size_t maxSize, std::initializer_list<T> il) : Queue<T>(), _maxSize(maxSize) {
-        this->initializer(il);
-    }
+		this->initializer(il);
+	}
 
 	/**
 	 * @brief Destructor that cleans up deque resources.
@@ -115,7 +113,7 @@ public:
 		Queue<T>::clear();
 	}
 
-  	/**
+	/**
 	 * @brief adds a single item to the deque (enqueue)
 	 * @param data (`T`) the data element to add to the deque
 	 * @return a reference to the Deque

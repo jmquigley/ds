@@ -238,6 +238,15 @@ public:
 	}
 
 	/**
+	 * @brief Checks if a `T` data element exists within the list
+	 * @returns true if the data element exists in the list, otherwise false.
+	 */
+	bool contains(T data) {
+		Match<T> match = find(data);
+		return match.found();
+	}
+
+	/**
 	 * @brief Retrieves an iterator to the back of the list
 	 * @returns A new Iterator object that points to the end of the list
 	 */
@@ -266,7 +275,7 @@ public:
 		std::shared_ptr<Node<T>> next;
 
 		while (lp) {
-			if (lp->getData() == data) {
+			if (this->comparator(lp->getData(), data) == 0) {
 				match.setData(data);
 				match.setFound(true);
 				match.setIndex(index);
@@ -366,7 +375,7 @@ public:
 		if (index == 0) {
 			// Remove the root node
 			tnode = this->_root;
-            this->_root = this->_root->getRight();
+			this->_root = this->_root->getRight();
 
 			if (this->_root) {
 				this->_root->setLeft(nullptr);

@@ -401,6 +401,14 @@ TEST_F(TestList, ListSearchEmpty) {
 	EXPECT_FALSE(match.getFound());
 }
 
+TEST_F(TestList, ListContains) {
+	ds::List<int> list = {1, 2, 3, 4, 5};
+
+	EXPECT_EQ(list.size(), 5);
+	EXPECT_TRUE(list.contains(1));
+	EXPECT_FALSE(list.contains(7));
+}
+
 TEST_F(TestList, ListDeleteFront) {
 	ds::List<int> list = {1, 2, 3, 4, 5};
 

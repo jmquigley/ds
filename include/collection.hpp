@@ -130,19 +130,25 @@ public:
 		return *this;
 	}
 
-    /**
-     * @brief retrieves the element at the end of the collection
-     * @return a `T` data element
-     */
-    T back() {
-        return this->_back->getData();
-    }
+	/**
+	 * @brief retrieves the element at the end of the collection
+	 * @return a `T` data element
+	 */
+	T back() {
+		return this->_back->getData();
+	}
 
 	/**
 	 * @brief Clears all elements from the collection, making it empty.
 	 * @pure
 	 */
 	virtual void clear() = 0;
+
+	/**
+	 * @brief Checks a container for the existence of the given T element
+	 * @return true if found in the container, otherwise false
+	 */
+	virtual bool contains(T data) = 0;
 
 	/**
 	 * @brief Check if the collection is empty
@@ -152,13 +158,13 @@ public:
 		return this->_size == 0;
 	}
 
-    /**
-     * @brief retrieves the element at the front of the collection
-     * @return a `T` data element
-     */
-    T front() {
-        return this->_front->getData();
-    }
+	/**
+	 * @brief retrieves the element at the front of the collection
+	 * @return a `T` data element
+	 */
+	T front() {
+		return this->_front->getData();
+	}
 
 	/**
 	 * @brief returns a JSON representation of the given collection.

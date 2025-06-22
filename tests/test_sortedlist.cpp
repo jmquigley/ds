@@ -99,3 +99,11 @@ TEST_F(TestSortedList, SortedListCopyConstructor) {
 	EXPECT_EQ(sl2.at(3), 4);
 	EXPECT_EQ(sl2.at(4), 5);
 }
+
+TEST_F(TestSortedList, Contains) {
+	ds::List<int> slist = {1, 2, 3, 4, 5};
+
+	EXPECT_EQ(slist.size(), 5);
+	EXPECT_TRUE(slist.contains(1));
+	EXPECT_FALSE(slist.contains(7));
+}

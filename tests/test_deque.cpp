@@ -115,12 +115,12 @@ TEST_F(TestDeque, OperatorEquality) {
 }
 
 TEST_F(TestDeque, OperatorAddElements) {
-    ds::Deque<int> q(4);
+	ds::Deque<int> q(4);
 
-    q += 1;
-    q += 2;
-    q += 3;
-    q += 4;
+	q += 1;
+	q += 2;
+	q += 3;
+	q += 4;
 
 	std::vector<int> a = q.array();
 
@@ -130,7 +130,7 @@ TEST_F(TestDeque, OperatorAddElements) {
 	EXPECT_EQ(a[2], 3);
 	EXPECT_EQ(a[3], 4);
 
-    q += 5;
+	q += 5;
 
 	a = q.array();
 
@@ -190,9 +190,9 @@ TEST_F(TestDeque, PopValuesFrontAndBack) {
 	EXPECT_EQ(a[2], 3);
 	EXPECT_EQ(a[3], 4);
 
-    int data = q.popFront();
+	int data = q.popFront();
 
-    EXPECT_EQ(data, 1);
+	EXPECT_EQ(data, 1);
 	EXPECT_EQ(q.size(), 3);
 
 	a = q.array();
@@ -201,13 +201,21 @@ TEST_F(TestDeque, PopValuesFrontAndBack) {
 	EXPECT_EQ(a[1], 3);
 	EXPECT_EQ(a[2], 4);
 
-    data = q.popBack();
+	data = q.popBack();
 
-    EXPECT_EQ(data, 4);
+	EXPECT_EQ(data, 4);
 	EXPECT_EQ(q.size(), 2);
 
 	a = q.array();
 
 	EXPECT_EQ(a[0], 2);
 	EXPECT_EQ(a[1], 3);
+}
+
+TEST_F(TestDeque, Contains) {
+	ds::Queue<int> q = {1, 2, 3, 4, 5};
+
+	EXPECT_EQ(q.size(), 5);
+	EXPECT_TRUE(q.contains(4));
+	EXPECT_FALSE(q.contains(7));
 }

@@ -15,3 +15,4 @@
 #include "queue.hpp"
 #include "sortedlist.hpp"
 #include "stack.hpp"
+#include "tree.hpp"

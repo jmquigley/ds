@@ -51,6 +51,7 @@ set(DS_SOURCES
 )
 
 set(DS_HEADERS
+    include/binarytree.hpp
     include/collection.hpp
     include/comparator.hpp
     include/constants.hpp
@@ -67,6 +68,7 @@ set(DS_HEADERS
     include/queue.hpp
     include/sortedlist.hpp
     include/stack.hpp
+    include/tree.hpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${DS_SOURCES} ${DS_HEADERS})
@@ -104,6 +106,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 #
 
 set(TEST_SOURCES
+  tests/test_binarytree.cpp
   tests/test_comparator.cpp
   tests/test_cstr.cpp
   tests/test_deque.cpp

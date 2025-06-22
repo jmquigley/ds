@@ -46,13 +46,13 @@ TEST_F(TestQueue, CreateQueue) {
 }
 
 TEST_F(TestQueue, OperatorAddElements) {
-    ds::Queue<int> q;
+	ds::Queue<int> q;
 
-    q += 1;
-    q += 2;
-    q += 3;
-    q += 4;
-    q += 5;
+	q += 1;
+	q += 2;
+	q += 3;
+	q += 4;
+	q += 5;
 
 	EXPECT_EQ(q.size(), 5);
 	EXPECT_EQ(q.front(), 1);
@@ -121,4 +121,12 @@ TEST_F(TestQueue, QueueEjectBad) {
 
 	EXPECT_EQ(q.size(), 3);
 	EXPECT_THROW(q.eject(999), std::range_error);
+}
+
+TEST_F(TestQueue, Contains) {
+	ds::Queue<int> q = {1, 2, 3, 4, 5};
+
+	EXPECT_EQ(q.size(), 5);
+	EXPECT_TRUE(q.contains(4));
+	EXPECT_FALSE(q.contains(7));
 }
