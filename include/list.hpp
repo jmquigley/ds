@@ -241,7 +241,7 @@ public:
 	 * @brief Checks if a `T` data element exists within the list
 	 * @returns true if the data element exists in the list, otherwise false.
 	 */
-	bool contains(T data) {
+	bool contains(T data) override {
 		Match<T> match = find(data);
 		return match.found();
 	}

@@ -142,6 +142,14 @@ public:
 	}
 
 	/**
+	 * @brief Checks if a `T` data element exists within the stack
+	 * @returns true if the data element exists in the stack, otherwise false.
+	 */
+	bool contains(T data) {
+		return List<T>::contains(data);
+	}
+
+	/**
 	 * @brief returns the contents of the stack as a JSON string
 	 * @returns a string that holds the stack in a JSON string
 	 */

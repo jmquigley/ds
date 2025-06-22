@@ -401,7 +401,7 @@ TEST_F(TestList, ListSearchEmpty) {
 	EXPECT_FALSE(match.getFound());
 }
 
-TEST_F(TestList, ListContains) {
+TEST_F(TestList, Contains) {
 	ds::List<int> list = {1, 2, 3, 4, 5};
 
 	EXPECT_EQ(list.size(), 5);

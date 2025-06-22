@@ -36,41 +36,41 @@ TEST_F(TestStack, StackCreate) {
 };
 
 TEST_F(TestStack, StackOperatorPush) {
-    ds::Stack<int> stack;
+	ds::Stack<int> stack;
 
 	EXPECT_EQ(stack.size(), 0);
 
-    stack += 1;
-    stack += 2;
-    stack += 3;
-    stack += 4;
-    stack += 5;
+	stack += 1;
+	stack += 2;
+	stack += 3;
+	stack += 4;
+	stack += 5;
 
-    EXPECT_EQ(stack.size(), 5);
-    EXPECT_EQ(stack.top(), 5);
+	EXPECT_EQ(stack.size(), 5);
+	EXPECT_EQ(stack.top(), 5);
 
-    std::vector<int> a = stack.array();
-    EXPECT_EQ(a[0], 5);
-    EXPECT_EQ(a[1], 4);
-    EXPECT_EQ(a[2], 3);
-    EXPECT_EQ(a[3], 2);
-    EXPECT_EQ(a[4], 1);
+	std::vector<int> a = stack.array();
+	EXPECT_EQ(a[0], 5);
+	EXPECT_EQ(a[1], 4);
+	EXPECT_EQ(a[2], 3);
+	EXPECT_EQ(a[3], 2);
+	EXPECT_EQ(a[4], 1);
 }
 
 TEST_F(TestStack, StackToArray) {
-    ds::Stack<int> stack = {1, 2, 3, 4, 5};
+	ds::Stack<int> stack = {1, 2, 3, 4, 5};
 
-    EXPECT_EQ(stack.size(), 5);
-    EXPECT_EQ(stack.top(), 5);
+	EXPECT_EQ(stack.size(), 5);
+	EXPECT_EQ(stack.top(), 5);
 
-    std::vector<int> a = stack.array();
-    EXPECT_EQ(a.size(), 5);
+	std::vector<int> a = stack.array();
+	EXPECT_EQ(a.size(), 5);
 
-    EXPECT_EQ(a[0], 5);
-    EXPECT_EQ(a[1], 4);
-    EXPECT_EQ(a[2], 3);
-    EXPECT_EQ(a[3], 2);
-    EXPECT_EQ(a[4], 1);
+	EXPECT_EQ(a[0], 5);
+	EXPECT_EQ(a[1], 4);
+	EXPECT_EQ(a[2], 3);
+	EXPECT_EQ(a[3], 2);
+	EXPECT_EQ(a[4], 1);
 }
 
 TEST_F(TestStack, StackCopyConstructor) {
@@ -79,7 +79,7 @@ TEST_F(TestStack, StackCopyConstructor) {
 	EXPECT_EQ(s1.size(), 5);
 	ds::Stack<int> s2(s1);
 	EXPECT_EQ(s2.size(), 5);
-    EXPECT_TRUE(s1 == s2);
+	EXPECT_TRUE(s1 == s2);
 }
 
 TEST_F(TestStack, StackClear) {
@@ -195,4 +195,12 @@ TEST_F(TestStack, StackToString) {
 
 	EXPECT_EQ(stack.str(), "[{\"data\":20},{\"data\":10}]");
 	EXPECT_EQ(stack.json(), "[{\"data\":20},{\"data\":10}]");
+}
+
+TEST_F(TestStack, Contains) {
+	ds::Stack<int> stack = {1, 2, 3, 4, 5};
+
+	EXPECT_EQ(stack.size(), 5);
+	EXPECT_TRUE(stack.contains(1));
+	EXPECT_FALSE(stack.contains(7));
 }
