@@ -25,6 +25,10 @@ namespace ds {
  * @tparam T The type of data stored within the queue.
  */
 template<typename T>
-class BinaryTree : public Tree<T> {};
+class BinaryTree : public Tree<T> {
+public:
+
+	void insert(T data) {}
+};
 
 }  // namespace ds

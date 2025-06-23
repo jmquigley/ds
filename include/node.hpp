@@ -43,14 +43,12 @@ class Node {
 	// Doxygen for PROPERTY macro generated members:
 	/// @brief The data payload of the node.
 	PROPERTY(data, Data, T);
-	/// @brief The unique identifier of the node.
-	PROPERTY(id, Id, std::string);
+	/// @brief flags used to determine bit properties in a node
+	PROPERTY(flags, Flags, unsigned char);
 	/// @brief A shared pointer to the left child node.
 	PROPERTY(left, Left, std::shared_ptr<Node<T>>);
 	/// @brief A shared pointer to the right child node.
 	PROPERTY(right, Right, std::shared_ptr<Node<T>>);
-	/// @brief The ID of the parent node.
-	PROPERTY(parentId, ParentId, std::string);
 	/// @brief A shared pointer to the parent node.
 	PROPERTY(parent, Parent, std::shared_ptr<Node<T>>);
 
@@ -60,19 +58,6 @@ private:
 	/// allows for N-ary representation if populated).
 	std::vector<T> children;
 
-	/**
-	 * @brief Initializes the node by generating a unique ID.
-	 */
-	void init() {
-		uuid_t uuid;
-		char uuidStr[UUID_STR_LEN];
-
-		// Creates a unique identifier for a node
-		uuid_generate_random(uuid);
-		uuid_unparse(uuid, uuidStr);
-		id = uuidStr;
-	}
-
 public:
 
 	/**
@@ -81,9 +66,7 @@ public:
 	 * Initializes parentId to empty, parent, left, and right to nullptr,
 	 * and generates a unique ID.
 	 */
-	Node() : left(nullptr), right(nullptr), parentId(""), parent(nullptr) {
-		init();
-	}
+	Node() : left(nullptr), right(nullptr), parent(nullptr) {}
 
 	/**
 	 * @brief Constructor for Node with initial data.
@@ -119,12 +102,7 @@ public:
 	 */
 	Node(std::shared_ptr<Node<T>> parent, std::shared_ptr<Node<T>> left,
 		 std::shared_ptr<Node<T>> right, T data)
-		: data(data), left(left), right(right), parent(parent) {
-		init();
-		if (parent) {
-			parentId = parent->getId();
-		}
-	}
+		: data(data), left(left), right(right), parent(parent) {}
 
 	/**
 	 * @brief Destructor for Node.
@@ -221,8 +199,6 @@ public:
 	 * clears the children vector, and generates a new unique ID for the node.
 	 */
 	void clear() {
-		init();
-		this->parentId = "";
 		this->parent.reset();
 		this->right.reset();
 		this->left.reset();
@@ -241,10 +217,7 @@ public:
 	 * @return Reference to this node after the copy operation
 	 */
 	Node<T> &copy(const Node<T> &src) {
-		init();
-
 		this->data = src.data;
-		this->parentId = src.parentId;
 		this->parent = src.parent;
 		this->right = src.right;
 		this->left = src.left;
@@ -264,9 +237,7 @@ public:
 	 * @return Reference to this node after the move operation
 	 */
 	Node<T> &move(Node<T> &&src) {
-		this->id = std::move(src.id);
 		this->data = std::move(src.data);
-		this->parentId = std::move(src.parentId);
 		this->parent = std::move(src.parent);
 		this->right = std::move(src.right);
 		this->left = std::move(src.left);
@@ -318,16 +289,6 @@ public:
 	 */
 	NodeBuilder &withData(T data) {
 		node.setData(data);
-		return *this;
-	}
-
-	/**
-	 * @brief Sets the parent ID for the Node being built.
-	 * @param parentId The parent ID to set.
-	 * @return A reference to the NodeBuilder for chaining.
-	 */
-	NodeBuilder &withParentId(std::string parentId) {
-		node.setParentId(parentId);
 		return *this;
 	}
 

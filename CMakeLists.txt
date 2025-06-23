@@ -163,3 +163,13 @@ gtest_discover_tests(${TEST_EXE}
 #
 
 install(FILES ${DS_HEADERS} DESTINATION "include/ds")
+
+#
+# Spikes
+#
+
+add_executable(typesizes spikes/typesizes.cpp)
+target_link_libraries(typesizes
+    PRIVATE ds
+)
+target_include_directories(typesizes PRIVATE ds)
