@@ -40,38 +40,34 @@ message(STATUS "TEST_FILTER: ${TEST_FILTER}")
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/tests
 )
 
 set(DS_SOURCES
     src/cstr.cpp
+    src/cstr.h
+    src/binarytree.hpp
+    src/collection.hpp
+    src/comparator.hpp
+    src/constants.hpp
+    src/deque.hpp
+    src/ds.h
     src/entry.cpp
     src/helpers.cpp
+    src/helpers.hpp
+    src/iterable.hpp
+    src/iterator.hpp
+    src/list.hpp
+    src/match.hpp
+    src/node.hpp
+    src/property.hpp
+    src/queue.hpp
+    src/sortedlist.hpp
+    src/stack.hpp
+    src/tree.hpp
 )
 
-set(DS_HEADERS
-    include/binarytree.hpp
-    include/collection.hpp
-    include/comparator.hpp
-    include/constants.hpp
-    include/cstr.h
-    include/deque.hpp
-    include/ds.h
-    include/helpers.hpp
-    include/iterable.hpp
-    include/iterator.hpp
-    include/list.hpp
-    include/match.hpp
-    include/node.hpp
-    include/property.hpp
-    include/queue.hpp
-    include/sortedlist.hpp
-    include/stack.hpp
-    include/tree.hpp
-)
-
-add_library(${PROJECT_NAME} SHARED ${DS_SOURCES} ${DS_HEADERS})
+add_library(${PROJECT_NAME} SHARED ${DS_SOURCES})
 
 target_compile_options(${PROJECT_NAME} PRIVATE
   $<$<CONFIG:Debug>:-g>
@@ -93,7 +89,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 target_sources(${PROJECT_NAME}
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/ds.h
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/ds.h
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -106,6 +102,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 #
 
 set(TEST_SOURCES
+  tests/testing_base.h
   tests/test_binarytree.cpp
   tests/test_comparator.cpp
   tests/test_cstr.cpp
@@ -119,16 +116,11 @@ set(TEST_SOURCES
   tests/test_stack.cpp
 )
 
-set(TEST_HEADERS
-  tests/testing_base.h
-)
-
-set(TEST_EXE ds-unit-tests)
+string(CONCAT TEST_EXE ${PROJECT_NAME} "-unit-tests")
 
 add_executable(
   ${TEST_EXE}
   ${TEST_SOURCES}
-  ${TEST_HEADERS}
 )
 
 target_compile_options(${TEST_EXE} PRIVATE
@@ -162,14 +154,14 @@ gtest_discover_tests(${TEST_EXE}
 # Installation statements
 #
 
-install(FILES ${DS_HEADERS} DESTINATION "include/ds")
+install(FILES ${DS_HEADERS} DESTINATION "include/${PROJECT_NAME}")
 
 #
 # Spikes
 #
 
-add_executable(typesizes spikes/typesizes.cpp)
+add_executable(typesizes extras/typesizes.cpp)
 target_link_libraries(typesizes
-    PRIVATE ds
+    PRIVATE ${PROJECT_NAME}
 )
-target_include_directories(typesizes PRIVATE ds)
+target_include_directories(typesizes PRIVATE ${PROJECT_NAME})
