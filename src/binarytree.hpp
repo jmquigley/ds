@@ -5,11 +5,12 @@
 
 #pragma once
 
+#include <cstddef>
 #include <limits>
 #include <vector>
 
+#include "node.hpp"
 #include "property.hpp"
-#include "stddef.h"
 #include "tree.hpp"
 
 /**
@@ -26,6 +27,10 @@ namespace ds {
  */
 template<typename T>
 class BinaryTree : public Tree<T> {
+private:
+
+    Node<T> insertDelegate(T data, std::shared_ptr<Node<T>> node, std::shared_ptr<Node<T>> parent) {}
+
 public:
 
 	void insert(T data) {}

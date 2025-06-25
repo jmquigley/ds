@@ -2,6 +2,8 @@
 
 > Data structures and algorithms implemented in C++
 
+**This repo is a work in progress**
+
 A user implementation of some basic data structures including:
 
 - BinaryTree

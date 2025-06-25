@@ -1,5 +1,6 @@
 #pragma once
 
+#include "bitflag.hpp"
 #include "collection.hpp"
 #include "comparator.hpp"
 #include "constants.hpp"

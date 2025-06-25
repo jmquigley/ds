@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <exception>
 #include <limits>
 #include <sstream>

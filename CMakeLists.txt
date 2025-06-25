@@ -44,12 +44,13 @@ include_directories(
 )
 
 set(DS_SOURCES
-    src/cstr.cpp
-    src/cstr.h
     src/binarytree.hpp
+    src/bitflag.hpp
     src/collection.hpp
     src/comparator.hpp
     src/constants.hpp
+    src/cstr.cpp
+    src/cstr.h
     src/deque.hpp
     src/ds.h
     src/entry.cpp
@@ -104,6 +105,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 set(TEST_SOURCES
   tests/testing_base.h
   tests/test_binarytree.cpp
+  tests/test_bitflag.cpp
   tests/test_comparator.cpp
   tests/test_cstr.cpp
   tests/test_deque.cpp

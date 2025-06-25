@@ -5,13 +5,13 @@
 
 #pragma once
 
+#include <cstddef>
 #include <limits>
 #include <vector>
 
 #include "collection.hpp"
 #include "iterable.hpp"
 #include "property.hpp"
-#include "stddef.h"
 
 /**
  * @namespace ds
