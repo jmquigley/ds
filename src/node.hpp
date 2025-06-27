@@ -30,11 +30,9 @@
  */
 namespace ds {
 
-
-enum NodeFlag : size_t {
-    Color = 1 << 0,   // 0 = RED, 1 = BLACK
+enum NodeFlag : unsigned char {
+	Color = 1 << 0,	 // 0 = RED, 1 = BLACK
 };
-
 
 /**
  * @class Node
@@ -52,7 +50,7 @@ class Node {
 	/// @brief The data payload of the node.
 	PROPERTY(data, Data, T);
 	/// @brief flags used to determine bit properties in a node
-	PROPERTY(flags, Flags, BitFlag);
+	PROPERTY(flags, Flags, ByteFlag);
 	/// @brief A shared pointer to the left child node.
 	PROPERTY(left, Left, std::shared_ptr<Node<T>>);
 	/// @brief A shared pointer to the right child node.
@@ -82,7 +80,7 @@ public:
 	 * Calls the main constructor with parent, left, and right as nullptr.
 	 * @param data The data to be stored in the node.
 	 */
-	Node(T data) : Node(nullptr, nullptr, nullptr, 0, data) {}
+	Node(T data) : Node(nullptr, nullptr, nullptr, ByteFlag(0), data) {}
 
 	/**
 	 * @brief Constructor for Node with a parent and initial data.
@@ -95,7 +93,8 @@ public:
 	 * @param parent The parent node (copied by value).
 	 * @param data The data to be stored in the node.
 	 */
-	Node(std::shared_ptr<Node<T>> parent, T data) : Node(parent, nullptr, nullptr, 0, data) {}
+	Node(std::shared_ptr<Node<T>> parent, T data)
+		: Node(parent, nullptr, nullptr, ByteFlag(0), data) {}
 
 	/**
 	 * @brief Full constructor for Node.
@@ -109,7 +108,7 @@ public:
 	 * @param data The data to be stored in the node.
 	 */
 	Node(std::shared_ptr<Node<T>> parent, std::shared_ptr<Node<T>> left,
-		 std::shared_ptr<Node<T>> right, BitFlag flags, T data)
+		 std::shared_ptr<Node<T>> right, ByteFlag flags, T data)
 		: data(data), flags(flags), left(left), right(right), parent(parent) {}
 
 	/**
