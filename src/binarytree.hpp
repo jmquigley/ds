@@ -29,7 +29,12 @@ template<typename T>
 class BinaryTree : public Tree<T> {
 private:
 
-    Node<T> insertDelegate(T data, std::shared_ptr<Node<T>> node, std::shared_ptr<Node<T>> parent) {}
+	Node<T> insertDelegate(T data, std::shared_ptr<Node<T>> &node,
+						   std::shared_ptr<Node<T>> &parent) {}
+
+	std::shared_ptr<Node<T>> newNode(T data, std::shared_ptr<Node<T>> &parent) {
+		std::shared_ptr<Node<T>> node = std::make_shared<Node<T>>(data);
+	}
 
 public:
 

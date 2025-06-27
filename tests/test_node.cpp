@@ -21,13 +21,13 @@ TEST_F(TestNode, NodeCreate) {
 };
 
 TEST_F(TestNode, NodeBuilder) {
-	ds::Node<int> node;
+	std::shared_ptr<ds::Node<int>> node;
 	ds::NodeBuilder<int> builder;
 
 	builder.withData(42);
 	node = builder.build();
 
-	EXPECT_EQ(node.getData(), 42);
+	EXPECT_EQ(node->getData(), 42);
 }
 
 TEST_F(TestNode, NodeToString) {
@@ -42,9 +42,9 @@ TEST_F(TestNode, NodeToString) {
 }
 
 TEST_F(TestNode, NodeClear) {
-	ds::Node<int> node;
-
+	std::shared_ptr<ds::Node<int>> node;
 	ds::NodeBuilder<int> builder;
+
 	node = builder.withData(1)
 			   .withRight(std::make_shared<ds::Node<int>>(2))
 			   .withLeft(std::make_shared<ds::Node<int>>(3))
@@ -52,25 +52,26 @@ TEST_F(TestNode, NodeClear) {
 
 	std::string id1, id2;
 
-	EXPECT_EQ(node.getData(), 1);
-	EXPECT_EQ(**node.getRight(), 2);
-	EXPECT_EQ(**node.getLeft(), 3);
+	EXPECT_EQ(node->getData(), 1);
+	EXPECT_EQ(**node->getRight(), 2);
+	EXPECT_EQ(**node->getLeft(), 3);
 
-	node.clear();
+	node->clear();
 
-	EXPECT_EQ(node.getData(), 1);
-	EXPECT_EQ(node.getRight(), nullptr);
-	EXPECT_EQ(node.getLeft(), nullptr);
+	EXPECT_EQ(node->getData(), 1);
+	EXPECT_EQ(node->getRight(), nullptr);
+	EXPECT_EQ(node->getLeft(), nullptr);
 }
 
 TEST_F(TestNode, NodeDereference) {
 	ds::Node<int> node(1);
 	EXPECT_EQ(*node, 1);
 
+	std::shared_ptr<ds::Node<int>> node2;
 	ds::NodeBuilder<int> builder;
 	builder.withData(42).withRight(std::make_shared<ds::Node<int>>(24));
-	node = builder.build();
+	node2 = builder.build();
 
-	EXPECT_EQ(node.getData(), 42);
-	EXPECT_EQ(**node.getRight(), 24);
+	EXPECT_EQ(node2->getData(), 42);
+	EXPECT_EQ(**node2->getRight(), 24);
 }

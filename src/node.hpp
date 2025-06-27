@@ -273,10 +273,10 @@ public:
 
 /**
  * @class NodeBuilder
- * @brief A builder class for constructing Node objects.
+ * @brief A builder class for constructing Node objects with a fluent interface.
  *
- * Provides a fluent interface to set various properties of a Node
- * before building the final object.
+ * Provides methods to set various properties of a Node before building the final
+ * shared_ptr wrapped object, ensuring proper memory management.
  *
  * @tparam T The type of data for the Node being built.
  */
@@ -284,10 +284,15 @@ template<typename T>
 class NodeBuilder {
 private:
 
-	/// @brief The Node object being built.
-	Node<T> node;
+	/// @brief The shared_ptr to the Node object being built.
+	std::shared_ptr<Node<T>> nodePtr;
 
 public:
+
+	/**
+	 * @brief Default constructor that initializes an empty node.
+	 */
+	NodeBuilder() : nodePtr(std::make_shared<Node<T>>()) {}
 
 	/**
 	 * @brief Sets the data for the Node being built.
@@ -295,46 +300,47 @@ public:
 	 * @return A reference to the NodeBuilder for chaining.
 	 */
 	NodeBuilder &withData(T data) {
-		node.setData(data);
+		nodePtr->setData(data);
 		return *this;
 	}
 
 	/**
-	 * @brief Sets the parent Node (via shared_ptr) for the Node being built.
+	 * @brief Sets the parent Node for the Node being built.
 	 * @param parent A shared pointer to the parent Node.
 	 * @return A reference to the NodeBuilder for chaining.
 	 */
 	NodeBuilder &withParent(std::shared_ptr<Node<T>> parent) {
-		node.setParent(parent);
+		nodePtr->setParent(parent);
 		return *this;
 	}
 
 	/**
-	 * @brief Sets the right child Node (via shared_ptr) for the Node being built.
+	 * @brief Sets the right child Node for the Node being built.
 	 * @param right A shared pointer to the right child Node.
 	 * @return A reference to the NodeBuilder for chaining.
 	 */
 	NodeBuilder &withRight(std::shared_ptr<Node<T>> right) {
-		node.setRight(right);
+		nodePtr->setRight(right);
 		return *this;
 	}
 
 	/**
-	 * @brief Sets the left child Node (via shared_ptr) for the Node being built.
+	 * @brief Sets the left child Node for the Node being built.
 	 * @param left A shared pointer to the left child Node.
 	 * @return A reference to the NodeBuilder for chaining.
 	 */
 	NodeBuilder &withLeft(std::shared_ptr<Node<T>> left) {
-		node.setLeft(left);
+		nodePtr->setLeft(left);
 		return *this;
 	}
 
 	/**
 	 * @brief Finalizes the build process and returns the constructed Node object.
-	 * @return The fully configured Node object.
+	 * @return A shared_ptr to the fully configured Node object.
 	 */
-	Node<T> build() {
-		return node;
+	std::shared_ptr<Node<T>> build() {
+		return nodePtr;
 	}
 };
+
 }  // namespace ds
