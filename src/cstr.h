@@ -20,6 +20,13 @@ namespace ds {
  * @brief Trims leading and trailing spaces from a NULL terminated buffer.
  *
  * Modifies the input string that is passed to the function.
+ *
+ * @code
+ * char temp[30];
+ * char* bufptr;
+ * strcpy(temp, "     Test String     ");
+ * bufptr = dtrim(temp);  // results in string "Test String"
+ * @endcode
  * @param buf A NULL terminated C string
  * @return A pointer to the modified buffer
  */
@@ -27,7 +34,6 @@ char *dtrim(char *buf);
 
 /**
  * @brief Copies the contents of a buffer into a string object.
- *
  * @param buf A pointer to the buffer to copy
  * @param size The number of bytes to copy into the string
  * @return A string object containing the copied data

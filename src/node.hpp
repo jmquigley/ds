@@ -30,6 +30,13 @@
  */
 namespace ds {
 
+/**
+ * @enum NodeFlag
+ * @brief Bit flags for node properties used in tree data structures.
+ *
+ * Defines flags that can be set on nodes to determine their characteristics.
+ * Implemented using bit positions for memory-efficient storage of boolean properties.
+ */
 enum NodeFlag : unsigned char {
 	Color = 1 << 0,	 // 0 = RED, 1 = BLACK
 };
@@ -105,6 +112,7 @@ public:
 	 * @param parent A pointer to the parent node. Can be nullptr.
 	 * @param left A pointer to the left child node. Can be nullptr.
 	 * @param right A pointer to the right child node. Can be nullptr.
+	 * @param flags initial internal flag settings for the new node
 	 * @param data The data to be stored in the node.
 	 */
 	Node(std::shared_ptr<Node<T>> parent, std::shared_ptr<Node<T>> left,
@@ -234,6 +242,22 @@ public:
 	}
 
 	/**
+	 * Checks if this node is black.
+	 * @return true if the node is black, false otherwise
+	 */
+	bool isBlack() {
+		return flags[0] == 1;
+	}
+
+	/**
+	 * Checks if this node is red.
+	 * @return true if the node is red, false otherwise
+	 */
+	bool isRed() {
+		return flags[0] == 0;
+	}
+
+	/**
 	 * @brief Helper function to implement move semantics.
 	 *
 	 * Transfers ownership of all resources from the source node to this node,
@@ -251,6 +275,22 @@ public:
 		this->children = std::move(src.children);
 
 		return *this;
+	}
+
+	/**
+	 * Sets this node's color to red.
+	 * In the Red-Black tree, red is represented by unsetting the Color flag.
+	 */
+	void setRed() {
+		this->flags.unset(NodeFlag::Color);
+	}
+
+	/**
+	 * Sets this node's color to black.
+	 * In the Red-Black tree, black is represented by setting the Color flag.
+	 */
+	void setBlack() {
+		this->flags.set(NodeFlag::Color);
 	}
 
 	/**
@@ -293,6 +333,24 @@ public:
 	 * @brief Default constructor that initializes an empty node.
 	 */
 	NodeBuilder() : nodePtr(std::make_shared<Node<T>>()) {}
+
+	/**
+	 * @brief Sets the red flag on the node
+	 * @return A reference to the NodeBuilder for chaining.
+	 */
+	NodeBuilder &asRed() {
+		nodePtr->setRed();
+		return *this;
+	}
+
+	/**
+	 * @brief Sets the black flag on the node
+	 * @return A reference to the NodeBuilder for chaining.
+	 */
+	NodeBuilder &asBlack() {
+		nodePtr->setBlack();
+		return *this;
+	}
 
 	/**
 	 * @brief Sets the data for the Node being built.

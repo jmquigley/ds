@@ -126,11 +126,11 @@ public:
 	 * This will print the contents of an integer type object as a
 	 * bit string representation of an 8, 16, 32, or 64-bit value.
 	 *
-	 * @example
-	 *    ds::BitFlag bf(123);
-	 *    std::cout << bf;
-	 *    // prints "01111011"
-	 *
+	 * @code
+	 * ds::BitFlag bf(123);
+	 * std::cout << bf;
+	 * // prints "01111011"
+	 * @endcode
 	 * @param st (`std::ostream`) the output stream
 	 * @param bf (`BaseBitFlag<T> &`) the BaseBitFlag object to print
 	 * @returns a reference to the `std::ostream` object

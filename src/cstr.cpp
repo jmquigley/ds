@@ -59,13 +59,6 @@ char *dtrim(char *buf) {
 	return buf;
 }
 
-/**
- * @brief Copies the contents of a buffer into a string object.
- *
- * @param buf A pointer to the buffer to copy
- * @param size The number of bytes to copy into the string
- * @return A string object
- */
 std::string moveBufferToString(const char *buf, ssize_t size) {
 	if (buf == nullptr || size <= 0) {
 		return "";
@@ -76,16 +69,6 @@ std::string moveBufferToString(const char *buf, ssize_t size) {
 	return s;
 }
 
-/**
- * @brief Replaces the carriage return/line feed (0xa,0xd) from the input
- * buffer.
- *
- * Changes these values to the space character. The input buffer is
- * changed in the operation.
- *
- * @param buf The input buffer to remove the CRLF from
- * @return The pointer to the original buffer with the CRLF items removed
- */
 char *removeCRLF(char *buf) {
 	char *bufptr = buf;
 
@@ -106,17 +89,6 @@ char *removeCRLF(char *buf) {
 	return (buf);
 }
 
-/**
- * @brief Removes a multiple set of characters from an input string.
- *
- * Modifies the original input string. If a null pointer is given in the
- * characters to remove, then the original string is returned unchanged.
- * If the input buffer is a null pointer, then a null pointer is returned.
- *
- * @param buf A null terminated string with characters to remove
- * @param charsToRemove The string of characters that should be removed
- * @return A pointer to the buf with the characters removed
- */
 char *removeIt(char *buf, const char *charsToRemove) {
 	char *bufptr = buf;
 	const char *rem = nullptr;
@@ -157,16 +129,6 @@ char *removeIt(char *buf, const char *charsToRemove) {
 	return (buf);
 }
 
-/**
- * @brief Replaces a character in a string with another in the entire string.
- *
- * Changes the original string that is passed to the function.
- *
- * @param buf The null terminated buffer to perform the replacement against
- * @param charToReplace The single character to find for replacement
- * @param replaceWith The character to change to
- * @return A pointer to buf with the characters replaced
- */
 char *replaceIt(char *buf, char charToReplace, char replaceWith) {
 	char *bufptr = buf;
 
@@ -185,19 +147,6 @@ char *replaceIt(char *buf, char charToReplace, char replaceWith) {
 	return (buf);
 }
 
-/**
- * @brief Performs a safe copy operation from a source to a destination buffer.
- *
- * Makes no assumptions about the NULL terminators in either string.
- * Uses the size variables of the src/dst and determines the smallest
- * and uses that as the upper bound.
- *
- * @param dst Pointer to the destination data location
- * @param dstSize The size of the destination buffer
- * @param src Pointer to the source of the data
- * @param srcSize The size of the source buffer
- * @return True if the data is copied, otherwise false
- */
 bool safecopy(char *dst, ssize_t dstSize, const char *src, ssize_t srcSize) {
 	if (dst == nullptr or src == nullptr or dstSize <= 0 or srcSize < 0) {
 		return false;
@@ -208,18 +157,6 @@ bool safecopy(char *dst, ssize_t dstSize, const char *src, ssize_t srcSize) {
 	return true;
 }
 
-/**
- * @brief Splits an incoming buffer into logical tokens by a user defined
- * delimiter.
- *
- * The incoming buffer is modified during tokenization.
- *
- * @param buf A null terminated string to break up into tokens
- * @param delimit The string that should be used to split on
- * @param databuf An array of pointers to store the tokens
- * @param maxTokens The maximum number of tokens to be parsed
- * @return The number of tokens created, or -1 on error
- */
 int tokenSplit(char *buf, const char *delimit, char **databuf, int maxTokens) {
 	if (buf == nullptr || databuf == nullptr || delimit == nullptr || maxTokens < 1) {
 		return -1;
@@ -236,15 +173,6 @@ int tokenSplit(char *buf, const char *delimit, char **databuf, int maxTokens) {
 	return index;
 }
 
-/**
- * @brief Converts the input string into all uppercase characters.
- *
- * Modifies the input string that is passed to the function, so it
- * cannot be a const char* string.
- *
- * @param buf A NULL terminated C string
- * @return An ASCII string converted to upper case
- */
 char *upperCase(char *buf) {
 	char *bufptr = nullptr;
 
