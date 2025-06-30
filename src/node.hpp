@@ -63,7 +63,7 @@ class Node {
 	/// @brief A shared pointer to the right child node.
 	PROPERTY(right, Right, std::shared_ptr<Node<T>>);
 	/// @brief A shared pointer to the parent node.
-	PROPERTY(parent, Parent, std::shared_ptr<Node<T>>);
+	PROPERTY(parent, Parent, std::weak_ptr<Node<T>>);
 
 private:
 
@@ -79,7 +79,7 @@ public:
 	 * Initializes parentId to empty, parent, left, and right to nullptr,
 	 * and generates a unique ID.
 	 */
-	Node() : flags(0), left(nullptr), right(nullptr), parent(nullptr) {}
+	Node() : flags(0), left(nullptr), right(nullptr), parent() {}
 
 	/**
 	 * @brief Constructor for Node with initial data.
@@ -87,7 +87,7 @@ public:
 	 * Calls the main constructor with parent, left, and right as nullptr.
 	 * @param data The data to be stored in the node.
 	 */
-	Node(T data) : Node(nullptr, nullptr, nullptr, ByteFlag(0), data) {}
+	Node(T data) : Node(std::weak_ptr<Node<T>>(), nullptr, nullptr, ByteFlag(), data) {}
 
 	/**
 	 * @brief Constructor for Node with a parent and initial data.
@@ -100,8 +100,8 @@ public:
 	 * @param parent The parent node (copied by value).
 	 * @param data The data to be stored in the node.
 	 */
-	Node(std::shared_ptr<Node<T>> parent, T data)
-		: Node(parent, nullptr, nullptr, ByteFlag(0), data) {}
+	Node(std::weak_ptr<Node<T>> parent, T data)
+		: Node(parent, nullptr, nullptr, ByteFlag(), data) {}
 
 	/**
 	 * @brief Full constructor for Node.
@@ -115,7 +115,7 @@ public:
 	 * @param flags initial internal flag settings for the new node
 	 * @param data The data to be stored in the node.
 	 */
-	Node(std::shared_ptr<Node<T>> parent, std::shared_ptr<Node<T>> left,
+	Node(std::weak_ptr<Node<T>> parent, std::shared_ptr<Node<T>> left,
 		 std::shared_ptr<Node<T>> right, ByteFlag flags, T data)
 		: data(data), flags(flags), left(left), right(right), parent(parent) {}
 

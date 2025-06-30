@@ -16,7 +16,7 @@ TEST_F(TestNode, NodeCreate) {
 	EXPECT_EQ(node.getData(), 42);
 	EXPECT_EQ(node.getLeft(), nullptr);
 	EXPECT_EQ(node.getRight(), nullptr);
-	EXPECT_EQ(node.getParent(), nullptr);
+	EXPECT_EQ(node.getParent().use_count(), 0);
 	std::cout << "Node = " << node << std::endl;
 };
 
@@ -44,7 +44,7 @@ TEST_F(TestNode, NodeToString) {
 	EXPECT_EQ(node.getData(), 42);
 	EXPECT_EQ(node.getLeft(), nullptr);
 	EXPECT_EQ(node.getRight(), nullptr);
-	EXPECT_EQ(node.getParent(), nullptr);
+	EXPECT_EQ(node.getParent().use_count(), 0);
 
 	EXPECT_EQ(node.str(), "{\"data\":42}");
 }
