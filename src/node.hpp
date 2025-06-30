@@ -63,7 +63,7 @@ class Node {
 	/// @brief A shared pointer to the right child node.
 	PROPERTY(right, Right, std::shared_ptr<Node<T>>);
 	/// @brief A shared pointer to the parent node.
-	PROPERTY(parent, Parent, std::weak_ptr<Node<T>>);
+	PROPERTY(_parent, Parent, std::weak_ptr<Node<T>>);
 
 private:
 
@@ -79,7 +79,7 @@ public:
 	 * Initializes parentId to empty, parent, left, and right to nullptr,
 	 * and generates a unique ID.
 	 */
-	Node() : flags(0), left(nullptr), right(nullptr), parent() {}
+	Node() : flags(0), left(nullptr), right(nullptr), _parent() {}
 
 	/**
 	 * @brief Constructor for Node with initial data.
@@ -117,7 +117,7 @@ public:
 	 */
 	Node(std::weak_ptr<Node<T>> parent, std::shared_ptr<Node<T>> left,
 		 std::shared_ptr<Node<T>> right, ByteFlag flags, T data)
-		: data(data), flags(flags), left(left), right(right), parent(parent) {}
+		: data(data), flags(flags), left(left), right(right), _parent(parent) {}
 
 	/**
 	 * @brief Destructor for Node.
@@ -214,7 +214,6 @@ public:
 	 * clears the children vector, and generates a new unique ID for the node.
 	 */
 	void clear() {
-		this->parent.reset();
 		this->right.reset();
 		this->left.reset();
 		this->children.clear();
@@ -275,6 +274,10 @@ public:
 		this->children = std::move(src.children);
 
 		return *this;
+	}
+
+	std::shared_ptr<Node<T>> parent() {
+		return this->_parent.lock();
 	}
 
 	/**

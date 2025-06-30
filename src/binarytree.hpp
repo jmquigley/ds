@@ -32,6 +32,12 @@ class BinaryTree : public Tree<T> {
 private:
 
 	/**
+	 * @brief a temporary node pointer value used to store the latest
+	 * value inserted into the tree.
+	 */
+	std::weak_ptr<Node<T>> _tnode;
+
+	/**
 	 * @brief A recursive function to clear all nodes from a tree
 	 *
 	 * Performs a postorder traversal of the tree to remove all nodes.
@@ -52,6 +58,24 @@ private:
 	}
 
 	/**
+	 * @brief Helper function to perform in-order traversal of the tree
+	 *
+	 * Recursively visits left subtree, the node itself, and then the right subtree
+	 *
+	 * @param node The current node in the traversal
+	 * @param out Vector to collect the elements in in-order sequence
+	 */
+	void inorderDelegate(std::shared_ptr<Node<T>> node, std::vector<T> &out) {
+		if (node == nullptr) {
+			return;
+		}
+
+		this->inorderDelegate(node->getLeft(), out);
+		out.push_back(node->getData());
+		this->inorderDelegate(node->getRight(), out);
+	}
+
+	/**
 	 * @brief Helper function to insert a node into the binary tree
 	 *
 	 * Recursively traverses the tree to find the appropriate position for the new node
@@ -64,28 +88,29 @@ private:
 	 */
 	std::shared_ptr<Node<T>> insertDelegate(T data, std::shared_ptr<Node<T>> node,
 											std::shared_ptr<Node<T>> parent) {
-		std::shared_ptr<Node<T>> tnode;
-
 		if (this->_root == nullptr) {
-			tnode = newNode(data, parent);
-			this->_root = tnode;
-			this->_front = this->_back = tnode;
+			// first node in the tree
+			this->_tnode = newNode(data, parent);
+			this->_root = this->_tnode.lock();
+			this->_front = this->_back = this->_tnode;
 			this->_size++;
 			return this->_root;
 		} else {
 			if (node == nullptr) {
+				// found a leaf, so insert in this location
 				this->_size++;
-				tnode = newNode(data, parent);
+				this->_tnode = newNode(data, parent);
 
 				if (this->comparator(data, this->front()) < 0) {
-					this->_front = tnode;
+					this->_front = this->_tnode;
 				} else if (this->comparator(data, this->back())) {
-					this->_back = tnode;
+					this->_back = this->_tnode;
 				}
 
-				return tnode;
+				return this->_tnode.lock();
 			}
 
+			// recursively descend through the tree to find insertion point
 			if (this->comparator(data, node->getData()) < 0) {
 				node->setLeft(insertDelegate(data, node->getLeft(), node));
 			} else if (this->comparator(data, node->getData()) > 0) {
@@ -104,8 +129,50 @@ private:
 	 *
 	 * @param node The newly inserted node that might cause violations
 	 */
-	void insertFixUp(std::shared_ptr<Node<T>> node) {
-		// TODO: implement insertFixUp for red-black algorihtm
+	void insertFixUp(std::shared_ptr<Node<T>> xnode) {
+		std::shared_ptr<Node<T>> ynode;
+
+		while (xnode != this->_root && xnode->parent()->isRed()) {
+			if (xnode->parent() == xnode->parent()->parent()->getLeft()) {
+				ynode = xnode->parent()->parent()->getRight();
+
+				if (ynode != nullptr && ynode->isRed()) {
+					xnode->parent()->setBlack();
+					ynode->setBlack();
+					xnode->parent()->parent()->setRed();
+					xnode = xnode->parent()->parent();
+				} else {
+					if (xnode == xnode->parent()->getRight()) {
+						xnode = xnode->parent();
+						rotateLeft(xnode);
+					}
+
+					xnode->parent()->setBlack();
+					xnode->parent()->parent()->setRed();
+					rotateRight(xnode->parent()->parent());
+				}
+			} else {
+				ynode = xnode->parent()->parent()->getLeft();
+
+				if (ynode != nullptr && ynode->isRed()) {
+					xnode->parent()->setBlack();
+					ynode->setBlack();
+					xnode->parent()->parent()->setRed();
+					xnode = xnode->parent()->parent();
+				} else {
+					if (xnode == xnode->parent()->getLeft()) {
+						xnode = xnode->parent();
+						rotateRight(xnode);
+					}
+
+					xnode->parent()->setBlack();
+					xnode->parent()->parent()->setRed();
+					rotateLeft(xnode->parent()->parent());
+				}
+			}
+		}
+
+		this->_root->setBlack();
 	}
 
 	/**
@@ -158,6 +225,61 @@ private:
 		this->preorderDelegate(node->getRight(), out);
 	}
 
+	void rotateLeft(std::shared_ptr<Node<T>> xnode) {
+		std::shared_ptr<Node<T>> ynode = xnode->getRight();
+
+		xnode->setRight(ynode->getLeft());
+
+		if (ynode->getLeft() == nullptr) {
+			// fix y's left child parent pointer
+			ynode->getLeft()->setParent(xnode);
+		}
+
+		ynode->setParent(xnode->parent());	// link x's parent to y
+
+		if (xnode->parent() == nullptr) {
+			// special case fix when rotating root
+			this->_root = ynode;
+		} else {
+			if (xnode == xnode->parent()->getLeft()) {
+				xnode->parent()->setLeft(ynode);
+			} else {
+				xnode->parent()->setRight(ynode);
+			}
+		}
+
+		ynode->setLeft(xnode);	  // move previous x into y's left child
+		xnode->setParent(ynode);  // fix the parent pointer after previous move
+	}
+
+	void rotateRight(std::shared_ptr<Node<T>> xnode) {
+		std::shared_ptr<Node<T>> ynode = xnode->getLeft();
+
+		// turn y's right subtree into x's left subtree
+		xnode->setLeft(ynode->getRight());
+
+		if (ynode->getRight() == nullptr) {
+			// fix y's right child parent pointer
+			ynode->getRight()->setParent(xnode);
+		}
+
+		ynode->setParent(xnode->parent());	// link x's parent to y
+
+		if (xnode->parent() == nullptr) {
+			// special case fix when rotation root
+			this->_root = ynode;
+		} else {
+			if (xnode == xnode->parent()->getRight()) {
+				xnode->parent()->setRight(ynode);
+			} else {
+				xnode->parent()->setLeft(ynode);
+			}
+		}
+
+		ynode->setRight(xnode);	  // move previous x into y's right child
+		xnode->setParent(ynode);  // fix y's left child parent pointer
+	}
+
 public:
 
 	BinaryTree() : Tree<T>() {}
@@ -198,9 +320,18 @@ public:
 		return match;
 	}
 
-	std::string json() const {
-		// TODO: implement json in BinaryTree
-		return "";
+	/**
+	 * @brief Performs an in-order traversal of the tree
+	 *
+	 * In-order traversal visits nodes in the order: left subtree, root, then right subtree.
+	 * This traversal is useful to retrieve the data in sorted order.
+	 *
+	 * @return A vector containing the elements in in-order traversal sequence
+	 */
+	std::vector<T> inorder() {
+		std::vector<T> out;
+		this->inorderDelegate(this->_root, out);
+		return out;
 	}
 
 	/**
@@ -208,12 +339,18 @@ public:
 	 * @param data The data to insert into the tree
 	 */
 	void insert(T data) {
-		std::shared_ptr<Node<T>> tnode;
-		tnode = this->insertDelegate(data, this->_root, nullptr);
+		std::shared_ptr<Node<T>> snode;
+		this->insertDelegate(data, this->_root, nullptr);
 
-		if (tnode == nullptr) {
-			this->insertFixUp(tnode);
+		snode = this->_tnode.lock();
+		if (snode != nullptr) {
+			this->insertFixUp(snode);
 		}
+	}
+
+	std::string json() const {
+		// TODO: implement json in BinaryTree
+		return "";
 	}
 
 	/**
