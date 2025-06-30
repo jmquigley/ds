@@ -29,6 +29,16 @@ template<typename T>
 class Tree : public Collection<T>, public Iterable<T> {
 	/// @brief The current height of the tree
 	PROPERTY_D(_height, Height, size_t, = 0);
+
+public:
+
+	Tree() : Collection<T>() {}
+
+	/**
+	 * @brief Constructor for Tree that passes along a custom comparator.
+	 * @param comparator An object used to compare elements of type T.
+	 */
+	Tree(Comparator<T> comparator) : Collection<T>(comparator) {}
 };
 
 }  // namespace ds

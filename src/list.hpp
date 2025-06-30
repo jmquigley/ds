@@ -41,8 +41,8 @@ protected:
 	 */
 	void addBack(std::shared_ptr<Node<T>> node) {
 		// add a new element to the end of the list
-		node->setLeft(this->_back);
-		this->_back->setRight(node);
+		node->setLeft(this->_back.lock());
+		this->_back.lock()->setRight(node);
 		this->_back = node;
 	}
 
@@ -54,7 +54,8 @@ protected:
 		// add a new element to the front of the list
 		node->setRight(this->_root);
 		this->_root->setLeft(node);
-		this->_root = this->_front = node;
+		this->_root = node;
+		this->_front = node;
 	}
 
 	/**
@@ -69,13 +70,13 @@ protected:
 		// Optimize traversal direction based on which end is closer
 		if (index < (this->_size / 2)) {
 			// Start from front for indices in the first half
-			tnode = this->_front;
+			tnode = this->getFront().lock();
 			for (size_t i = 0; i < index; i++) {
 				tnode = tnode->getRight();
 			}
 		} else {
 			// Start from back for indices in the second half
-			tnode = this->_back;
+			tnode = this->getBack().lock();
 			for (size_t i = this->_size - 1; i > index; i--) {
 				tnode = tnode->getLeft();
 			}
@@ -332,7 +333,8 @@ public:
 
 		if (this->_root == nullptr) {
 			// empty list, first value
-			this->_root = this->_front = this->_back = node;
+			this->_root = node;
+			this->_front = this->_back = node;
 		} else if (index >= this->_size) {
 			addBack(node);
 		} else if (index == 0) {
@@ -385,9 +387,9 @@ public:
 			this->_front = this->_root;
 		} else if (index >= this->_size - 1) {
 			// Removes the last node in the list
-			tnode = this->_back;
-			this->_back = this->_back->getLeft();
-			this->_back->setRight(nullptr);
+			tnode = this->_back.lock();
+			this->_back = this->_back.lock()->getLeft();
+			this->_back.lock()->setRight(nullptr);
 		} else {
 			if (tnode == nullptr) {
 				tnode = this->getNodeByIndex(index);
@@ -429,7 +431,7 @@ public:
 	 * @return std::vector<T> A vector containing copies of all elements in reverse order
 	 */
 	std::vector<T> reverse() {
-		std::shared_ptr<Node<T>> lp = this->_back;
+		std::shared_ptr<Node<T>> lp = this->_back.lock();
 		std::shared_ptr<Node<T>> previous;
 		std::vector<T> v;
 

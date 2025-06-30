@@ -94,7 +94,7 @@ public:
 	 * @returns a `T` object at the back of the queue
 	 */
 	T back() {
-		return **this->getBack();
+		return List<T>::back();
 	}
 
 	/**
@@ -147,7 +147,7 @@ public:
 	 * @returns a `T` object at the front of the queue
 	 */
 	T front() {
-		return **this->getFront();
+		return List<T>::front();
 	}
 
 	/**

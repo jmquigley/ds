@@ -56,7 +56,8 @@ public:
 
 		if (this->_root == nullptr) {
 			// empty list, first value
-			this->_root = this->_front = this->_back = node;
+			this->_root = node;
+			this->_front = this->_back = node;
 		} else {
 			std::shared_ptr<Node<T>> tnode = this->_root;
 

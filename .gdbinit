@@ -2,12 +2,13 @@
 # simple debuggging with: gdb -x ~/workspace/ds/.gdbinit {exe}
 #
 
-set auto-load safe-path /
 set listsize 40
 set breakpoint pending on
-set debuginfod enabled off
 set cwd /root/workspace/ds
+set debuginfod enabled off
 
-b /root/workspace/ds/include/list.hpp:78
+b /root/workspace/ds/tests/test_binarytree.cpp:16
+b /root/workspace/ds/src/binarytree.hpp:insert
+b /root/workspace/ds/src/binarytree.hpp:insertDelegate
 
 info break

@@ -8,6 +8,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <stdexcept>
 
 #include "comparator.hpp"
 #include "node.hpp"
@@ -29,12 +30,12 @@ class Collection {
 	 * @brief Pointer to the first/front element in the collection.
 	 * @protected
 	 */
-	PROPERTY_SCOPED(_front, Front, std::shared_ptr<Node<T>>, protected:);
+	PROPERTY_SCOPED(_front, Front, std::weak_ptr<Node<T>>, protected:);
 	/**
 	 * @brief Pointer to the last/back element in the collection.
 	 * @protected
 	 */
-	PROPERTY_SCOPED(_back, Back, std::shared_ptr<Node<T>>, protected:);
+	PROPERTY_SCOPED(_back, Back, std::weak_ptr<Node<T>>, protected:);
 	/**
 	 * @brief The number of elements currently in the collection.
 	 * @protected
@@ -68,7 +69,7 @@ public:
 	 * @brief Default constructor for Collection.
 	 * Initializes pointers to nullptr and length to 0.
 	 */
-	Collection() : _front(nullptr), _back(nullptr), _size(0), _root(nullptr) {}
+	Collection() : _front(), _back(), _size(0), _root(nullptr) {}
 
 	/**
 	 * @brief Constructor for Collection that takes a custom comparator.
@@ -134,9 +135,10 @@ public:
 	/**
 	 * @brief retrieves the element at the end of the collection
 	 * @return a `T` data element
+	 * @throws std::bad_weak_ptr if the requested back pointer is not available
 	 */
 	T back() {
-		return this->_back->getData();
+		return this->_back.lock()->getData();
 	}
 
 	/**
@@ -164,7 +166,7 @@ public:
 	 * @return a `T` data element
 	 */
 	T front() {
-		return this->_front->getData();
+		return this->_front.lock()->getData();
 	}
 
 	/**
