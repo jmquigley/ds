@@ -31,6 +31,15 @@ template<typename T>
 class BinaryTree : public Tree<T> {
 private:
 
+	/**
+	 * @brief A recursive function to clear all nodes from a tree
+	 *
+	 * Performs a postorder traversal of the tree to remove all nodes.
+	 * The anchor is reached when a leaf is null.  This is called by
+	 * the clear() to start from the root node of the tree.
+	 *
+	 * @param node a reference to the next node to search
+	 */
 	void clearDelegate(std::shared_ptr<Node<T>> node) {
 		if (node == nullptr) {
 			return;
@@ -43,11 +52,15 @@ private:
 	}
 
 	/**
-	 * @brief Recursive helper method for inserting nodes into the tree
-	 * @param data Data to be inserted
-	 * @param node Current node in recursion
-	 * @param parent Parent of the current node
-	 * @return Node<T> The newly inserted node
+	 * @brief Helper function to insert a node into the binary tree
+	 *
+	 * Recursively traverses the tree to find the appropriate position for the new node
+	 * based on the comparator, then inserts it.
+	 *
+	 * @param data The data to be inserted
+	 * @param node The current node in the recursion
+	 * @param parent The parent of the current node
+	 * @return Shared pointer to the inserted node or the current node in recursion
 	 */
 	std::shared_ptr<Node<T>> insertDelegate(T data, std::shared_ptr<Node<T>> node,
 											std::shared_ptr<Node<T>> parent) {
@@ -83,7 +96,17 @@ private:
 		}
 	}
 
-	void insertFixUp(std::shared_ptr<Node<T>> node) {}
+	/**
+	 * @brief Fixes violations of Red-Black tree properties after insertion
+	 *
+	 * Rebalances the tree and recolors nodes as necessary to maintain
+	 * Red-Black tree invariants after a node is inserted.
+	 *
+	 * @param node The newly inserted node that might cause violations
+	 */
+	void insertFixUp(std::shared_ptr<Node<T>> node) {
+		// TODO: implement insertFixUp for red-black algorihtm
+	}
 
 	/**
 	 * @brief Creates a new node with the specified data and parent
@@ -99,6 +122,14 @@ private:
 		return node;
 	}
 
+	/**
+	 * @brief Helper function to perform post-order traversal of the tree
+	 *
+	 * Recursively visits left subtree, right subtree, then the node itself.
+	 *
+	 * @param node The current node in the traversal
+	 * @param out Vector to collect the elements in post-order sequence
+	 */
 	void postorderDelegate(std::shared_ptr<Node<T>> node, std::vector<T> &out) {
 		if (node == nullptr) {
 			return;
@@ -109,6 +140,14 @@ private:
 		out.push_back(node->getData());
 	}
 
+	/**
+	 * @brief Helper function to perform pre-order traversal of the tree
+	 *
+	 * Recursively visits the node itself, then left subtree, then right subtree.
+	 *
+	 * @param node The current node in the traversal
+	 * @param out Vector to collect the elements in pre-order sequence
+	 */
 	void preorderDelegate(std::shared_ptr<Node<T>> node, std::vector<T> &out) {
 		if (node == nullptr) {
 			return;
@@ -177,12 +216,30 @@ public:
 		}
 	}
 
+	/**
+	 * @brief Performs a post-order traversal of the tree
+	 *
+	 * Post-order traversal visits nodes in the order: left subtree, right subtree, then root.
+	 * This traversal is useful for operations where child nodes must be processed before parent
+	 * nodes, such as when deleting nodes or calculating a tree's height.
+	 *
+	 * @return A vector containing the elements in post-order traversal sequence
+	 */
 	std::vector<T> postorder() {
 		std::vector<T> out;
 		this->postorderDelegate(this->_root, out);
 		return out;
 	}
 
+	/**
+	 * @brief Performs a pre-order traversal of the tree
+	 *
+	 * Pre-order traversal visits nodes in the order: root, left subtree, then right subtree.
+	 * This traversal is useful for creating a copy of the tree or generating a prefix expression
+	 * from an expression tree. It also naturally corresponds to depth-first search.
+	 *
+	 * @return A vector containing the elements in pre-order traversal sequence
+	 */
 	std::vector<T> preorder() {
 		std::vector<T> out;
 		this->preorderDelegate(this->_root, out);
