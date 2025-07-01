@@ -46,7 +46,7 @@ TEST_F(TestNode, NodeToString) {
 	EXPECT_EQ(node.getRight(), nullptr);
 	EXPECT_EQ(node.getParent().use_count(), 0);
 
-	EXPECT_EQ(node.str(), "{\"data\":42}");
+	EXPECT_EQ(node.str(), "{\"data\":42,\"color\":\"red\"\"parent\":\"invalid\"}");
 }
 
 TEST_F(TestNode, NodeClear) {

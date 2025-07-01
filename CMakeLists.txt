@@ -138,6 +138,7 @@ target_link_options(${TEST_EXE} PRIVATE
 target_link_libraries(${TEST_EXE}
   gtest
   GTest::gtest_main
+  GTest::gmock
   ${PROJECT_NAME}
 )
 

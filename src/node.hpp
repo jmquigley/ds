@@ -244,7 +244,7 @@ public:
 	 * Checks if this node is black.
 	 * @return true if the node is black, false otherwise
 	 */
-	bool isBlack() {
+	bool isBlack() const {
 		return flags[0] == 1;
 	}
 
@@ -252,7 +252,7 @@ public:
 	 * Checks if this node is red.
 	 * @return true if the node is red, false otherwise
 	 */
-	bool isRed() {
+	bool isRed() const {
 		return flags[0] == 0;
 	}
 
@@ -306,8 +306,15 @@ public:
 		std::stringstream ss;
 
 		ss << "{";
-		ss << "\"data\":" << data;
-		// Can add more fields here if needed, e.g., ss << ", \"id\":\"" << id << "\"";
+		ss << std::quoted("data") << ":" << data << ",";
+
+		if (this->isRed()) {
+			ss << std::quoted("color") << ":" << std::quoted("red");
+		} else {
+			ss << std::quoted("color") << ":" << std::quoted("black");
+		}
+
+		ss << std::quoted("parent") << ":" << std::quoted(weakPointerToString(this->_parent));
 		ss << "}";
 
 		return ss.str();

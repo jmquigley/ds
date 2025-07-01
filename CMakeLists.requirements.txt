@@ -48,6 +48,7 @@ FetchContent_Declare(
     GIT_TAG v1.16.0
 )
 include_directories(${googletest_SOURCE_DIR}/include)
+include_directories(${googlemock_SOURCE_DIR}/include)
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 set(INSTALL_GTEST OFF)
 FetchContent_MakeAvailable(googletest)

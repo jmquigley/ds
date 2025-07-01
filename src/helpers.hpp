@@ -5,6 +5,9 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
+#include <sstream>
+#include <string>
 #include <type_traits>
 
 /**
@@ -27,5 +30,19 @@ template<typename Enumeration>
 auto as_integer(Enumeration const value) -> typename std::underlying_type<Enumeration>::type {
 	return static_cast<typename std::underlying_type<Enumeration>::type>(value);
 };
+
+template<typename T>
+std::string weakPointerToString(std::weak_ptr<T> wp) {
+	std::stringstream ss;
+	std::shared_ptr<T> p = wp.lock();
+
+	if (p) {
+		void *rawAddress = static_cast<void *>(p.get());
+		ss << rawAddress;
+		return ss.str();
+	}
+
+	return "invalid";
+}
 
 }  // namespace ds
