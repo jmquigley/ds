@@ -1,6 +1,5 @@
 /**
  * @brief Defines a binary tree that uses the red-black algorithm
- *
  */
 
 #pragma once
@@ -35,7 +34,7 @@ private:
 	 * @brief a temporary node pointer value used to store the latest
 	 * value inserted into the tree.
 	 */
-	std::weak_ptr<Node<T>> _tnode;
+	std::weak_ptr<Node<T>> _latestNode;
 
 	/**
 	 * @brief A recursive function to clear all nodes from a tree
@@ -88,26 +87,30 @@ private:
 	 */
 	std::shared_ptr<Node<T>> insertDelegate(T data, std::shared_ptr<Node<T>> node,
 											std::shared_ptr<Node<T>> parent) {
+		std::shared_ptr<Node<T>> tnode;
+
 		if (this->_root == nullptr) {
 			// first node in the tree
-			this->_tnode = newNode(data, parent);
-			this->_root = this->_tnode.lock();
-			this->_front = this->_back = this->_tnode;
+			tnode = newNode(data, parent);
+			this->_latestNode = tnode;
+			this->_root = tnode;
+			this->_front = this->_back = this->_latestNode;
 			this->_size++;
 			return this->_root;
 		} else {
 			if (node == nullptr) {
 				// found a leaf, so insert in this location
 				this->_size++;
-				this->_tnode = newNode(data, parent);
+				tnode = newNode(data, parent);
+				this->_latestNode = tnode;
 
 				if (this->comparator(data, this->front()) < 0) {
-					this->_front = this->_tnode;
+					this->_front = tnode;
 				} else if (this->comparator(data, this->back())) {
-					this->_back = this->_tnode;
+					this->_back = tnode;
 				}
 
-				return this->_tnode.lock();
+				return tnode;
 			}
 
 			// recursively descend through the tree to find insertion point
@@ -230,7 +233,7 @@ private:
 
 		xnode->setRight(ynode->getLeft());
 
-		if (ynode->getLeft() == nullptr) {
+		if (ynode->getLeft() != nullptr) {
 			// fix y's left child parent pointer
 			ynode->getLeft()->setParent(xnode);
 		}
@@ -258,7 +261,7 @@ private:
 		// turn y's right subtree into x's left subtree
 		xnode->setLeft(ynode->getRight());
 
-		if (ynode->getRight() == nullptr) {
+		if (ynode->getRight() != nullptr) {
 			// fix y's right child parent pointer
 			ynode->getRight()->setParent(xnode);
 		}
@@ -339,12 +342,14 @@ public:
 	 * @param data The data to insert into the tree
 	 */
 	void insert(T data) {
+		std::shared_ptr<Node<T>> tnode;
+
 		std::shared_ptr<Node<T>> snode;
 		this->insertDelegate(data, this->_root, nullptr);
 
-		snode = this->_tnode.lock();
-		if (snode != nullptr) {
-			this->insertFixUp(snode);
+		tnode = this->_latestNode.lock();
+		if (tnode != nullptr) {
+			insertFixUp(tnode);
 		}
 	}
 
