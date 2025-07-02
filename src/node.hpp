@@ -276,6 +276,10 @@ public:
 		return *this;
 	}
 
+	/**
+	 * @brief convenience method to retrieve the parent pointer
+	 * @returns a shared_pointer to to the parent object of this node
+	 */
 	std::shared_ptr<Node<T>> parent() {
 		return this->_parent.lock();
 	}
@@ -313,8 +317,6 @@ public:
 		} else {
 			ss << std::quoted("color") << ":" << std::quoted("black");
 		}
-
-		ss << std::quoted("parent") << ":" << std::quoted(weakPointerToString(this->_parent));
 		ss << "}";
 
 		return ss.str();

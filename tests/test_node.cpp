@@ -40,13 +40,14 @@ TEST_F(TestNode, NodeBuilder) {
 
 TEST_F(TestNode, NodeToString) {
 	ds::Node<int> node(42);
+	std::string result = "{\"data\":42,\"color\":\"red\"}";
 
 	EXPECT_EQ(node.getData(), 42);
 	EXPECT_EQ(node.getLeft(), nullptr);
 	EXPECT_EQ(node.getRight(), nullptr);
 	EXPECT_EQ(node.getParent().use_count(), 0);
 
-	EXPECT_EQ(node.str(), "{\"data\":42,\"color\":\"red\"\"parent\":\"invalid\"}");
+	EXPECT_EQ(node.str(), result);
 }
 
 TEST_F(TestNode, NodeClear) {

@@ -189,12 +189,13 @@ TEST_F(TestStack, StackInequalityOperatorEmpty) {
 TEST_F(TestStack, StackToString) {
 	ds::Stack<int> stack = {10, 20};
 	std::string s;
+	std::string result = "[{\"data\":20,\"color\":\"red\"},{\"data\":10,\"color\":\"red\"}]";
 
 	EXPECT_EQ(stack.size(), 2);
 	EXPECT_EQ(stack.top(), 20);
 
-	EXPECT_EQ(stack.str(), "[{\"data\":20},{\"data\":10}]");
-	EXPECT_EQ(stack.json(), "[{\"data\":20},{\"data\":10}]");
+	EXPECT_EQ(stack.str(), result);
+	EXPECT_EQ(stack.json(), result);
 }
 
 TEST_F(TestStack, Contains) {

@@ -130,7 +130,8 @@ private:
 	 * Rebalances the tree and recolors nodes as necessary to maintain
 	 * Red-Black tree invariants after a node is inserted.
 	 *
-	 * @param node The newly inserted node that might cause violations
+	 * @param xnode (`std::shared_ptr<Node<T>>`) The newly inserted node that
+	 * might cause violations
 	 */
 	void insertFixUp(std::shared_ptr<Node<T>> xnode) {
 		std::shared_ptr<Node<T>> ynode;

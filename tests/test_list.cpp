@@ -342,7 +342,9 @@ TEST_F(TestList, ListAt) {
 
 TEST_F(TestList, ListToString) {
 	ds::List<int> list;
-	std::string result = "[{\"data\":1},{\"data\":2},{\"data\":3}]";
+	std::string result =
+		"[{\"data\":1,\"color\":\"red\"},{\"data\":2,\"color\":\"red\"},{\"data\":3,\"color\":"
+		"\"red\"}]";
 
 	list.insert(1);
 	list.insert(2);
