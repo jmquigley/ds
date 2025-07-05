@@ -45,11 +45,10 @@
 
 #include <algorithm>
 #include <bitset>
+#include <constants.hpp>
 #include <cstddef>
 #include <string>
 #include <type_traits>
-
-#include "constants.hpp"
 
 /**
  * @namespace ds

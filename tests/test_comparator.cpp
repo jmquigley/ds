@@ -1,8 +1,8 @@
+#include <testing_base.h>
+
+#include <Comparator.hpp>
 #include <iostream>
 #include <string>
-
-#include "comparator.hpp"
-#include "testing_base.h"
 
 class TestComparator : public TestingBase {
 public:

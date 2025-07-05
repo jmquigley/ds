@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <bitflag.hpp>
-#include <builder.hpp>
+#include <BaseBitFlag.hpp>
+#include <BaseNodeBuilder.hpp>
 #include <helpers.hpp>
 #include <iomanip>
 #include <iostream>

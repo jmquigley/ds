@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <basenode.hpp>
-#include <builder.hpp>
+#include <BaseNode.hpp>
+#include <BaseNodeBuilder.hpp>
 #include <memory>
 #include <utility>
 #include <vector>

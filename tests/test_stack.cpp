@@ -1,10 +1,10 @@
+#include <testing_base.h>
+
+#include <Stack.hpp>
 #include <exception>
 #include <fstream>
 #include <string>
 #include <vector>
-
-#include "stack.hpp"
-#include "testing_base.h"
 
 class TestStack : public TestingBase {
 protected:

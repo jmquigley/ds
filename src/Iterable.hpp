@@ -4,10 +4,9 @@
 
 #pragma once
 
+#include <Match.hpp>
 #include <cstddef>
 #include <limits>
-
-#include "match.hpp"
 
 /**
  * @namespace ds
@@ -36,7 +35,7 @@ enum class Position : size_t { FRONT = 0, BACK = std::numeric_limits<std::size_t
  *
  * @tparam T The type of data stored within the collection.
  */
-template<typename T>
+template<typename T, template<class> class C>
 class Iterable {
 public:
 
@@ -54,7 +53,7 @@ public:
 	 * @param data (`T`) the data element to add to the collection
 	 * @return a reference to the collection
 	 */
-	Iterable<T> &operator+=(const T data) {
+	Iterable<T, C> &operator+=(const T data) {
 		this->insert(data);
 		return *this;
 	}
@@ -88,7 +87,7 @@ public:
 	 * @param tnode (`std::shared_ptr<Node<T>>`) a convenience cache node from a search to
 	 * help short circuit a lookup for deletion that has already occurred.
 	 */
-	virtual T removeAt(size_t index, std::shared_ptr<Node<T>> tnode = nullptr) = 0;
+	virtual T removeAt(size_t index, std::shared_ptr<C<T>> tnode = nullptr) = 0;
 
 	/**
 	 * @brief Removes the first instance of the given value from the list.

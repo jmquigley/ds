@@ -1,48 +1,49 @@
+#include <testing_base.h>
+
+#include <BaseIterator.hpp>
+#include <Node.hpp>
 #include <iostream>
 #include <string>
-
-#include "iterator.hpp"
-#include "node.hpp"
-#include "testing_base.h"
 
 class TestIterator : public TestingBase {
 protected:
 
 	std::shared_ptr<ds::Node<int>> root;
-    std::shared_ptr<ds::Node<int>> n1;
-    std::shared_ptr<ds::Node<int>> n2;
-    std::shared_ptr<ds::Node<int>> n3;
+	std::shared_ptr<ds::Node<int>> n1;
+	std::shared_ptr<ds::Node<int>> n2;
+	std::shared_ptr<ds::Node<int>> n3;
 
 	void SetUp() override {
-        n1 = std::make_shared<ds::Node<int>>(1);
-        n2 = std::make_shared<ds::Node<int>>(2);
-        n3 = std::make_shared<ds::Node<int>>(3);
+		n1 = std::make_shared<ds::Node<int>>(1);
+		n2 = std::make_shared<ds::Node<int>>(2);
+		n3 = std::make_shared<ds::Node<int>>(3);
 
-        n1->setRight(n2);
-        n2->setRight(n3);
-        n2->setLeft(n1);
-        n3->setLeft(n2);
+		n1->setRight(n2);
+		n2->setRight(n3);
+		n2->setLeft(n1);
+		n3->setLeft(n2);
 
-        this->root = n1;
+		this->root = n1;
 	}
 
-    void TearDown() override {
-        n3->clear();
-        n2->clear();
-        n1->clear();
-        root.reset();
-    }
+	void TearDown() override {
+		n3->clear();
+		n2->clear();
+		n1->clear();
+		root.reset();
+	}
 
 public:
 
 	TestIterator() : TestingBase() {};
 };
 
-class LocalIterator : public ds::IteratorBase<int> {
+class LocalIterator : public ds::BaseIterator<int> {
 public:
 
-	LocalIterator(std::weak_ptr<ds::Node<int>> lp) : ds::IteratorBase<int>(lp) {}
-    LocalIterator() : ds::IteratorBase<int>() {}
+	LocalIterator(std::weak_ptr<ds::Node<int>> lp) : ds::BaseIterator<int>(lp) {}
+
+	LocalIterator() : ds::BaseIterator<int>() {}
 };
 
 TEST_F(TestIterator, CreateIterator) {
@@ -101,6 +102,6 @@ TEST_F(TestIterator, IteratorTestDecrement) {
 }
 
 TEST_F(TestIterator, Empty) {
-    LocalIterator it;
-    EXPECT_EQ(*it, 0);
+	LocalIterator it;
+	EXPECT_EQ(*it, 0);
 }

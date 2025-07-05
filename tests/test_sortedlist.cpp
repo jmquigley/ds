@@ -1,8 +1,8 @@
+#include <testing_base.h>
+
+#include <SortedList.hpp>
 #include <iostream>
 #include <string>
-
-#include "sortedlist.hpp"
-#include "testing_base.h"
 
 class TestSortedList : public TestingBase {
 public:

@@ -44,31 +44,31 @@ include_directories(
 )
 
 set(DS_SOURCES
-    src/basenode.hpp
-    src/binarytree.hpp
-    src/bitflag.hpp
-    src/builder.hpp
-    src/collection.hpp
-    src/comparator.hpp
+    src/BaseBitFlag.hpp
+    src/BaseIterator.hpp
+    src/BaseNodeBuilder.hpp
+    src/BaseNode.hpp
+    src/BinaryTree.hpp
+    src/Collection.hpp
+    src/Comparator.hpp
     src/constants.hpp
     src/cstr.cpp
     src/cstr.h
-    src/deque.hpp
+    src/Deque.hpp
     src/ds.h
     src/entry.cpp
     src/helpers.cpp
     src/helpers.hpp
-    src/iterable.hpp
-    src/iterator.hpp
-    src/list.hpp
-    src/match.hpp
-    src/node.hpp
+    src/Iterable.hpp
+    src/List.hpp
+    src/Match.hpp
+    src/Node.hpp
     src/property.hpp
-    src/queue.hpp
-    src/sortedlist.hpp
-    src/stack.hpp
-    src/tree.hpp
-    src/treenode.hpp
+    src/Queue.hpp
+    src/SortedList.hpp
+    src/Stack.hpp
+    src/Tree.hpp
+    src/TreeNode.hpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${DS_SOURCES})

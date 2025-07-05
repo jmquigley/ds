@@ -4,9 +4,8 @@
 
 #pragma once
 
+#include <Node.hpp>
 #include <memory>
-
-#include "node.hpp"
 
 /**
  * @namespace ds
@@ -15,7 +14,7 @@
 namespace ds {
 
 /**
- * @class IteratorBase
+ * @class BaseIterator
  * @brief A base iterator class for traversing node-based data structures.
  *
  * This template class provides basic iterator functionality for traversing
@@ -25,20 +24,20 @@ namespace ds {
  * @tparam T The type of data stored in the nodes being iterated
  */
 template<typename T>
-class IteratorBase {
+class BaseIterator {
 	PROPERTY(lp, Lp, std::weak_ptr<Node<T>>);
 
 public:
 
-	IteratorBase() : IteratorBase(std::weak_ptr<Node<T>>()) {};
+	BaseIterator() : BaseIterator(std::weak_ptr<Node<T>>()) {};
 
 	/**
 	 * @brief Constructor that initializes the iterator with a node pointer.
 	 * @param lp Shared pointer to the starting node for iteration
 	 */
-	IteratorBase(std::weak_ptr<Node<T>> lp) : lp(lp) {}
+	BaseIterator(std::weak_ptr<Node<T>> lp) : lp(lp) {}
 
-	~IteratorBase() {
+	~BaseIterator() {
 		if (lp.lock()) {
 			lp.reset();
 		}
@@ -51,7 +50,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	IteratorBase &operator++() {
+	BaseIterator &operator++() {
 		return this->next();
 	}
 
@@ -63,7 +62,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	IteratorBase &operator++(int) {
+	BaseIterator &operator++(int) {
 		return this->next();
 	}
 
@@ -74,7 +73,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	IteratorBase &operator--() {
+	BaseIterator &operator--() {
 		return this->previous();
 	}
 
@@ -86,7 +85,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	IteratorBase &operator--(int) {
+	BaseIterator &operator--(int) {
 		return this->previous();
 	}
 
@@ -98,7 +97,7 @@ public:
 	 * @param rhs The right-hand side iterator to compare with
 	 * @return true if both iterators point to the same node, false otherwise
 	 */
-	bool operator==(const IteratorBase &rhs) const {
+	bool operator==(const BaseIterator &rhs) const {
 		auto p = this->lp.lock();
 		auto rp = rhs.lp.lock();
 
@@ -113,7 +112,7 @@ public:
 	 * @param rhs The right-hand side iterator to compare with
 	 * @return true if the iterators point to different nodes, false otherwise
 	 */
-	bool operator!=(const IteratorBase &rhs) const {
+	bool operator!=(const BaseIterator &rhs) const {
 		auto p = this->lp.lock();
 		auto rp = rhs.lp.lock();
 
@@ -147,7 +146,7 @@ public:
 	 * @param it The iterator to output
 	 * @return Reference to the output stream after writing
 	 */
-	friend std::ostream &operator<<(std::ostream &st, const IteratorBase &it) {
+	friend std::ostream &operator<<(std::ostream &st, const BaseIterator &it) {
 		return st << it.lp.lock();
 	}
 
@@ -160,7 +159,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	IteratorBase &next() {
+	BaseIterator &next() {
 		auto p = this->lp.lock();
 
 		if (p) {
@@ -179,7 +178,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	IteratorBase &previous() {
+	BaseIterator &previous() {
 		auto p = this->lp.lock();
 
 		if (p) {

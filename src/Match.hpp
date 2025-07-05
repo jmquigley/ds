@@ -4,10 +4,9 @@
 
 #pragma once
 
+#include <Node.hpp>
 #include <memory>
-
-#include "node.hpp"
-#include "property.hpp"
+#include <property.hpp>
 
 /**
  * @namespace ds

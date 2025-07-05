@@ -1,8 +1,8 @@
+#include <testing_base.h>
+
+#include <BaseBitFlag.hpp>
 #include <iostream>
 #include <string>
-
-#include "bitflag.hpp"
-#include "testing_base.h"
 
 class TestBitFlag : public TestingBase {
 public:

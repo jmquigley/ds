@@ -6,8 +6,7 @@
  */
 #pragma once
 
-#include <basenode.hpp>
-#include <comparator.hpp>
+#include <Comparator.hpp>
 #include <cstddef>
 #include <cstdlib>
 #include <memory>
@@ -15,10 +14,9 @@
 #include <stdexcept>
 
 /**
- * @file collection.hpp
- * @brief Defines the base abstract class for various data collections.
+ * @namespace ds
+ * @brief Contains data structure related classes.
  */
-
 namespace ds {
 /**
  * @brief Namespace for data structures.

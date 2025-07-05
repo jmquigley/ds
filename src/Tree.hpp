@@ -5,13 +5,13 @@
 
 #pragma once
 
-#include <collection.hpp>
+#include <Collection.hpp>
+#include <Iterable.hpp>
+#include <Node.hpp>
+#include <TreeNode.hpp>
 #include <cstddef>
-#include <iterable.hpp>
 #include <limits>
-#include <node.hpp>
 #include <property.hpp>
-#include <treenode.hpp>
 #include <vector>
 
 /**
@@ -27,7 +27,7 @@ namespace ds {
  * @tparam T The type of data stored within the queue.
  */
 template<typename T>
-class Tree : public Collection<T, Node>, public Iterable<T> {
+class Tree : public Collection<T, Node>, public Iterable<T, Node> {
 	/// @brief The current height of the tree
 	PROPERTY_D(_height, Height, size_t, = 0);
 

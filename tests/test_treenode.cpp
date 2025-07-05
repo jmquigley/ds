@@ -1,8 +1,8 @@
 #include <testing_base.h>
 
+#include <TreeNode.hpp>
 #include <iostream>
 #include <string>
-#include <treenode.hpp>
 #include <vector>
 
 class TestTreeNode : public TestingBase {

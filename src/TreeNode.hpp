@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <basenode.hpp>
+#include <BaseNode.hpp>
 #include <memory>
 #include <property.hpp>
 #include <vector>

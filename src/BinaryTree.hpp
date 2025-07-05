@@ -4,14 +4,14 @@
 
 #pragma once
 
+#include <Match.hpp>
+#include <Node.hpp>
+#include <Tree.hpp>
+#include <TreeNode.hpp>
 #include <cstddef>
 #include <limits>
-#include <match.hpp>
-#include <node.hpp>
 #include <property.hpp>
 #include <string>
-#include <tree.hpp>
-#include <treenode.hpp>
 #include <vector>
 
 /**

@@ -1,10 +1,10 @@
+#include <testing_base.h>
+
+#include <Queue.hpp>
 #include <exception>
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "queue.hpp"
-#include "testing_base.h"
 
 class TestQueue : public TestingBase {
 public:

@@ -4,18 +4,17 @@
 
 #pragma once
 
+#include <BaseIterator.hpp>
+#include <Collection.hpp>
+#include <Iterable.hpp>
 #include <cstddef>
 #include <exception>
+#include <helpers.hpp>
 #include <limits>
+#include <property.hpp>
 #include <sstream>
 #include <string>
 #include <vector>
-
-#include "collection.hpp"
-#include "helpers.hpp"
-#include "iterable.hpp"
-#include "iterator.hpp"
-#include "property.hpp"
 
 /**
  * @namespace ds
@@ -32,7 +31,7 @@ namespace ds {
  * @tparam T The type of data stored within the list.
  */
 template<typename T>
-class List : public Collection<T, Node>, public Iterable<T> {
+class List : public Collection<T, Node>, public Iterable<T, Node> {
 protected:
 
 	/**
@@ -93,19 +92,19 @@ public:
 	 * Provides a standard iterator interface for List traversal,
 	 * extending the IteratorBase template with List-specific functionality.
 	 */
-	class Iterator : public IteratorBase<T> {
+	class Iterator : public BaseIterator<T> {
 	public:
 
 		/**
 		 * @brief Default constructor creating an empty iterator.
 		 */
-		Iterator() : IteratorBase<T>() {}
+		Iterator() : BaseIterator<T>() {}
 
 		/**
 		 * @brief Constructor that initializes the iterator with a node pointer.
 		 * @param lp Weak pointer to a Node<T> to start iterating from
 		 */
-		Iterator(std::weak_ptr<Node<T>> lp) : IteratorBase<T>(lp) {}
+		Iterator(std::weak_ptr<Node<T>> lp) : BaseIterator<T>(lp) {}
 	};
 
 	/**

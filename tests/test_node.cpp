@@ -1,8 +1,8 @@
+#include <testing_base.h>
+
+#include <Node.hpp>
 #include <iostream>
 #include <string>
-
-#include "node.hpp"
-#include "testing_base.h"
 
 class TestNode : public TestingBase {
 public:

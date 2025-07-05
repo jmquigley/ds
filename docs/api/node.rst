@@ -2,5 +2,5 @@
 Node
 ****
 
-.. doxygenfile:: node.hpp
+.. doxygenfile:: Node.hpp
    :project: ds

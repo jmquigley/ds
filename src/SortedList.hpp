@@ -1,10 +1,9 @@
 #pragma once
 
+#include <Comparator.hpp>
+#include <List.hpp>
 #include <iostream>
 #include <typeinfo>
-
-#include "comparator.hpp"
-#include "list.hpp"
 
 namespace ds {
 

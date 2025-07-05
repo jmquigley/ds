@@ -1,9 +1,9 @@
+#include <testing_base.h>
+
+#include <BinaryTree.hpp>
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "binarytree.hpp"
-#include "testing_base.h"
 
 class TestBinaryTree : public TestingBase {
 public:

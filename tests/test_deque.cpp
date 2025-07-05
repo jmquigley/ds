@@ -1,11 +1,11 @@
+#include <testing_base.h>
+
+#include <Deque.hpp>
 #include <exception>
 #include <iostream>
 #include <limits>
 #include <string>
 #include <vector>
-
-#include "deque.hpp"
-#include "testing_base.h"
 
 class TestDeque : public TestingBase {
 public:

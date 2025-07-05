@@ -8,13 +8,12 @@
 
 #pragma once
 
+#include <Queue.hpp>
 #include <cstddef>
+#include <helpers.hpp>
 #include <limits>
+#include <property.hpp>
 #include <vector>
-
-#include "helpers.hpp"
-#include "property.hpp"
-#include "queue.hpp"
 
 /**
  * @namespace ds
