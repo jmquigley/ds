@@ -48,18 +48,18 @@ enum NodeFlag : unsigned char {
  *
  * @tparam T The type of data stored within the node.
  */
-template<typename T>
-class Node {
+template<typename T, template<class> class C>
+class BaseNode {
 	/// @brief The data payload of the node.
-	PROPERTY(_data, Data, T);
+	PROPERTY_SCOPED(_data, Data, T, protected:);
 	/// @brief flags used to determine bit properties in a node
-	PROPERTY(_flags, Flags, ByteFlag);
+	PROPERTY_SCOPED(_flags, Flags, ByteFlag, protected:);
 	/// @brief A shared pointer to the left child node.
-	PROPERTY(_left, Left, std::shared_ptr<Node<T>>);
+	PROPERTY_SCOPED(_left, Left, std::shared_ptr<C<T>>, protected:);
 	/// @brief A shared pointer to the right child node.
-	PROPERTY(_right, Right, std::shared_ptr<Node<T>>);
+	PROPERTY_SCOPED(_right, Right, std::shared_ptr<C<T>>, protected:);
 	/// @brief A shared pointer to the parent node.
-	PROPERTY(_parent, Parent, std::weak_ptr<Node<T>>);
+	PROPERTY_SCOPED(_parent, Parent, std::weak_ptr<C<T>>, protected:);
 
 private:
 
@@ -74,8 +74,7 @@ private:
 	 * @param src The source Node object to copy from
 	 * @return Reference to this node after the copy operation
 	 */
-
-	Node<T> &copy(const Node<T> &src) {
+	C<T> &copy(const C<T> &src) {
 		this->_data = src._data;
 		this->_parent = src._parent;
 		this->_right = src._right;
@@ -92,7 +91,7 @@ public:
 	 * Initializes parentId to empty, parent, left, and right to nullptr,
 	 * and generates a unique ID.
 	 */
-	Node() : _flags(0), _left(nullptr), _right(nullptr), _parent() {}
+	BaseNode() : _flags(0), _left(nullptr), _right(nullptr), _parent() {}
 
 	/**
 	 * @brief Constructor for Node with initial data.
@@ -100,7 +99,7 @@ public:
 	 * Calls the main constructor with parent, left, and right as nullptr.
 	 * @param data The data to be stored in the node.
 	 */
-	Node(T data) : Node(std::weak_ptr<Node<T>>(), nullptr, nullptr, ByteFlag(), data) {}
+	BaseNode(T data) : BaseNode(std::weak_ptr<C<T>>(), nullptr, nullptr, ByteFlag(), data) {}
 
 	/**
 	 * @brief Constructor for Node with a parent and initial data.
@@ -113,8 +112,8 @@ public:
 	 * @param parent The parent node (copied by value).
 	 * @param data The data to be stored in the node.
 	 */
-	Node(std::weak_ptr<Node<T>> parent, T data)
-		: Node(parent, nullptr, nullptr, ByteFlag(), data) {}
+	BaseNode(std::weak_ptr<C<T>> parent, T data)
+		: BaseNode(parent, nullptr, nullptr, ByteFlag(), data) {}
 
 	/**
 	 * @brief Full constructor for Node.
@@ -128,8 +127,8 @@ public:
 	 * @param flags initial internal flag settings for the new node
 	 * @param data The data to be stored in the node.
 	 */
-	Node(std::weak_ptr<Node<T>> parent, std::shared_ptr<Node<T>> left,
-		 std::shared_ptr<Node<T>> right, ByteFlag flags, T data)
+	BaseNode(std::weak_ptr<C<T>> parent, std::shared_ptr<C<T>> left, std::shared_ptr<C<T>> right,
+			 ByteFlag flags, T data)
 		: _data(data), _flags(flags), _left(left), _right(right), _parent(parent) {}
 
 	/**
@@ -137,7 +136,7 @@ public:
 	 *
 	 * Currently empty, but can be extended for cleanup if needed.
 	 */
-	~Node() {
+	~BaseNode() {
 		this->clear();
 	}
 
@@ -149,7 +148,7 @@ public:
 	 *
 	 * @param other The source Node object to move resources from
 	 */
-	Node(const Node<T> &other) {
+	BaseNode(const C<T> &other) {
 		copy(other);
 	}
 
@@ -164,7 +163,7 @@ public:
 	 * @param other (`Node<T>`) The Node object to move from (will be left in a valid but
 	 * unspecified state)
 	 */
-	Node(Node<T> &&other) {
+	BaseNode(C<T> &&other) {
 		move(std::move(other));
 	}
 
@@ -177,7 +176,7 @@ public:
 	 * @param node The Node object to print.
 	 * @return A reference to the output stream.
 	 */
-	friend std::ostream &operator<<(std::ostream &st, const Node<T> &node) {
+	friend std::ostream &operator<<(std::ostream &st, const C<T> &node) {
 		return st << node.str();
 	}
 
@@ -192,7 +191,7 @@ public:
 	 * @param rhs The right-hand side Node object to copy from
 	 * @return Reference to this node after the assignment
 	 */
-	Node<T> &operator=(const Node<T> &rhs) {
+	C<T> &operator=(const C<T> &rhs) {
 		copy(rhs);
 		return *this;
 	}
@@ -207,7 +206,7 @@ public:
 	 * @param rhs The right-hand side Node object to move resources from
 	 * @return Reference to this node after the assignment
 	 */
-	Node<T> &operator=(Node<T> &&rhs) {
+	C<T> &operator=(C<T> &&rhs) {
 		move(std::move(rhs));
 		return *this;
 	}
@@ -240,22 +239,6 @@ public:
 	}
 
 	/**
-	 * @brief Creates a deep copy of this node
-	 *
-	 * This function creates a true deep copy of the node,
-	 * including properly copying the data and color state.
-	 * The new node will not have any parent or child relationships
-	 * since those should be established by the tree structure.
-	 *
-	 * @returns a copy of the Node<T> that was created
-	 */
-	Node<T> deepcopy() const {
-		NodeBuilder<T> builder;
-		auto newNode = builder.withData(this->_data).withFlags(this->_flags).build();
-		return *newNode;
-	}
-
-	/**
 	 * Checks if this node is black.
 	 * @return true if the node is black, false otherwise
 	 */
@@ -276,7 +259,7 @@ public:
 	 * @returns a std::shared_ptr<Node<T>> object that represents the left
 	 * child node pointer.
 	 */
-	inline std::shared_ptr<Node<T>> left() const {
+	inline std::shared_ptr<C<T>> left() const {
 		return this->_left;
 	}
 
@@ -290,7 +273,7 @@ public:
 	 * @param src The source Node object to move resources from
 	 * @return Reference to this node after the move operation
 	 */
-	Node<T> &move(Node<T> &&src) {
+	C<T> &move(C<T> &&src) {
 		this->data = std::move(src.data);
 		this->parent = std::move(src.parent);
 		this->right = std::move(src.right);
@@ -303,7 +286,7 @@ public:
 	 * @brief convenience method to retrieve the parent pointer
 	 * @returns a shared_pointer to to the parent object of this node
 	 */
-	inline std::shared_ptr<Node<T>> parent() const {
+	inline std::shared_ptr<C<T>> parent() const {
 		return this->_parent.lock();
 	}
 
@@ -312,7 +295,7 @@ public:
 	 * @returns a std::shared_ptr<Node<T>> object that represents the right
 	 * child node pointer.
 	 */
-	inline std::shared_ptr<Node<T>> right() const {
+	inline std::shared_ptr<C<T>> right() const {
 		return this->_right;
 	}
 
@@ -352,6 +335,27 @@ public:
 		ss << "}";
 
 		return ss.str();
+	}
+};
+
+template<typename T>
+class Node : public BaseNode<T, Node> {
+public:
+
+	/**
+	 * @brief Creates a deep copy of this node
+	 *
+	 * This function creates a true deep copy of the node,
+	 * including properly copying the data and color state.
+	 * The new node will not have any parent or child relationships
+	 * since those should be established by the tree structure.
+	 *
+	 * @returns a copy of the Node<T> that was created
+	 */
+	Node<T> deepcopy() const {
+		NodeBuilder<T> builder;
+		auto newNode = builder.withData(this->_data).withFlags(this->_flags).build();
+		return *newNode;
 	}
 };
 

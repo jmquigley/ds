@@ -26,22 +26,22 @@ namespace ds {
  * @tparam T The type of data stored in the node
  */
 template<typename T>
-class TreeNode : public Node<T> {
+class TreeNode : public BaseNode<T, TreeNode> {
 	/// @brief A vector to hold child nodes in a general tree
-	PROPERTY(_children, Children, std::vector<T>);
+	PROPERTY_SCOPED(_children, Children, std::vector<T>, protected:);
 
 public:
 
 	/**
 	 * @brief Default constructor
 	 */
-	TreeNode() : Node<T>() {}
+	TreeNode() : BaseNode<T, TreeNode>() {}
 
 	/**
 	 * @brief Constructor with data initialization
 	 * @param data The data to store in this node
 	 */
-	TreeNode(T data) : Node<T>(data) {}
+	TreeNode(T data) : BaseNode<T, TreeNode>(data) {}
 
 	/**
 	 * @brief Constructor with parent node and data
@@ -49,7 +49,7 @@ public:
 	 * @param data The data to store in this node
 	 */
 	TreeNode(std::weak_ptr<TreeNode<T>> parent, T data)
-		: Node<T>(std::static_pointer_cast<Node<T>>(parent), data) {}
+		: BaseNode<T, TreeNode>(std::static_pointer_cast<BaseNode<T, TreeNode>>(parent), data) {}
 
 	/**
 	 * @brief Comprehensive constructor for a complete node initialization
@@ -61,11 +61,11 @@ public:
 	 */
 	TreeNode(std::weak_ptr<TreeNode<T>> parent, std::shared_ptr<TreeNode<T>> left,
 			 std::shared_ptr<TreeNode<T>> right, ByteFlag flags, T data)
-		: Node<T>::_data(data),
-		  Node<T>::_flags(flags),
-		  Node<T>::_left(std::static_pointer_cast<Node<T>>(left)),
-		  Node<T>::_right(std::static_pointer_cast<Node<T>>(right)),
-		  Node<T>::_parent(std::static_pointer_cast<Node<T>>(parent)) {}
+		: BaseNode<T, TreeNode>::_data(data),
+		  BaseNode<T, TreeNode>::_flags(flags),
+		  BaseNode<T, TreeNode>::_left(std::static_pointer_cast<BaseNode<T, TreeNode>>(left)),
+		  BaseNode<T, TreeNode>::_right(std::static_pointer_cast<BaseNode<T, TreeNode>>(right)),
+		  BaseNode<T, TreeNode>::_parent(std::static_pointer_cast<BaseNode<T, TreeNode>>(parent)) {}
 
 	/**
 	 * @brief A convenience method for returning the child structure

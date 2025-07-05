@@ -104,7 +104,7 @@ public:
 	 * @param parent A shared pointer to the parent Node.
 	 * @return A reference to the `B` class for chaining.
 	 */
-	B &withParent(std::shared_ptr<Node<T>> parent) {
+	B &withParent(std::shared_ptr<C<T>> parent) {
 		// nodePtr->setParent(std::static_pointer_cast<Node<T>>(parent));
 		nodePtr->setParent(parent);
 		return derived();
@@ -115,7 +115,7 @@ public:
 	 * @param right A shared pointer to the right child Node.
 	 * @return A reference to the `B` class for chaining.
 	 */
-	B &withRight(std::shared_ptr<Node<T>> right) {
+	B &withRight(std::shared_ptr<C<T>> right) {
 		nodePtr->setRight(right);
 		return derived();
 	}
@@ -125,7 +125,7 @@ public:
 	 * @param left A shared pointer to the left child Node.
 	 * @return A reference to the `B` class for chaining.
 	 */
-	B &withLeft(std::shared_ptr<Node<T>> left) {
+	B &withLeft(std::shared_ptr<C<T>> left) {
 		nodePtr->setLeft(left);
 		return derived();
 	}
