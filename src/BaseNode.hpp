@@ -39,7 +39,7 @@ enum NodeFlag : unsigned char {
  * @brief A generic node class template for tree-like data structures.
  *
  * This class represents a single node in a tree, capable of holding generic data,
- * a unique identifier, and references to parent, left, and right child nodes.
+ * a unique identifier, and references to left, and right child nodes.
  * It uses the PROPERTY macro for automatic getter/setter generation.
  *
  * @tparam T The type of data stored within the node.
@@ -54,8 +54,6 @@ class BaseNode {
 	PROPERTY_SCOPED(_left, Left, std::shared_ptr<C<T>>, protected:);
 	/// @brief A shared pointer to the right child node.
 	PROPERTY_SCOPED(_right, Right, std::shared_ptr<C<T>>, protected:);
-	/// @brief A shared pointer to the parent node.
-	PROPERTY_SCOPED(_parent, Parent, std::weak_ptr<C<T>>, protected:);
 
 private:
 
@@ -72,7 +70,6 @@ private:
 	 */
 	C<T> &copy(const C<T> &src) {
 		this->_data = src._data;
-		this->_parent = src._parent;
 		this->_right = src._right;
 		this->_left = src._left;
 
@@ -84,48 +81,30 @@ public:
 	/**
 	 * @brief Default constructor for Node.
 	 *
-	 * Initializes parentId to empty, parent, left, and right to nullptr,
-	 * and generates a unique ID.
+	 * Initializes the flags, and left, and right to nullptr,
 	 */
-	BaseNode() : _flags(0), _left(nullptr), _right(nullptr), _parent() {}
+	BaseNode() : _flags(0), _left(nullptr), _right(nullptr) {}
 
 	/**
 	 * @brief Constructor for Node with initial data.
 	 *
-	 * Calls the main constructor with parent, left, and right as nullptr.
+	 * Calls the main constructor with left, and right as nullptr.
 	 * @param data The data to be stored in the node.
 	 */
-	BaseNode(T data) : BaseNode(std::weak_ptr<C<T>>(), nullptr, nullptr, ByteFlag(), data) {}
-
-	/**
-	 * @brief Constructor for Node with a parent and initial data.
-	 *
-	 * Calls the main constructor with left and right as nullptr.
-	 * Note: This constructor makes a copy of the 'parent' Node object,
-	 * it does not take a pointer or shared_ptr. This might be a design
-	 * consideration depending on usage.
-	 *
-	 * @param parent The parent node (copied by value).
-	 * @param data The data to be stored in the node.
-	 */
-	BaseNode(std::weak_ptr<C<T>> parent, T data)
-		: BaseNode(parent, nullptr, nullptr, ByteFlag(), data) {}
+	BaseNode(T data) : BaseNode(nullptr, nullptr, ByteFlag(), data) {}
 
 	/**
 	 * @brief Full constructor for Node.
 	 *
-	 * Initializes parent, left, right, and data, and generates a unique ID.
-	 * If a parent pointer is provided, its ID is set as the parentId.
+	 * Initializes left, right, and data.
 	 *
-	 * @param parent A pointer to the parent node. Can be nullptr.
 	 * @param left A pointer to the left child node. Can be nullptr.
 	 * @param right A pointer to the right child node. Can be nullptr.
 	 * @param flags initial internal flag settings for the new node
 	 * @param data The data to be stored in the node.
 	 */
-	BaseNode(std::weak_ptr<C<T>> parent, std::shared_ptr<C<T>> left, std::shared_ptr<C<T>> right,
-			 ByteFlag flags, T data)
-		: _data(data), _flags(flags), _left(left), _right(right), _parent(parent) {}
+	BaseNode(std::shared_ptr<C<T>> left, std::shared_ptr<C<T>> right, ByteFlag flags, T data)
+		: _data(data), _flags(flags), _left(left), _right(right) {}
 
 	/**
 	 * @brief Destructor for Node.
@@ -154,7 +133,6 @@ public:
 	 * Efficiently transfers ownership of resources from the source node to this node.
 	 * - Preserves the generated ID of the moved-from node
 	 * - Transfers data and relationship pointers
-	 * - Updates parent-child relationships to maintain tree integrity
 	 *
 	 * @param other (`Node<T>`) The Node object to move from (will be left in a valid but
 	 * unspecified state)
@@ -218,12 +196,11 @@ public:
 	/**
 	 * @brief Clears the node's identifiers and pointers, then re-initializes a new ID.
 	 *
-	 * Sets parentId to empty, parent, right, left to nullptr,
+	 * Sets right, left to nullptr,
 	 */
 	void clear() {
 		this->_right.reset();
 		this->_left.reset();
-		this->_parent.reset();
 	}
 
 	/**
@@ -263,7 +240,7 @@ public:
 	 * @brief Helper function to implement move semantics.
 	 *
 	 * Transfers ownership of all resources from the source node to this node,
-	 * including ID, data, parent references, and child nodes. This operation
+	 * including ID, data, and child nodes. This operation
 	 * is more efficient than copying as it avoids deep copying of resources.
 	 *
 	 * @param src The source Node object to move resources from
@@ -271,19 +248,10 @@ public:
 	 */
 	C<T> &move(C<T> &&src) {
 		this->data = std::move(src.data);
-		this->parent = std::move(src.parent);
 		this->right = std::move(src.right);
 		this->left = std::move(src.left);
 
 		return *this;
-	}
-
-	/**
-	 * @brief convenience method to retrieve the parent pointer
-	 * @returns a shared_pointer to to the parent object of this node
-	 */
-	inline std::shared_ptr<C<T>> parent() const {
-		return this->_parent.lock();
 	}
 
 	/**

@@ -31,6 +31,8 @@ template<typename T>
 class TreeNode : public BaseNode<T, TreeNode> {
 	/// @brief A vector to hold child nodes in a general tree
 	PROPERTY_SCOPED(_children, Children, std::vector<T>, protected:);
+	/// @brief A shared pointer to the parent node.
+	PROPERTY_SCOPED(_parent, Parent, std::weak_ptr<TreeNode<T>>, protected:);
 
 public:
 
@@ -50,8 +52,7 @@ public:
 	 * @param parent Weak pointer to parent node
 	 * @param data The data to store in this node
 	 */
-	TreeNode(std::weak_ptr<TreeNode<T>> parent, T data)
-		: BaseNode<T, TreeNode>(std::static_pointer_cast<BaseNode<T, TreeNode>>(parent), data) {}
+	TreeNode(std::weak_ptr<TreeNode<T>> parent, T data) : BaseNode<T, TreeNode>() {}
 
 	/**
 	 * @brief Comprehensive constructor for a complete node initialization
@@ -67,7 +68,7 @@ public:
 		  BaseNode<T, TreeNode>::_flags(flags),
 		  BaseNode<T, TreeNode>::_left(std::static_pointer_cast<BaseNode<T, TreeNode>>(left)),
 		  BaseNode<T, TreeNode>::_right(std::static_pointer_cast<BaseNode<T, TreeNode>>(right)),
-		  BaseNode<T, TreeNode>::_parent(std::static_pointer_cast<BaseNode<T, TreeNode>>(parent)) {}
+		  _parent(parent) {}
 
 	/**
 	 * @brief A convenience method for returning the child structure
@@ -91,6 +92,14 @@ public:
 		TreeNodeBuilder<T> builder;
 		auto newNode = builder.withData(this->_data).withFlags(this->_flags).build();
 		return *newNode;
+	}
+
+	/**
+	 * @brief convenience method to retrieve the parent pointer
+	 * @returns a shared_pointer to to the parent object of this node
+	 */
+	inline std::shared_ptr<TreeNode<T>> parent() const {
+		return this->_parent.lock();
 	}
 };
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <BaseBitFlag.hpp>
 #include <memory>
 #include <vector>
 

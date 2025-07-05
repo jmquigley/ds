@@ -4,9 +4,10 @@
 
 #pragma once
 
+#include <BaseNodeBuilder.hpp>
+#include <BaseTree.hpp>
 #include <Match.hpp>
 #include <Node.hpp>
-#include <Tree.hpp>
 #include <TreeNode.hpp>
 #include <cstddef>
 #include <limits>
@@ -27,14 +28,14 @@ namespace ds {
  * @tparam T The type of data stored within the queue.
  */
 template<typename T>
-class BinaryTree : public Tree<T> {
+class BinaryTree : public BaseTree<T, TreeNode> {
 private:
 
 	/**
 	 * @brief a temporary node pointer value used to store the latest
 	 * value inserted into the tree.
 	 */
-	std::weak_ptr<Node<T>> _latestNode;
+	std::weak_ptr<TreeNode<T>> _latestNode;
 
 	/**
 	 * @brief A recursive function to clear all nodes from a tree
@@ -45,7 +46,7 @@ private:
 	 *
 	 * @param node a reference to the next node to search
 	 */
-	void clearDelegate(std::shared_ptr<Node<T>> node) {
+	void clearDelegate(std::shared_ptr<TreeNode<T>> node) {
 		if (node == nullptr) {
 			return;
 		}
@@ -64,7 +65,7 @@ private:
 	 * @param node The current node in the traversal
 	 * @param out Vector to collect the elements in in-order sequence
 	 */
-	void inorderDelegate(std::shared_ptr<Node<T>> node, std::vector<T> &out) {
+	void inorderDelegate(std::shared_ptr<TreeNode<T>> node, std::vector<T> &out) {
 		if (node == nullptr) {
 			return;
 		}
@@ -85,9 +86,9 @@ private:
 	 * @param parent The parent of the current node
 	 * @return Shared pointer to the inserted node or the current node in recursion
 	 */
-	std::shared_ptr<Node<T>> insertDelegate(T data, std::shared_ptr<Node<T>> node,
-											std::shared_ptr<Node<T>> parent) {
-		std::shared_ptr<Node<T>> tnode;
+	std::shared_ptr<TreeNode<T>> insertDelegate(T data, std::shared_ptr<TreeNode<T>> node,
+												std::shared_ptr<TreeNode<T>> parent) {
+		std::shared_ptr<TreeNode<T>> tnode;
 
 		if (this->_root == nullptr) {
 			// first node in the tree
@@ -133,8 +134,8 @@ private:
 	 * @param xnode (`std::shared_ptr<Node<T>>`) The newly inserted node that
 	 * might cause violations
 	 */
-	void insertFixUp(std::shared_ptr<Node<T>> xnode) {
-		std::shared_ptr<Node<T>> ynode;
+	void insertFixUp(std::shared_ptr<TreeNode<T>> xnode) {
+		std::shared_ptr<TreeNode<T>> ynode;
 
 		while (xnode != this->_root && xnode->parent()->isRed()) {
 			if (xnode->parent() == xnode->parent()->parent()->getLeft()) {
@@ -185,12 +186,14 @@ private:
 	 * @param parent Parent node for the new node
 	 * @return std::shared_ptr<Node<T>> Shared pointer to the newly created node
 	 */
-	std::shared_ptr<Node<T>> newNode(T data, std::shared_ptr<Node<T>> &parent) {
-		std::shared_ptr<ds::Node<T>> node;
-		NodeBuilder<T> builder;
+	std::shared_ptr<TreeNode<T>> newNode(T data, std::shared_ptr<TreeNode<T>> &parent) {
+		std::shared_ptr<ds::TreeNode<T>> node;
+		TreeNodeBuilder<T> builder;
 
 		node = builder.withData(data).withParent(parent).asRed().build();
-		return std::static_pointer_cast<Node<T>>(node);
+		return node;
+		// BUG: check if this can just return node
+		// return std::static_pointer_cast<TreeNode<T>>(node);
 	}
 
 	/**
@@ -201,7 +204,7 @@ private:
 	 * @param node The current node in the traversal
 	 * @param out Vector to collect the elements in post-order sequence
 	 */
-	void postorderDelegate(std::shared_ptr<Node<T>> node, std::vector<T> &out) {
+	void postorderDelegate(std::shared_ptr<TreeNode<T>> node, std::vector<T> &out) {
 		if (node == nullptr) {
 			return;
 		}
@@ -219,7 +222,7 @@ private:
 	 * @param node The current node in the traversal
 	 * @param out Vector to collect the elements in pre-order sequence
 	 */
-	void preorderDelegate(std::shared_ptr<Node<T>> node, std::vector<T> &out) {
+	void preorderDelegate(std::shared_ptr<TreeNode<T>> node, std::vector<T> &out) {
 		if (node == nullptr) {
 			return;
 		}
@@ -229,8 +232,8 @@ private:
 		this->preorderDelegate(node->getRight(), out);
 	}
 
-	void rotateLeft(std::shared_ptr<Node<T>> xnode) {
-		std::shared_ptr<Node<T>> ynode = xnode->getRight();
+	void rotateLeft(std::shared_ptr<TreeNode<T>> xnode) {
+		std::shared_ptr<TreeNode<T>> ynode = xnode->getRight();
 
 		xnode->setRight(ynode->getLeft());
 
@@ -256,8 +259,8 @@ private:
 		xnode->setParent(ynode);  // fix the parent pointer after previous move
 	}
 
-	void rotateRight(std::shared_ptr<Node<T>> xnode) {
-		std::shared_ptr<Node<T>> ynode = xnode->getLeft();
+	void rotateRight(std::shared_ptr<TreeNode<T>> xnode) {
+		std::shared_ptr<TreeNode<T>> ynode = xnode->getLeft();
 
 		// turn y's right subtree into x's left subtree
 		xnode->setLeft(ynode->getRight());
@@ -286,7 +289,7 @@ private:
 
 public:
 
-	BinaryTree() : Tree<T>() {}
+	BinaryTree() : BaseTree<T, TreeNode>() {}
 
 	~BinaryTree() {
 		this->clear();
@@ -296,11 +299,11 @@ public:
 	 * @brief Constructor for BinaryTree that takes a custom comparator.
 	 * @param comparator An object used to compare elements of type T.
 	 */
-	BinaryTree(Comparator<T> comparator) : Tree<T>(comparator) {}
+	BinaryTree(Comparator<T> comparator) : BaseTree<T, TreeNode>(comparator) {}
 
 	T at(size_t index) {
 		// TODO: implement at in BinaryTree
-		T data;
+		T data {};
 		return data;
 	}
 
@@ -343,9 +346,9 @@ public:
 	 * @param data The data to insert into the tree
 	 */
 	void insert(T data) {
-		std::shared_ptr<Node<T>> tnode;
+		std::shared_ptr<TreeNode<T>> tnode;
 
-		std::shared_ptr<Node<T>> snode;
+		std::shared_ptr<TreeNode<T>> snode;
 		this->insertDelegate(data, this->_root, nullptr);
 
 		tnode = this->_latestNode.lock();
@@ -389,15 +392,24 @@ public:
 		return out;
 	}
 
-	T removeAt(size_t index, std::shared_ptr<Node<T>> tnode) {
+	/**
+	 * @brief Removes an element from the tree at the given position (based on its
+	 * inorder traversal position).
+	 *
+	 * @param index (`size_t`) the location within the tree to remove
+	 * @param tnode (`std::shared_ptr<TreeNode<T>>`) a convenience cache node from
+	 * a search to help short circuit a lookup for deletion that has already occurred.
+	 * @returns the value that was removed from the tree
+	 */
+	T removeAt(size_t index, std::shared_ptr<TreeNode<T>> tnode = nullptr) {
 		// TODO: implmeent removeAt in BinaryTree
-		T data;
+		T data {};
 		return data;
 	}
 
 	T removeValue(T value) {
 		// TODO: implement removeValue in BinaryTree
-		T data;
+		T data {};
 		return data;
 	}
 

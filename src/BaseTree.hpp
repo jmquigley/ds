@@ -7,7 +7,6 @@
 
 #include <Collection.hpp>
 #include <Iterable.hpp>
-#include <Node.hpp>
 #include <TreeNode.hpp>
 #include <cstddef>
 #include <limits>
@@ -21,25 +20,25 @@
 namespace ds {
 
 /**
- * @class Tree
+ * @class BaseTree
  * @brief Abstract interface for tree structures
  *
  * @tparam T The type of data stored within the queue.
  */
-template<typename T>
-class Tree : public Collection<T, Node>, public Iterable<T, Node> {
+template<typename T, template<class> class C>
+class BaseTree : public Collection<T, C>, public Iterable<T, C> {
 	/// @brief The current height of the tree
 	PROPERTY_D(_height, Height, size_t, = 0);
 
 public:
 
-	Tree() : Collection<T, Node>() {}
+	BaseTree() : Collection<T, TreeNode>() {}
 
 	/**
 	 * @brief Constructor for Tree that passes along a custom comparator.
 	 * @param comparator An object used to compare elements of type T.
 	 */
-	Tree(Comparator<T> comparator) : Collection<T, Node>(comparator) {}
+	BaseTree(Comparator<T> comparator) : Collection<T, C>(comparator) {}
 };
 
 }  // namespace ds

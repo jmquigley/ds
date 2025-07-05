@@ -48,6 +48,7 @@ set(DS_SOURCES
     src/BaseIterator.hpp
     src/BaseNodeBuilder.hpp
     src/BaseNode.hpp
+    src/BaseTree.hpp
     src/BinaryTree.hpp
     src/Collection.hpp
     src/Comparator.hpp
@@ -67,7 +68,6 @@ set(DS_SOURCES
     src/Queue.hpp
     src/SortedList.hpp
     src/Stack.hpp
-    src/Tree.hpp
     src/TreeNode.hpp
 )
 
