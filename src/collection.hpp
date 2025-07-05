@@ -183,6 +183,14 @@ public:
 	}
 
 	/**
+	 * @brief a convenience method to get the current root pointer
+	 * @returns a `std::shared_ptr<Node<T>>` that contains the current root
+	 */
+	inline virtual std::shared_ptr<Node<T>> root() const {
+		return this->_root;
+	}
+
+	/**
 	 * @brief Returns a string representation of the collection's contents.
 	 * @return std::string A string describing the collection.
 	 * @pure

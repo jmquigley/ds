@@ -22,14 +22,18 @@ function banner() {
 
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 CLEAN_OPT=0
+NODOCS_OPT=0
 NOMEM_OPT=0
+NOTEST_OPT=0
 BUILD_TYPE=Debug
 export GTEST_SHUFFLE=1
 export FILTER='*'
 export THREADS=10
 
 while :; do
+    echo "Processing parameters: $1"
     case $1 in
+
         -c|--clean)
             CLEAN_OPT=1
             shift
@@ -38,7 +42,7 @@ while :; do
         -f|--filter)
             if [ -n "$2" ]; then
                 FILTER="$2"
-                shift
+                shift 2
             else
                 printf 'ERROR: "--filter" requires a non-empty option argument.\n' >&2
                 exit 127
@@ -47,12 +51,13 @@ while :; do
 
         --filter=?*)
             FILTER=${1#*=}
+            shift
             ;;
 
         -j|--jobs)
             if [ -n "$2" ]; then
                 THREADS="$2"
-                shift
+                shift 2
             else
                 printf 'ERROR: "--jobs" requires a non-empty option argument.\n' >&2
                 exit 127
@@ -61,10 +66,21 @@ while :; do
 
         --jobs=?*)
             THREADS=${1#*=}
+            shift
             ;;
 
-        -n|--nomem)
+        --nodocs)
+            NODOCS_OPT=1
+            shift
+            ;;
+
+        --nomem)
             NOMEM_OPT=1
+            shift
+            ;;
+
+        --notest|--notesting)
+            NOTEST_OPT=1
             shift
             ;;
 
@@ -76,7 +92,6 @@ while :; do
         *) # Default case: If no more options then break out of the loop.
             break
     esac
-    shift
 done
 
 echo "Building dt API library from ${SCRIPT_DIR}"
@@ -114,6 +129,8 @@ exitOnError $? "Error building project, terminating"
 # Testing
 #
 
+if [ ${NOTEST_OPT} == 0 ]; then
+
 banner "Testing"
 MEMCHECK='-T memcheck'
 if [ ${NOMEM_OPT} == 1 ]; then
@@ -127,15 +144,18 @@ if [ $rc -ne 0 ]; then
 fi
 exitOnError $rc "Error executing unit tests, terminating"
 
+fi
+
 #
 # Creating coverage information
 #
 
-banner "Coverage"
-lcov --capture --directory . --output-file coverage.info --ignore-errors mismatch,mismatch --ignore-errors gcov,gcov
-lcov --quiet --remove coverage.info '/usr/*' --remove coverage.info '*test*' --output-file coverage.info
-genhtml coverage.info -q --demangle-cpp --output-directory docs/html/coverage
-
+if [ ${NODOCS_OPT} == 0 ]; then
+    banner "Coverage"
+    lcov --capture --directory . --output-file coverage.info --ignore-errors mismatch,mismatch --ignore-errors gcov,gcov
+    lcov --quiet --remove coverage.info '/usr/*' --remove coverage.info '*test*' --output-file coverage.info
+    genhtml coverage.info -q --demangle-cpp --output-directory docs/html/coverage
+fi
 #
 # Installation
 #
@@ -152,14 +172,16 @@ exitOnError $? "Error installing project, terminating"
 # Building documentation
 #
 
-banner "Documentation"
-pushd ../docs
-make html
-exitOnError $? "Error creating project documentation, terminating"
-popd
+if [ ${NODOCS_OPT} == 0 ]; then
+    banner "Documentation"
+    pushd ../docs
+    make html
+    exitOnError $? "Error creating project documentation, terminating"
+    popd
 
-if [ -d /var/www/html ]; then
-    yes | cp -rfv docs/html/* /var/www/html/.
+    if [ -d /var/www/html ]; then
+        yes | cp -rfv docs/html/* /var/www/html/.
+    fi
 fi
 
 popd

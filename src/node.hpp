@@ -1,5 +1,4 @@
 /**
- * @file node.hpp
  * @brief Defines the Node class template for tree-like data structures and its associated
  * NodeBuilder.
  *
@@ -10,19 +9,17 @@
 
 #pragma once
 
-#include <uuid/uuid.h>
-
+#include <bitflag.hpp>
+#include <builder.hpp>
+#include <helpers.hpp>
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <property.hpp>
 #include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "bitflag.hpp"
-#include "helpers.hpp"
-#include "property.hpp"
 
 /**
  * @namespace ds
@@ -53,23 +50,39 @@ enum NodeFlag : unsigned char {
  */
 template<typename T>
 class Node {
-	// Doxygen for PROPERTY macro generated members:
 	/// @brief The data payload of the node.
-	PROPERTY(data, Data, T);
+	PROPERTY(_data, Data, T);
 	/// @brief flags used to determine bit properties in a node
-	PROPERTY(flags, Flags, ByteFlag);
+	PROPERTY(_flags, Flags, ByteFlag);
 	/// @brief A shared pointer to the left child node.
-	PROPERTY(left, Left, std::shared_ptr<Node<T>>);
+	PROPERTY(_left, Left, std::shared_ptr<Node<T>>);
 	/// @brief A shared pointer to the right child node.
-	PROPERTY(right, Right, std::shared_ptr<Node<T>>);
+	PROPERTY(_right, Right, std::shared_ptr<Node<T>>);
 	/// @brief A shared pointer to the parent node.
 	PROPERTY(_parent, Parent, std::weak_ptr<Node<T>>);
 
 private:
 
-	/// @brief A vector to hold child nodes (though left/right pointers are primarily used, this
-	/// allows for N-ary representation if populated).
-	std::vector<T> children;
+	/**
+	 * @brief Copy assignment helper function.
+	 *
+	 * Creates a deep copy of the source node into this node. The current node
+	 * is initialized with a new ID before copying all properties from the source.
+	 * This ensures that the resulting node is a distinct entity with the same
+	 * content as the source.
+	 *
+	 * @param src The source Node object to copy from
+	 * @return Reference to this node after the copy operation
+	 */
+
+	Node<T> &copy(const Node<T> &src) {
+		this->_data = src._data;
+		this->_parent = src._parent;
+		this->_right = src._right;
+		this->_left = src._left;
+
+		return *this;
+	}
 
 public:
 
@@ -79,7 +92,7 @@ public:
 	 * Initializes parentId to empty, parent, left, and right to nullptr,
 	 * and generates a unique ID.
 	 */
-	Node() : flags(0), left(nullptr), right(nullptr), _parent() {}
+	Node() : _flags(0), _left(nullptr), _right(nullptr), _parent() {}
 
 	/**
 	 * @brief Constructor for Node with initial data.
@@ -117,7 +130,7 @@ public:
 	 */
 	Node(std::weak_ptr<Node<T>> parent, std::shared_ptr<Node<T>> left,
 		 std::shared_ptr<Node<T>> right, ByteFlag flags, T data)
-		: data(data), flags(flags), left(left), right(right), _parent(parent) {}
+		: _data(data), _flags(flags), _left(left), _right(right), _parent(parent) {}
 
 	/**
 	 * @brief Destructor for Node.
@@ -204,40 +217,42 @@ public:
 	 * @returns The `T` data that is associated with this node.
 	 */
 	T &operator*() {
-		return this->data;
+		return this->_data;
 	}
 
 	/**
 	 * @brief Clears the node's identifiers and pointers, then re-initializes a new ID.
 	 *
 	 * Sets parentId to empty, parent, right, left to nullptr,
-	 * clears the children vector, and generates a new unique ID for the node.
 	 */
 	void clear() {
-		this->right.reset();
-		this->left.reset();
-		this->children.clear();
+		this->_right.reset();
+		this->_left.reset();
+		this->_parent.reset();
 	}
 
 	/**
-	 * @brief Copy assignment helper function.
-	 *
-	 * Creates a deep copy of the source node into this node. The current node
-	 * is initialized with a new ID before copying all properties from the source.
-	 * This ensures that the resulting node is a distinct entity with the same
-	 * content as the source.
-	 *
-	 * @param src The source Node object to copy from
-	 * @return Reference to this node after the copy operation
+	 * @brief Convenience method to get the data stored in the node
+	 * @returns a `T &` that references the data in the node
 	 */
-	Node<T> &copy(const Node<T> &src) {
-		this->data = src.data;
-		this->parent = src.parent;
-		this->right = src.right;
-		this->left = src.left;
-		this->children = src.children;
+	T &data() {
+		return this->_data;
+	}
 
-		return *this;
+	/**
+	 * @brief Creates a deep copy of this node
+	 *
+	 * This function creates a true deep copy of the node,
+	 * including properly copying the data and color state.
+	 * The new node will not have any parent or child relationships
+	 * since those should be established by the tree structure.
+	 *
+	 * @returns a copy of the Node<T> that was created
+	 */
+	Node<T> deepcopy() const {
+		NodeBuilder<T> builder;
+		auto newNode = builder.withData(this->_data).withFlags(this->_flags).build();
+		return *newNode;
 	}
 
 	/**
@@ -245,7 +260,7 @@ public:
 	 * @return true if the node is black, false otherwise
 	 */
 	bool isBlack() const {
-		return flags[0] == 1;
+		return _flags[0] == 1;
 	}
 
 	/**
@@ -253,7 +268,16 @@ public:
 	 * @return true if the node is red, false otherwise
 	 */
 	bool isRed() const {
-		return flags[0] == 0;
+		return _flags[0] == 0;
+	}
+
+	/**
+	 * @brief Convenience method to get the left child pointer of this node
+	 * @returns a std::shared_ptr<Node<T>> object that represents the left
+	 * child node pointer.
+	 */
+	inline std::shared_ptr<Node<T>> left() const {
+		return this->_left;
 	}
 
 	/**
@@ -271,7 +295,6 @@ public:
 		this->parent = std::move(src.parent);
 		this->right = std::move(src.right);
 		this->left = std::move(src.left);
-		this->children = std::move(src.children);
 
 		return *this;
 	}
@@ -280,8 +303,17 @@ public:
 	 * @brief convenience method to retrieve the parent pointer
 	 * @returns a shared_pointer to to the parent object of this node
 	 */
-	std::shared_ptr<Node<T>> parent() {
+	inline std::shared_ptr<Node<T>> parent() const {
 		return this->_parent.lock();
+	}
+
+	/**
+	 * @brief Convenience method to get the right child pointer of this node
+	 * @returns a std::shared_ptr<Node<T>> object that represents the right
+	 * child node pointer.
+	 */
+	inline std::shared_ptr<Node<T>> right() const {
+		return this->_right;
 	}
 
 	/**
@@ -289,7 +321,7 @@ public:
 	 * In the Red-Black tree, red is represented by unsetting the Color flag.
 	 */
 	void setRed() {
-		this->flags.unset(NodeFlag::Color);
+		this->_flags.unset(NodeFlag::Color);
 	}
 
 	/**
@@ -297,7 +329,7 @@ public:
 	 * In the Red-Black tree, black is represented by setting the Color flag.
 	 */
 	void setBlack() {
-		this->flags.set(NodeFlag::Color);
+		this->_flags.set(NodeFlag::Color);
 	}
 
 	/**
@@ -310,7 +342,7 @@ public:
 		std::stringstream ss;
 
 		ss << "{";
-		ss << std::quoted("data") << ":" << data << ",";
+		ss << std::quoted("data") << ":" << _data << ",";
 
 		if (this->isRed()) {
 			ss << std::quoted("color") << ":" << std::quoted("red");
@@ -320,96 +352,6 @@ public:
 		ss << "}";
 
 		return ss.str();
-	}
-};
-
-/**
- * @class NodeBuilder
- * @brief A builder class for constructing Node objects with a fluent interface.
- *
- * Provides methods to set various properties of a Node before building the final
- * shared_ptr wrapped object, ensuring proper memory management.
- *
- * @tparam T The type of data for the Node being built.
- */
-template<typename T>
-class NodeBuilder {
-private:
-
-	/// @brief The shared_ptr to the Node object being built.
-	std::shared_ptr<Node<T>> nodePtr;
-
-public:
-
-	/**
-	 * @brief Default constructor that initializes an empty node.
-	 */
-	NodeBuilder() : nodePtr(std::make_shared<Node<T>>()) {}
-
-	/**
-	 * @brief Sets the red flag on the node
-	 * @return A reference to the NodeBuilder for chaining.
-	 */
-	NodeBuilder &asRed() {
-		nodePtr->setRed();
-		return *this;
-	}
-
-	/**
-	 * @brief Sets the black flag on the node
-	 * @return A reference to the NodeBuilder for chaining.
-	 */
-	NodeBuilder &asBlack() {
-		nodePtr->setBlack();
-		return *this;
-	}
-
-	/**
-	 * @brief Sets the data for the Node being built.
-	 * @param data The data to set.
-	 * @return A reference to the NodeBuilder for chaining.
-	 */
-	NodeBuilder &withData(T data) {
-		nodePtr->setData(data);
-		return *this;
-	}
-
-	/**
-	 * @brief Sets the parent Node for the Node being built.
-	 * @param parent A shared pointer to the parent Node.
-	 * @return A reference to the NodeBuilder for chaining.
-	 */
-	NodeBuilder &withParent(std::shared_ptr<Node<T>> parent) {
-		nodePtr->setParent(parent);
-		return *this;
-	}
-
-	/**
-	 * @brief Sets the right child Node for the Node being built.
-	 * @param right A shared pointer to the right child Node.
-	 * @return A reference to the NodeBuilder for chaining.
-	 */
-	NodeBuilder &withRight(std::shared_ptr<Node<T>> right) {
-		nodePtr->setRight(right);
-		return *this;
-	}
-
-	/**
-	 * @brief Sets the left child Node for the Node being built.
-	 * @param left A shared pointer to the left child Node.
-	 * @return A reference to the NodeBuilder for chaining.
-	 */
-	NodeBuilder &withLeft(std::shared_ptr<Node<T>> left) {
-		nodePtr->setLeft(left);
-		return *this;
-	}
-
-	/**
-	 * @brief Finalizes the build process and returns the constructed Node object.
-	 * @return A shared_ptr to the fully configured Node object.
-	 */
-	std::shared_ptr<Node<T>> build() {
-		return nodePtr;
 	}
 };
 

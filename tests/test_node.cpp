@@ -10,17 +10,17 @@ public:
 	TestNode() : TestingBase() {}
 };
 
-TEST_F(TestNode, NodeCreate) {
+TEST_F(TestNode, Create) {
 	ds::Node<int> node(42);
 
 	EXPECT_EQ(node.getData(), 42);
-	EXPECT_EQ(node.getLeft(), nullptr);
-	EXPECT_EQ(node.getRight(), nullptr);
-	EXPECT_EQ(node.getParent().use_count(), 0);
+	EXPECT_EQ(node.left(), nullptr);
+	EXPECT_EQ(node.right(), nullptr);
+	EXPECT_EQ(node.parent().use_count(), 0);
 	std::cout << "Node = " << node << std::endl;
 };
 
-TEST_F(TestNode, NodeBuilder) {
+TEST_F(TestNode, Builder) {
 	std::shared_ptr<ds::Node<int>> node;
 	ds::NodeBuilder<int> builder;
 
@@ -38,7 +38,7 @@ TEST_F(TestNode, NodeBuilder) {
 	EXPECT_TRUE(node->isBlack());
 }
 
-TEST_F(TestNode, NodeToString) {
+TEST_F(TestNode, ToString) {
 	ds::Node<int> node(42);
 	std::string result = "{\"data\":42,\"color\":\"red\"}";
 
@@ -50,7 +50,7 @@ TEST_F(TestNode, NodeToString) {
 	EXPECT_EQ(node.str(), result);
 }
 
-TEST_F(TestNode, NodeClear) {
+TEST_F(TestNode, Clear) {
 	std::shared_ptr<ds::Node<int>> node;
 	ds::NodeBuilder<int> builder;
 
@@ -72,7 +72,20 @@ TEST_F(TestNode, NodeClear) {
 	EXPECT_EQ(node->getLeft(), nullptr);
 }
 
-TEST_F(TestNode, NodeDereference) {
+TEST_F(TestNode, DeepCopy) {
+	ds::Node<int> node1(42);
+
+	EXPECT_EQ(node1.data(), 42);
+	EXPECT_TRUE(node1.isRed());
+
+	ds::Node<int> node2 = node1.deepcopy();
+
+	EXPECT_EQ(node2.data(), 42);
+	EXPECT_TRUE(node2.isRed());
+	EXPECT_TRUE(&node1 != &node2);
+}
+
+TEST_F(TestNode, Dereference) {
 	ds::Node<int> node(1);
 	EXPECT_EQ(*node, 1);
 
@@ -85,8 +98,10 @@ TEST_F(TestNode, NodeDereference) {
 	EXPECT_EQ(**node2->getRight(), 24);
 }
 
-TEST_F(TestNode, NodeColor) {
+TEST_F(TestNode, Color) {
 	ds::Node<int> node(42);
+	std::string resultRed = "{\"data\":42,\"color\":\"red\"}";
+	std::string resultBlack = "{\"data\":42,\"color\":\"black\"}";
 
 	// Default should be red
 	EXPECT_TRUE(node.isRed());
@@ -96,14 +111,16 @@ TEST_F(TestNode, NodeColor) {
 	node.setBlack();
 	EXPECT_TRUE(node.isBlack());
 	EXPECT_FALSE(node.isRed());
+	EXPECT_EQ(node.str(), resultBlack);
 
 	// Test setting back to red
 	node.setRed();
 	EXPECT_TRUE(node.isRed());
 	EXPECT_FALSE(node.isBlack());
+	EXPECT_EQ(node.str(), resultRed);
 }
 
-TEST_F(TestNode, NodeColorWithBuilder) {
+TEST_F(TestNode, ColorWithBuilder) {
 	std::shared_ptr<ds::Node<int>> node;
 	ds::NodeBuilder<int> builder;
 

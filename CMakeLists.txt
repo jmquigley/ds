@@ -46,6 +46,7 @@ include_directories(
 set(DS_SOURCES
     src/binarytree.hpp
     src/bitflag.hpp
+    src/builder.hpp
     src/collection.hpp
     src/comparator.hpp
     src/constants.hpp
@@ -66,6 +67,7 @@ set(DS_SOURCES
     src/sortedlist.hpp
     src/stack.hpp
     src/tree.hpp
+    src/treenode.hpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${DS_SOURCES})
@@ -116,6 +118,7 @@ set(TEST_SOURCES
   tests/test_queue.cpp
   tests/test_sortedlist.cpp
   tests/test_stack.cpp
+  tests/test_treenode.cpp
 )
 
 string(CONCAT TEST_EXE ${PROJECT_NAME} "-unit-tests")
@@ -160,7 +163,7 @@ gtest_discover_tests(${TEST_EXE}
 install(FILES ${DS_HEADERS} DESTINATION "include/${PROJECT_NAME}")
 
 #
-# Spikes
+# Extras
 #
 
 add_executable(typesizes extras/typesizes.cpp)
@@ -168,3 +171,15 @@ target_link_libraries(typesizes
     PRIVATE ${PROJECT_NAME}
 )
 target_include_directories(typesizes PRIVATE ${PROJECT_NAME})
+
+add_executable(inherit extras/inherit.cpp)
+target_link_libraries(inherit
+    PRIVATE ${PROJECT_NAME}
+)
+target_include_directories(inherit PRIVATE ${PROJECT_NAME})
+
+add_executable(crtp extras/crtp.cpp)
+target_link_libraries(crtp
+    PRIVATE ${PROJECT_NAME}
+)
+target_include_directories(crtp PRIVATE ${PROJECT_NAME})

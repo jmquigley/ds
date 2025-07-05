@@ -6,13 +6,13 @@
 
 #include <cstddef>
 #include <limits>
+#include <match.hpp>
+#include <node.hpp>
+#include <property.hpp>
 #include <string>
+#include <tree.hpp>
+#include <treenode.hpp>
 #include <vector>
-
-#include "match.hpp"
-#include "node.hpp"
-#include "property.hpp"
-#include "tree.hpp"
 
 /**
  * @namespace ds
@@ -186,11 +186,11 @@ private:
 	 * @return std::shared_ptr<Node<T>> Shared pointer to the newly created node
 	 */
 	std::shared_ptr<Node<T>> newNode(T data, std::shared_ptr<Node<T>> &parent) {
-		std::shared_ptr<ds::Node<T>> node;
-		NodeBuilder<T> builder;
+		std::shared_ptr<ds::TreeNode<T>> node;
+		TreeNodeBuilder<T> builder;
 
 		node = builder.withData(data).withParent(parent).asRed().build();
-		return node;
+		return std::static_pointer_cast<Node<T>>(node);
 	}
 
 	/**
