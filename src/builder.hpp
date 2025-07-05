@@ -12,6 +12,7 @@ namespace ds {
 /**
  * @class Node
  * @brief Forward declaration of Node class
+ * @tparam T The type of data stored in the node
  */
 template<typename T>
 class Node;
@@ -19,6 +20,7 @@ class Node;
 /**
  * @class TreeNode
  * @brief Forward declaration of TreeNode class
+ * @tparam T The type of data stored in the node
  */
 template<typename T>
 class TreeNode;
@@ -30,7 +32,9 @@ class TreeNode;
  * Provides methods to set various properties of a Node before building the final
  * shared_ptr wrapped object, ensuring proper memory management.
  *
- * @tparam T The type of data for the Node being built.
+ * @tparam T The type of data for the Node being built
+ * @tparam C The node class type (Node or TreeNode)
+ * @tparam B The derived builder type for CRTP pattern
  */
 template<typename T, template<class> class C, typename B>
 class BaseNodeBuilder {
@@ -51,11 +55,14 @@ public:
 	 */
 	BaseNodeBuilder() : nodePtr(std::make_shared<C<T>>()) {}
 
+	/**
+	 * @brief Virtual destructor for proper inheritance
+	 */
 	virtual ~BaseNodeBuilder() = default;
 
 	/**
 	 * @brief Sets the red flag on the node
-	 * @return A reference to the `B` class for chaining.
+	 * @return A `B &` reference to the derived builder class for chaining.
 	 */
 	B &asRed() {
 		nodePtr->setRed();
@@ -64,7 +71,7 @@ public:
 
 	/**
 	 * @brief Sets the black flag on the node
-	 * @return A reference to the `B` class for chaining.
+	 * @return A `B &` reference to the derived builder class for chaining.
 	 */
 	B &asBlack() {
 		nodePtr->setBlack();
@@ -73,16 +80,16 @@ public:
 
 	/**
 	 * @brief Finalizes the build process and returns the constructed Node object.
-	 * @return A shared_ptr to the fully configured Node object.
+	 * @return A `std::shared_ptr<C<T>>` to the fully configured BaseNode object.
 	 */
 	std::shared_ptr<C<T>> build() {
 		return nodePtr;
 	}
 
 	/**
-	 * @brief Sets the data for the Node being built.
-	 * @param data The data to set.
-	 * @return A reference to the `B` class for chaining.
+	 * @brief Sets the data for the BaseNode being built.
+	 * @param data (`T`) The data to set.
+	 * @return A `B &` reference to the derived builder class for chaining.
 	 */
 	B &withData(T data) {
 		nodePtr->setData(data);
@@ -91,8 +98,8 @@ public:
 
 	/**
 	 * @brief Sets the flags for the Node being built.
-	 * @param flags (`ByteFlag``) the flag value to set.
-	 * @return A reference to the `B` class for chaining.
+	 * @param flags (`ByteFlag`) the ByteFlag value to set.
+	 * @return A `B &` reference to the derived builder class for chaining.
 	 */
 	B &withFlags(ByteFlag flags) {
 		nodePtr->setFlags(flags);
@@ -101,19 +108,18 @@ public:
 
 	/**
 	 * @brief Sets the parent Node for the Node being built.
-	 * @param parent A shared pointer to the parent Node.
-	 * @return A reference to the `B` class for chaining.
+	 * @param parent (`std::shared_ptr<C<T>>`) A shared pointer to the parent BaseNode.
+	 * @return A `B &` reference to the derived builder class for chaining.
 	 */
 	B &withParent(std::shared_ptr<C<T>> parent) {
-		// nodePtr->setParent(std::static_pointer_cast<Node<T>>(parent));
 		nodePtr->setParent(parent);
 		return derived();
 	}
 
 	/**
 	 * @brief Sets the right child Node for the Node being built.
-	 * @param right A shared pointer to the right child Node.
-	 * @return A reference to the `B` class for chaining.
+	 * @param right (`std::shared_potr<C<T>>`) A shared pointer to the right child Node.
+	 * @return A `B &` reference to the derived builder class for chaining.
 	 */
 	B &withRight(std::shared_ptr<C<T>> right) {
 		nodePtr->setRight(right);
@@ -122,8 +128,8 @@ public:
 
 	/**
 	 * @brief Sets the left child Node for the Node being built.
-	 * @param left A shared pointer to the left child Node.
-	 * @return A reference to the `B` class for chaining.
+	 * @param left (`std::shared_potr<C<T>>`) A shared pointer to the left child Node.
+	 * @return A `B &` reference to the derived builder class for chaining.
 	 */
 	B &withLeft(std::shared_ptr<C<T>> left) {
 		nodePtr->setLeft(left);
@@ -134,28 +140,36 @@ public:
 /**
  * @class NodeBuilder
  * @brief Concrete builder implementation for Node<T>
+ * @tparam T The type of data for the Node being built
  */
 template<typename T>
 class NodeBuilder : public BaseNodeBuilder<T, Node, NodeBuilder<T>> {
 public:
 
+	/**
+	 * @brief Default constructor initializing the base builder
+	 */
 	NodeBuilder() : BaseNodeBuilder<T, Node, NodeBuilder<T>>() {}
 };
 
 /**
  * @class TreeNodeBuilder
- * @brief Concreete builder implementaiton for a TreeNode<T>
+ * @brief Concrete builder implementation for TreeNode<T>
+ * @tparam T The type of data for the TreeNode being built
  */
 template<typename T>
 class TreeNodeBuilder : public BaseNodeBuilder<T, TreeNode, TreeNodeBuilder<T>> {
 public:
 
+	/**
+	 * @brief Default constructor initializing the base builder
+	 */
 	TreeNodeBuilder() : BaseNodeBuilder<T, TreeNode, TreeNodeBuilder<T>>() {}
 
 	/**
-	 * @brief Sets the child array to an inital vector of elements
-	 * @param children (`std::vector<T>`) a reference to a child object vector
-	 * @return A reference to the `TreeNodeBuilder` class for chaining.
+	 * @brief Sets the child array to an initial vector of elements
+	 * @param children (`std::vector<T>`) A reference to a vector of child objects
+	 * @return A `B &` reference to the TreeNodeBuilder for method chaining
 	 */
 	TreeNodeBuilder &withChildren(std::vector<T> &children) {
 		this->nodePtr->setChildren(children);

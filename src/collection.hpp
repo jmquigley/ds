@@ -6,14 +6,13 @@
  */
 #pragma once
 
+#include <basenode.hpp>
+#include <comparator.hpp>
 #include <cstddef>
+#include <cstdlib>
 #include <memory>
+#include <property.hpp>
 #include <stdexcept>
-
-#include "comparator.hpp"
-#include "node.hpp"
-#include "property.hpp"
-#include "stdlib.h"
 
 /**
  * @file collection.hpp
@@ -23,19 +22,24 @@
 namespace ds {
 /**
  * @brief Namespace for data structures.
+ * @tparam T the data type that will be stored in the collection
+ * @tparam C the BaseNode class type that will be used within the collection
+ *
  */
-template<typename T>
+template<typename T, template<class> class C>
 class Collection {
+protected:
+
 	/**
 	 * @brief Pointer to the first/front element in the collection.
 	 * @protected
 	 */
-	PROPERTY_SCOPED(_front, Front, std::weak_ptr<Node<T>>, protected:);
+	PROPERTY_SCOPED(_front, Front, std::weak_ptr<C<T>>, protected:);
 	/**
 	 * @brief Pointer to the last/back element in the collection.
 	 * @protected
 	 */
-	PROPERTY_SCOPED(_back, Back, std::weak_ptr<Node<T>>, protected:);
+	PROPERTY_SCOPED(_back, Back, std::weak_ptr<C<T>>, protected:);
 	/**
 	 * @brief The number of elements currently in the collection.
 	 * @protected
@@ -45,7 +49,7 @@ class Collection {
 	 * @brief Pointer to the root element of tree-like collections.
 	 * @protected
 	 */
-	PROPERTY_SCOPED(_root, Root, std::shared_ptr<Node<T>>, protected:);
+	PROPERTY_SCOPED(_root, Root, std::shared_ptr<C<T>>, protected:);
 
 protected:
 
@@ -56,12 +60,6 @@ protected:
 	 * of the collection.
 	 */
 	Comparator<T> comparator;
-	/**
-	 * @brief A sentinel node often used in tree-based or linked-list structures.
-	 *
-	 * An empty node that can be used for comparison as a NIL value.
-	 */
-	Node<T> nil;
 
 public:
 
@@ -90,13 +88,13 @@ public:
 	 * @param col (`Collection &`) the collection to compare against
 	 * @return true if both collections have the same values, otherwise false
 	 */
-	bool operator==(const Collection<T> &col) const {
+	bool operator==(const Collection<T, C> &col) const {
 		if (this->_size != col.size()) {
 			return false;
 		}
 
-		std::shared_ptr<Node<T>> r1 = this->_root;
-		std::shared_ptr<Node<T>> r2 = col.getRoot();
+		std::shared_ptr<C<T>> r1 = this->_root;
+		std::shared_ptr<C<T>> r2 = col.getRoot();
 
 		while (r1 && r2) {
 			if (this->comparator(r1->getData(), r2->getData()) != 0) {
@@ -115,7 +113,7 @@ public:
 	 * @param col (`Collection &`) the list to compare against
 	 * @return false if both lists have the same values, otherwise true
 	 */
-	bool operator!=(const Collection<T> &col) const {
+	bool operator!=(const Collection<T, C> &col) const {
 		return !operator==(col);
 	}
 
@@ -127,7 +125,7 @@ public:
 	 *
 	 * @return A reference to the current object (`*this`).
 	 */
-	Collection<T> &operator~() {
+	Collection<T, C> &operator~() {
 		this->clear();
 		return *this;
 	}
@@ -186,7 +184,7 @@ public:
 	 * @brief a convenience method to get the current root pointer
 	 * @returns a `std::shared_ptr<Node<T>>` that contains the current root
 	 */
-	inline virtual std::shared_ptr<Node<T>> root() const {
+	inline virtual std::shared_ptr<C<T>> root() const {
 		return this->_root;
 	}
 

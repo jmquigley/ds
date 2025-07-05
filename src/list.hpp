@@ -32,7 +32,7 @@ namespace ds {
  * @tparam T The type of data stored within the list.
  */
 template<typename T>
-class List : public Collection<T>, public Iterable<T> {
+class List : public Collection<T, Node>, public Iterable<T> {
 protected:
 
 	/**
@@ -111,14 +111,14 @@ public:
 	/**
 	 * @brief Default constructor that initializes an empty list.
 	 */
-	List() : Collection<T>() {}
+	List() : Collection<T, Node>() {}
 
 	/**
 	 * @brief Constructor that initializes a list with a custom comparator.
 	 *
 	 * @param comparator The comparator function to use for element comparison
 	 */
-	List(Comparator<T> comparator) : Collection<T>(comparator) {}
+	List(Comparator<T> comparator) : Collection<T, Node>(comparator) {}
 
 	/**
 	 * @brief a List copy constructor
@@ -136,7 +136,7 @@ public:
 	 *
 	 * @param il (`std::initializer_list`) a list of values to see the list
 	 */
-	List(std::initializer_list<T> il) : Collection<T>() {
+	List(std::initializer_list<T> il) : Collection<T, Node>() {
 		for (auto it: il) {
 			this->insert(it);
 		}
