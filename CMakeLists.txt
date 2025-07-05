@@ -44,6 +44,7 @@ include_directories(
 )
 
 set(DS_SOURCES
+    src/basenode.hpp
     src/binarytree.hpp
     src/bitflag.hpp
     src/builder.hpp

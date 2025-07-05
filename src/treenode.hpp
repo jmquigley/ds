@@ -7,8 +7,10 @@
 
 #pragma once
 
-#include <node.hpp>
+#include <basenode.hpp>
+#include <memory>
 #include <property.hpp>
+#include <vector>
 
 /**
  * @namespace ds
@@ -73,6 +75,22 @@ public:
 	 */
 	std::vector<T> children() const {
 		return this->_children;
+	}
+
+	/**
+	 * @brief Creates a deep copy of this node
+	 *
+	 * This function creates a true deep copy of the node,
+	 * including properly copying the data and color state.
+	 * The new node will not have any parent or child relationships
+	 * since those should be established by the tree structure.
+	 *
+	 * @returns a copy of the Node<T> that was created
+	 */
+	TreeNode<T> deepcopy() const {
+		TreeNodeBuilder<T> builder;
+		auto newNode = builder.withData(this->_data).withFlags(this->_flags).build();
+		return *newNode;
 	}
 };
 
