@@ -128,7 +128,7 @@ public:
 	 * @return a `T` data element
 	 * @throws std::bad_weak_ptr if the requested back pointer is not available
 	 */
-	T back() const {
+	inline T back() const {
 		return this->_back.lock()->getData();
 	}
 
@@ -150,7 +150,7 @@ public:
 	 * @brief Check if the collection is empty
 	 * @return true if the colleciton is empty, otherwise false
 	 */
-	bool empty() const {
+	inline bool empty() const {
 		return this->_size == 0;
 	}
 
@@ -158,7 +158,7 @@ public:
 	 * @brief retrieves the element at the front of the collection
 	 * @return a `T` data element
 	 */
-	T front() const {
+	inline T front() const {
 		return this->_front.lock()->getData();
 	}
 
@@ -174,7 +174,7 @@ public:
 	 * @brief returns the size of the collection class
 	 * @returns the size of the collection
 	 */
-	size_t size() const {
+	inline size_t size() const {
 		return this->_size;
 	}
 

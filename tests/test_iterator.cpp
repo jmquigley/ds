@@ -38,12 +38,12 @@ public:
 	TestIterator() : TestingBase() {};
 };
 
-class LocalIterator : public ds::BaseIterator<int> {
+class LocalIterator : public ds::BaseIterator<int, ds::Node> {
 public:
 
-	LocalIterator(std::weak_ptr<ds::Node<int>> lp) : ds::BaseIterator<int>(lp) {}
+	LocalIterator(std::weak_ptr<ds::Node<int>> lp) : ds::BaseIterator<int, ds::Node>(lp) {}
 
-	LocalIterator() : ds::BaseIterator<int>() {}
+	LocalIterator() : ds::BaseIterator<int, ds::Node>() {}
 };
 
 TEST_F(TestIterator, CreateIterator) {

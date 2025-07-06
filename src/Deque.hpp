@@ -34,7 +34,7 @@ private:
 	 *
 	 * @returns `boolean` true if in an overflow condition, otherwise false.
 	 */
-	bool overflow() {
+	inline bool overflow() {
 		return this->_size >= this->_maxSize;
 	}
 
@@ -115,7 +115,7 @@ public:
 	 * @brief deletes everything from the current deque and resets it to its
 	 * initialized state.
 	 */
-	void clear() {
+	inline void clear() {
 		Queue<T>::clear();
 	}
 

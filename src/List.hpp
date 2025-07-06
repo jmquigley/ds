@@ -84,19 +84,19 @@ public:
 	 * Provides a standard iterator interface for List traversal,
 	 * extending the IteratorBase template with List-specific functionality.
 	 */
-	class Iterator : public BaseIterator<T> {
+	class Iterator : public BaseIterator<T, Node> {
 	public:
 
 		/**
 		 * @brief Default constructor creating an empty iterator.
 		 */
-		Iterator() : BaseIterator<T>() {}
+		Iterator() : BaseIterator<T, Node>() {}
 
 		/**
 		 * @brief Constructor that initializes the iterator with a node pointer.
 		 * @param lp Weak pointer to a Node<T> to start iterating from
 		 */
-		Iterator(std::weak_ptr<Node<T>> lp) : BaseIterator<T>(lp) {}
+		Iterator(std::weak_ptr<Node<T>> lp) : BaseIterator<T, Node>(lp) {}
 	};
 
 	/**
@@ -197,7 +197,7 @@ public:
 	 * @brief Retrieves an iterator to the front of the list
 	 * @returns A new Iterator object that points to the front of the list
 	 */
-	Iterator begin() const {
+	inline Iterator begin() const {
 		return Iterator(this->_front);
 	}
 
@@ -205,7 +205,7 @@ public:
 	 * @brief Retrieves an iterator to the back of the list
 	 * @returns A new Iterator object that points to the back of the list
 	 */
-	Iterator rbegin() const {
+	inline Iterator rbegin() const {
 		return Iterator(this->_back);
 	}
 
@@ -234,7 +234,7 @@ public:
 	 * @brief Checks if a `T` data element exists within the list
 	 * @returns true if the data element exists in the list, otherwise false.
 	 */
-	bool contains(T data) const override {
+	inline bool contains(T data) const override {
 		Match<T> match = find(data);
 		return match.found();
 	}
@@ -243,7 +243,7 @@ public:
 	 * @brief Retrieves an iterator to the back of the list
 	 * @returns A new Iterator object that points to the end of the list
 	 */
-	Iterator end() const {
+	inline Iterator end() const {
 		return Iterator();
 	}
 
@@ -251,7 +251,7 @@ public:
 	 * @brief Retrieves an iterator to the front of the list
 	 * @returns A new Iterator object that points to the front of the list
 	 */
-	Iterator rend() const {
+	inline Iterator rend() const {
 		return Iterator();
 	}
 
@@ -348,7 +348,7 @@ public:
 	 * @brief Converts the list to a JSON string representation.
 	 * @return std::string JSON representation of the list
 	 */
-	virtual std::string json() const override {
+	inline virtual std::string json() const override {
 		return this->str();
 	}
 

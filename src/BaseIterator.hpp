@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Node.hpp>
 #include <memory>
+#include <property.hpp>
 
 namespace ds {
 
@@ -15,20 +15,20 @@ namespace ds {
  *
  * @tparam T The type of data stored in the nodes being iterated
  */
-template<typename T>
+template<typename T, template<class> class C>
 class BaseIterator {
 	/// @brief an internal pointer to the object that will be iterated
-	PROPERTY(lp, Lp, std::weak_ptr<Node<T>>);
+	PROPERTY(lp, Lp, std::weak_ptr<C<T>>);
 
 public:
 
-	BaseIterator() : BaseIterator(std::weak_ptr<Node<T>>()) {};
+	BaseIterator() : BaseIterator(std::weak_ptr<C<T>>()) {};
 
 	/**
 	 * @brief Constructor that initializes the iterator with a node pointer.
 	 * @param lp Shared pointer to the starting node for iteration
 	 */
-	BaseIterator(std::weak_ptr<Node<T>> lp) : lp(lp) {}
+	BaseIterator(std::weak_ptr<C<T>> lp) : lp(lp) {}
 
 	~BaseIterator() {
 		if (lp.lock()) {

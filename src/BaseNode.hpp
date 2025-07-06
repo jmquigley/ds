@@ -198,7 +198,7 @@ public:
 	 * @brief Convenience method to get the data stored in the node
 	 * @returns a `T &` that references the data in the node
 	 */
-	T &data() {
+	inline T &data() {
 		return this->_data;
 	}
 
@@ -206,7 +206,7 @@ public:
 	 * Checks if this node is black.
 	 * @return true if the node is black, false otherwise
 	 */
-	bool isBlack() const {
+	inline bool isBlack() const {
 		return _flags[0] == 1;
 	}
 
@@ -214,7 +214,7 @@ public:
 	 * Checks if this node is red.
 	 * @return true if the node is red, false otherwise
 	 */
-	bool isRed() const {
+	inline bool isRed() const {
 		return _flags[0] == 0;
 	}
 
@@ -258,7 +258,7 @@ public:
 	 * Sets this node's color to red.
 	 * In the Red-Black tree, red is represented by unsetting the Color flag.
 	 */
-	void setRed() {
+	inline void setRed() {
 		this->_flags.unset(NodeFlag::Color);
 	}
 
@@ -266,7 +266,7 @@ public:
 	 * Sets this node's color to black.
 	 * In the Red-Black tree, black is represented by setting the Color flag.
 	 */
-	void setBlack() {
+	inline void setBlack() {
 		this->_flags.set(NodeFlag::Color);
 	}
 
@@ -276,7 +276,7 @@ public:
 	 * Currently, it formats the node's data into a simple JSON-like string.
 	 * @return A string representing the node's content.
 	 */
-	std::string str() const {
+	inline std::string str() const {
 		std::stringstream ss;
 
 		ss << "{";
