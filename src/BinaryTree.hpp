@@ -6,6 +6,7 @@
 #include <Node.hpp>
 #include <TreeNode.hpp>
 #include <cstddef>
+#include <functional>
 #include <limits>
 #include <property.hpp>
 #include <string>
@@ -50,21 +51,58 @@ private:
 	}
 
 	/**
+	 * @brief Calculates the height of a subtree rooted at the given node
+	 *
+	 * This recursive function computes the height of a binary tree, defined as the
+	 * maximum number of edges from the node to the most distant leaf node.
+	 * A leaf node has a height of 0, and an empty tree (null node) has a height of -1.
+	 *
+	 * The algorithm works by:
+	 * 1. Returning -1 if the node is null (base case)
+	 * 2. Recursively finding the height of left and right subtrees
+	 * 3. Taking the maximum of those heights and adding 1 for the current level
+	 *
+	 * Time complexity: O(n) where n is the number of nodes in the subtree
+	 * Space complexity: O(h) where h is the height of the tree (for recursion stack)
+	 *
+	 * @param node The root of the subtree whose height is being calculated
+	 * @return The height of the subtree as a signed integer (or -1 for empty trees)
+	 */
+	ssize_t findHeight(std::shared_ptr<TreeNode<T>> node) {
+		if (node == nullptr) {
+			return -1;
+		}
+
+		ssize_t heightLeft = findHeight(node->left());
+		ssize_t heightRight = findHeight(node->right());
+
+		if (heightLeft > heightRight) {
+			return heightLeft + 1;
+		} else {
+			return heightRight + 1;
+		}
+	}
+
+	/**
 	 * @brief Helper function to perform in-order traversal of the tree
 	 *
 	 * Recursively visits left subtree, the node itself, and then the right subtree
 	 *
 	 * @param node The current node in the traversal
-	 * @param out Vector to collect the elements in in-order sequence
+	 * @param callback a callback function that will be executed using each
+	 * node as it is encountered (if defined).
 	 */
-	void inorderDelegate(std::shared_ptr<TreeNode<T>> node, std::vector<T> &out) {
+	void inorderDelegate(std::shared_ptr<TreeNode<T>> node,
+						 std::function<void(TreeNode<T> &node)> callback = nullptr) {
 		if (node == nullptr) {
 			return;
 		}
 
-		this->inorderDelegate(node->getLeft(), out);
-		out.push_back(node->getData());
-		this->inorderDelegate(node->getRight(), out);
+		this->inorderDelegate(node->getLeft(), callback);
+		if (callback) {
+			callback(*node);
+		}
+		this->inorderDelegate(node->getRight(), callback);
 	}
 
 	/**
@@ -192,16 +230,20 @@ private:
 	 * Recursively visits left subtree, right subtree, then the node itself.
 	 *
 	 * @param node The current node in the traversal
-	 * @param out Vector to collect the elements in post-order sequence
+	 * @param callback a callback function that will be executed using each
+	 * node as it is encountered (if defined).
 	 */
-	void postorderDelegate(std::shared_ptr<TreeNode<T>> node, std::vector<T> &out) {
+	void postorderDelegate(std::shared_ptr<TreeNode<T>> node,
+						   std::function<void(TreeNode<T> &node)> callback = nullptr) {
 		if (node == nullptr) {
 			return;
 		}
 
-		this->postorderDelegate(node->getLeft(), out);
-		this->postorderDelegate(node->getRight(), out);
-		out.push_back(node->getData());
+		this->postorderDelegate(node->getLeft(), callback);
+		this->postorderDelegate(node->getRight(), callback);
+		if (callback) {
+			callback(*node);
+		}
 	}
 
 	/**
@@ -210,16 +252,20 @@ private:
 	 * Recursively visits the node itself, then left subtree, then right subtree.
 	 *
 	 * @param node The current node in the traversal
-	 * @param out Vector to collect the elements in pre-order sequence
+	 * @param callback a callback function that will be executed using each
+	 * node as it is encountered (if defined).
 	 */
-	void preorderDelegate(std::shared_ptr<TreeNode<T>> node, std::vector<T> &out) {
+	void preorderDelegate(std::shared_ptr<TreeNode<T>> node,
+						  std::function<void(TreeNode<T> &node)> callback = nullptr) {
 		if (node == nullptr) {
 			return;
 		}
 
-		out.push_back(node->getData());
-		this->preorderDelegate(node->getLeft(), out);
-		this->preorderDelegate(node->getRight(), out);
+		if (callback) {
+			callback(*node);
+		}
+		this->preorderDelegate(node->getLeft(), callback);
+		this->preorderDelegate(node->getRight(), callback);
 	}
 
 	/**
@@ -317,6 +363,16 @@ public:
 	 */
 	BinaryTree(Comparator<T> comparator) : BaseTree<T, TreeNode>(comparator) {}
 
+	/**
+	 * @brief Iterates through the tree and saves all date elements into an array.
+	 *
+	 * This function follows an inorder traverslal to build the list.
+	 * @param out a referece to the vector that should contain each data element
+	 */
+	void array(std::vector<T> &out) {
+		inorderDelegate(this->root(), [&](TreeNode<T> &node) { out.push_back(node.getData()); });
+	}
+
 	T at(size_t index) const override {
 		// TODO: implement at in BinaryTree
 		T data {};
@@ -344,17 +400,40 @@ public:
 	}
 
 	/**
+	 * @brief Calculates the height of the binary tree
+	 *
+	 * The height of a tree is defined as the number of edges on the longest path
+	 * from the root node to any leaf node. An empty tree has a height of 0, and
+	 * a tree with only a root node also has a height of 0.
+	 *
+	 * This method serves as a public interface that:
+	 * 1. Calls the private recursive findHeight() method starting at the root
+	 * 2. Transforms the result to ensure empty or invalid trees return 0 instead of -1
+	 * 3. Presents a consistent height definition to external callers
+	 *
+	 * Time complexity: O(n) where n is the number of nodes in the tree
+	 * Space complexity: O(h) where h is the height of the tree (for recursion stack)
+	 *
+	 * @return The height of the tree as a non-negative integer
+	 */
+	size_t height() override {
+		ssize_t n;
+		n = this->findHeight(this->root());
+		return n <= 0 ? 0 : n;
+	}
+
+	/**
 	 * @brief Performs an in-order traversal of the tree
 	 *
 	 * In-order traversal visits nodes in the order: left subtree, root, then right subtree.
-	 * This traversal is useful to retrieve the data in sorted order.
+	 * This traversal is useful to retrieve the data in sorted order.  As each node is
+	 * encounterd it is passed to a callback function for use.
 	 *
-	 * @return A vector containing the elements in in-order traversal sequence
+	 * @param callback a function pointer that will be executed on each node as it is
+	 * encountered.
 	 */
-	std::vector<T> inorder() {
-		std::vector<T> out;
-		this->inorderDelegate(this->_root, out);
-		return out;
+	void inorder(std::function<void(TreeNode<T> &node)> callback) {
+		this->inorderDelegate(this->_root, callback);
 	}
 
 	/**
@@ -385,12 +464,11 @@ public:
 	 * This traversal is useful for operations where child nodes must be processed before parent
 	 * nodes, such as when deleting nodes or calculating a tree's height.
 	 *
-	 * @return A vector containing the elements in post-order traversal sequence
+	 * @param callback a function pointer that will be executed on each node as it is
+	 * encountered.
 	 */
-	std::vector<T> postorder() {
-		std::vector<T> out;
-		this->postorderDelegate(this->_root, out);
-		return out;
+	void postorder(std::function<void(TreeNode<T> &node)> callback) {
+		this->postorderDelegate(this->_root, callback);
 	}
 
 	/**
@@ -400,12 +478,11 @@ public:
 	 * This traversal is useful for creating a copy of the tree or generating a prefix expression
 	 * from an expression tree. It also naturally corresponds to depth-first search.
 	 *
-	 * @return A vector containing the elements in pre-order traversal sequence
+	 * @param callback a function pointer that will be executed on each node as it is
+	 * encountered.
 	 */
-	std::vector<T> preorder() {
-		std::vector<T> out;
-		this->preorderDelegate(this->_root, out);
-		return out;
+	void preorder(std::function<void(TreeNode<T> &node)> callback) {
+		this->preorderDelegate(this->_root, callback);
 	}
 
 	/**

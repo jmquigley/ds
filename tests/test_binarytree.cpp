@@ -1,6 +1,7 @@
 #include <testing_base.h>
 
 #include <BinaryTree.hpp>
+#include <TreeNode.hpp>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -22,10 +23,13 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 	bt.insert(5);
 	bt.insert(7);
 
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_EQ(bt.size(), 7);
+
 	std::vector<int> out;
 	std::string comma;
 
-	out = bt.inorder();
+	bt.array(out);
 	EXPECT_EQ(out.size(), 7);
 	EXPECT_EQ(out[0], 1);
 	EXPECT_EQ(out[1], 2);
@@ -43,7 +47,9 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 	}
 	std::cout << std::endl;
 
-	out = bt.postorder();
+	out.clear();
+	bt.postorder([&](auto &node) { out.push_back(node.getData()); });
+
 	EXPECT_EQ(out.size(), 7);
 	EXPECT_EQ(out[0], 1);
 	EXPECT_EQ(out[1], 3);
@@ -61,7 +67,9 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 	}
 	std::cout << std::endl;
 
-	out = bt.preorder();
+	out.clear();
+	bt.preorder([&](auto &node) { out.push_back(node.getData()); });
+
 	EXPECT_EQ(out.size(), 7);
 	EXPECT_EQ(out[0], 2);
 	EXPECT_EQ(out[1], 1);
