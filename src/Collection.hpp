@@ -64,7 +64,7 @@ public:
 
 	/**
 	 * @brief Constructor for Collection that takes a custom comparator.
-	 * @param comparator An object used to compare elements of type T.
+	 * @param comparator (`Comparator<T>`) An object used to compare elements of type T.
 	 */
 	Collection(Comparator<T> comparator) : Collection() {
 		this->comparator = comparator;
@@ -78,7 +78,7 @@ public:
 
 	/**
 	 * @brief Checks if the contents of two given collections are equal
-	 * @param col (`Collection &`) the collection to compare against
+	 * @param col (`Collection<T, C>`) the collection to compare against
 	 * @return true if both collections have the same values, otherwise false
 	 */
 	bool operator==(const Collection<T, C> &col) const {
@@ -103,7 +103,7 @@ public:
 
 	/**
 	 * @brief Checks if the contents of two given collections are not equal
-	 * @param col (`Collection &`) the list to compare against
+	 * @param col (`Collection<T,C> &`) the list to compare against
 	 * @return false if both lists have the same values, otherwise true
 	 */
 	bool operator!=(const Collection<T, C> &col) const {
@@ -128,7 +128,7 @@ public:
 	 * @return a `T` data element
 	 * @throws std::bad_weak_ptr if the requested back pointer is not available
 	 */
-	T back() {
+	T back() const {
 		return this->_back.lock()->getData();
 	}
 
@@ -140,15 +140,17 @@ public:
 
 	/**
 	 * @brief Checks a container for the existence of the given T element
+	 * @param data (`T`) the data element to find within the collection
 	 * @return true if found in the container, otherwise false
+	 * @pure
 	 */
-	virtual bool contains(T data) = 0;
+	virtual bool contains(T data) const = 0;
 
 	/**
 	 * @brief Check if the collection is empty
 	 * @return true if the colleciton is empty, otherwise false
 	 */
-	bool empty() {
+	bool empty() const {
 		return this->_size == 0;
 	}
 
@@ -156,18 +158,21 @@ public:
 	 * @brief retrieves the element at the front of the collection
 	 * @return a `T` data element
 	 */
-	T front() {
+	T front() const {
 		return this->_front.lock()->getData();
 	}
 
 	/**
 	 * @brief returns a JSON representation of the given collection.
+	 * @returns a std::string that contains a json representation of the
+	 * collection
 	 * @pure
 	 */
 	virtual std::string json() const = 0;
 
 	/**
 	 * @brief returns the size of the collection class
+	 * @returns the size of the collection
 	 */
 	size_t size() const {
 		return this->_size;
@@ -183,7 +188,7 @@ public:
 
 	/**
 	 * @brief Returns a string representation of the collection's contents.
-	 * @return std::string A string describing the collection.
+	 * @return a `std::string` A string describing the collection.
 	 * @pure
 	 */
 	virtual std::string str() const = 0;

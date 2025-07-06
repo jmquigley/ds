@@ -41,7 +41,11 @@ public:
 	 * @param parent Weak pointer to parent node
 	 * @param data The data to store in this node
 	 */
-	TreeNode(std::weak_ptr<TreeNode<T>> parent, T data) : BaseNode<T, TreeNode>() {}
+	TreeNode(std::weak_ptr<TreeNode<T>> parent, T data)
+		: BaseNode<T, TreeNode>::_data(data),
+		  BaseNode<T, TreeNode>::_left(nullptr),
+		  BaseNode<T, TreeNode>::_right(nullptr),
+		  _parent(parent) {}
 
 	/**
 	 * @brief Comprehensive constructor for a complete node initialization

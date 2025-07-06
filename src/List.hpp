@@ -161,7 +161,7 @@ public:
 	 * @returns the data element located at the given index
 	 * @throws std::out_of_range error if an invalid index is requested
 	 */
-	T at(size_t index) {
+	T at(size_t index) const override {
 		if (index < 0 or index >= this->_size) {
 			throw std::out_of_range("Invalid list position index requested");
 		}
@@ -197,7 +197,7 @@ public:
 	 * @brief Retrieves an iterator to the front of the list
 	 * @returns A new Iterator object that points to the front of the list
 	 */
-	Iterator begin() {
+	Iterator begin() const {
 		return Iterator(this->_front);
 	}
 
@@ -205,7 +205,7 @@ public:
 	 * @brief Retrieves an iterator to the back of the list
 	 * @returns A new Iterator object that points to the back of the list
 	 */
-	Iterator rbegin() {
+	Iterator rbegin() const {
 		return Iterator(this->_back);
 	}
 
@@ -234,7 +234,7 @@ public:
 	 * @brief Checks if a `T` data element exists within the list
 	 * @returns true if the data element exists in the list, otherwise false.
 	 */
-	bool contains(T data) override {
+	bool contains(T data) const override {
 		Match<T> match = find(data);
 		return match.found();
 	}
@@ -243,7 +243,7 @@ public:
 	 * @brief Retrieves an iterator to the back of the list
 	 * @returns A new Iterator object that points to the end of the list
 	 */
-	Iterator end() {
+	Iterator end() const {
 		return Iterator();
 	}
 
@@ -251,7 +251,7 @@ public:
 	 * @brief Retrieves an iterator to the front of the list
 	 * @returns A new Iterator object that points to the front of the list
 	 */
-	Iterator rend() {
+	Iterator rend() const {
 		return Iterator();
 	}
 
@@ -261,7 +261,7 @@ public:
 	 * @returns a `Match<T>` object that contains information about the `Node`
 	 * that was found in the search.
 	 */
-	virtual Match<T> find(T data) override {
+	virtual Match<T> find(T data) const override {
 		size_t index = 0;
 		std::shared_ptr<Node<T>> lp = this->_root;
 		Match<T> match;
@@ -402,7 +402,7 @@ public:
 	 * @param value (`T`) a data value to find and remove from the list
 	 * @returns the T value that was removed from the list
 	 */
-	virtual T removeValue(T value) {
+	virtual T removeValue(T value) override {
 		if (this->_size == 0) {
 			throw std::out_of_range("Invalid list position requested for remove");
 		}

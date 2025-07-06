@@ -84,7 +84,7 @@ public:
 	 * @brief returns the item at the end of the queue
 	 * @returns a `T` object at the back of the queue
 	 */
-	T back() {
+	T back() const {
 		return List<T>::back();
 	}
 
@@ -92,7 +92,7 @@ public:
 	 * @brief Checks if an element exists in the Queue
 	 * @returns true if the item is in the Queue otherwise false
 	 */
-	bool contains(T data) {
+	bool contains(T data) const {
 		return List<T>::contains(data);
 	}
 
@@ -146,7 +146,7 @@ public:
 	 * @returns a `size_t` of the number of elements in the queue
 	 */
 	size_t size() const {
-		return this->_size;
+		return List<T>::size();
 	}
 };
 

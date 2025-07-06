@@ -56,7 +56,7 @@ public:
 	 * @returns the data element located at the given index
 	 * @pure
 	 */
-	virtual T at(size_t index) = 0;
+	virtual T at(size_t index) const = 0;
 
 	/**
 	 * @brief Find function for iterable collection classes.
@@ -64,7 +64,7 @@ public:
 	 * @return Match<T> A match object indicating whether the element was found
 	 * @pure
 	 */
-	virtual Match<T> find(T data) = 0;
+	virtual Match<T> find(T data) const = 0;
 
 	/**
 	 * @brief Insert the given data into a collection at back of the collection

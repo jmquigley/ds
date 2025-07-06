@@ -10,6 +10,7 @@
 namespace ds {
 
 /**
+ * @class BaseBitFlag
  * @brief bit flag management class
  * @tparam T The integral type used to store the flags
  *

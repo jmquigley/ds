@@ -17,6 +17,7 @@ namespace ds {
  */
 template<typename T>
 class BaseIterator {
+	/// @brief an internal pointer to the object that will be iterated
 	PROPERTY(lp, Lp, std::weak_ptr<Node<T>>);
 
 public:

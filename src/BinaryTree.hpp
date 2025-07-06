@@ -184,8 +184,6 @@ private:
 
 		node = builder.withData(data).withParent(parent).asRed().build();
 		return node;
-		// BUG: check if this can just return node
-		// return std::static_pointer_cast<TreeNode<T>>(node);
 	}
 
 	/**
@@ -224,6 +222,19 @@ private:
 		this->preorderDelegate(node->getRight(), out);
 	}
 
+	/**
+	 * @brief Performs a left rotation on the given node
+	 *
+	 * A left rotation is a local operation in a binary search tree that changes the structure
+	 * without interfering with the in-order traversal order of the nodes. It's commonly
+	 * used in self-balancing trees like Red-Black trees and AVL trees.
+	 *
+	 * The rotation takes the right child of xnode (ynode) and makes it the new root
+	 * of the subtree, with xnode becoming the left child of ynode. The left child of
+	 * ynode (if any) becomes the right child of xnode.
+	 *
+	 * @param xnode The node to rotate around, which will become the left child after rotation
+	 */
 	void rotateLeft(std::shared_ptr<TreeNode<T>> xnode) {
 		std::shared_ptr<TreeNode<T>> ynode = xnode->getRight();
 
@@ -251,6 +262,19 @@ private:
 		xnode->setParent(ynode);  // fix the parent pointer after previous move
 	}
 
+	/**
+	 * @brief Performs a right rotation on the given node
+	 *
+	 * A right rotation is a local operation in a binary search tree that changes the structure
+	 * without interfering with the in-order traversal order of the nodes. It's commonly
+	 * used in self-balancing trees like Red-Black trees and AVL trees.
+	 *
+	 * The rotation takes the left child of xnode (ynode) and makes it the new root
+	 * of the subtree, with xnode becoming the right child of ynode. The right child of
+	 * ynode (if any) becomes the left child of xnode.
+	 *
+	 * @param xnode The node to rotate around, which will become the right child after rotation
+	 */
 	void rotateRight(std::shared_ptr<TreeNode<T>> xnode) {
 		std::shared_ptr<TreeNode<T>> ynode = xnode->getLeft();
 
@@ -293,7 +317,7 @@ public:
 	 */
 	BinaryTree(Comparator<T> comparator) : BaseTree<T, TreeNode>(comparator) {}
 
-	T at(size_t index) {
+	T at(size_t index) const override {
 		// TODO: implement at in BinaryTree
 		T data {};
 		return data;
@@ -308,12 +332,12 @@ public:
 		this->_size = 0;
 	}
 
-	bool contains(T data) {
+	bool contains(T data) const override {
 		// TODO: implements contains in BinaryTree
 		return false;
 	}
 
-	Match<T> find(T data) {
+	Match<T> find(T data) const override {
 		// TODO: implement find in BinaryTree
 		Match<T> match;
 		return match;
@@ -349,7 +373,7 @@ public:
 		}
 	}
 
-	std::string json() const {
+	std::string json() const override {
 		// TODO: implement json in BinaryTree
 		return "";
 	}
@@ -405,7 +429,7 @@ public:
 		return data;
 	}
 
-	std::string str() const {
+	std::string str() const override {
 		// TODO: implement str in BinaryTree
 		return "";
 	}

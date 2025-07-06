@@ -38,7 +38,7 @@ enum NodeFlag : unsigned char {
 template<typename T, template<class> class C>
 class BaseNode {
 	/// @brief The data payload of the node.
-	PROPERTY_SCOPED(_data, Data, T, protected:);
+	PROPERTY_SCOPED_D(_data, Data, T, protected:, {});
 	/// @brief flags used to determine bit properties in a node
 	PROPERTY_SCOPED(_flags, Flags, ByteFlag, protected:);
 	/// @brief A shared pointer to the left child node.
