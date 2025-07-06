@@ -4,10 +4,6 @@
 #include <memory>
 #include <vector>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes.
- */
 namespace ds {
 
 /**

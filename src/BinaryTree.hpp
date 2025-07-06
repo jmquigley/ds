@@ -1,7 +1,3 @@
-/**
- * @brief Defines a binary tree that uses the red-black algorithm
- */
-
 #pragma once
 
 #include <BaseNodeBuilder.hpp>
@@ -15,10 +11,6 @@
 #include <string>
 #include <vector>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes.
- */
 namespace ds {
 
 /**

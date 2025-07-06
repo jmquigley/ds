@@ -1,7 +1,3 @@
-/**
- * @brief Defines a doubly linked list data structure collection.
- */
-
 #pragma once
 
 #include <BaseIterator.hpp>
@@ -16,10 +12,6 @@
 #include <string>
 #include <vector>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes.
- */
 namespace ds {
 
 /**

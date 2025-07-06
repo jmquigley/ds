@@ -1,17 +1,9 @@
-/**
- * @brief Defines the object that will hold search/find results
- */
-
 #pragma once
 
 #include <Node.hpp>
 #include <memory>
 #include <property.hpp>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes.
- */
 namespace ds {
 
 /**

@@ -1,17 +1,9 @@
-/**
- * @brief Defines the interface that is used by all iterable data structures.
- */
-
 #pragma once
 
 #include <Match.hpp>
 #include <cstddef>
 #include <limits>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes.
- */
 namespace ds {
 
 /**

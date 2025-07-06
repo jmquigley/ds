@@ -1,16 +1,8 @@
-/**
- * @brief Defines a base class iterator for all collection classes
- */
-
 #pragma once
 
 #include <Node.hpp>
 #include <memory>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes.
- */
 namespace ds {
 
 /**

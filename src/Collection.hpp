@@ -1,9 +1,3 @@
-/**
- * @brief the base class for all collection object in the library.
- *
- * An abstract class that defines the basic structure of all collection
- * classes
- */
 #pragma once
 
 #include <Comparator.hpp>
@@ -15,9 +9,10 @@
 
 /**
  * @namespace ds
- * @brief Contains data structure related classes.
+ * @brief Contains data structure related classes for a set of collection classes
  */
 namespace ds {
+
 /**
  * @brief Namespace for data structures.
  * @tparam T the data type that will be stored in the collection

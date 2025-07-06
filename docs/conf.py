@@ -61,3 +61,4 @@ html_baseurl = 'http://localhost/'
 breathe_projects = {"ds": "/root/workspace/ds/build/doxygen/xml/"}
 breathe_default_project = "ds"
 breathe_default_members = ('members', 'undoc-members')
+breathe_implementation_filename_extensions = ['.c', '.cc', '.cpp', '.hpp']

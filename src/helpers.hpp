@@ -1,7 +1,3 @@
-/**
- * @brief generate utility functions shared by all classes
- */
-
 #pragma once
 
 #include <cstddef>
@@ -10,10 +6,6 @@
 #include <string>
 #include <type_traits>
 
-/**
- * @namespace ds
- * @brief Contains data structure related utilities and helper functions.
- */
 namespace ds {
 
 /**

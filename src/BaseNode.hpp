@@ -1,8 +1,3 @@
-/**
- * @brief Defines the BaseNode class template for all other types of collection nodes
- *
- */
-
 #pragma once
 
 #include <BaseBitFlag.hpp>
@@ -17,10 +12,6 @@
 #include <utility>
 #include <vector>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes.
- */
 namespace ds {
 
 /**

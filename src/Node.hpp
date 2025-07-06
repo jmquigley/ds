@@ -1,9 +1,3 @@
-/**
- * @brief Defines the Node class template for a collection class.
- *
- * This is a concrete implementation of the Node.
- */
-
 #pragma once
 
 #include <BaseNode.hpp>
@@ -12,10 +6,6 @@
 #include <utility>
 #include <vector>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes.
- */
 namespace ds {
 
 /**

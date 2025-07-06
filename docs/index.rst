@@ -13,11 +13,17 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-Table of Contents
-^^^^^^^^^^^^^^^^^
+API Classes
+^^^^^^^^^^^
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
+    :glob:
 
-    api/index
-    coverage
+    api/*
+
+Links
+^^^^^
+
+- `Coverage Results <coverage/index.html>`_
+- `Doxygen Generated Documentation <doxygen/index.html>`_

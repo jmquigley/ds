@@ -1,5 +1,17 @@
+#pragma once
+
+#include <algorithm>
+#include <bitset>
+#include <constants.hpp>
+#include <cstddef>
+#include <string>
+#include <type_traits>
+
+namespace ds {
+
 /**
  * @brief bit flag management class
+ * @tparam T The integral type used to store the flags
  *
  * @example
  * // Basic usage example:
@@ -39,27 +51,6 @@
  *
  * // Get the raw value
  * unsigned char rawValue = flags.get();  // Will be 0x04 (EXECUTE flag)
- */
-
-#pragma once
-
-#include <algorithm>
-#include <bitset>
-#include <constants.hpp>
-#include <cstddef>
-#include <string>
-#include <type_traits>
-
-/**
- * @namespace ds
- * @brief Contains data structure related utilities and helper functions.
- */
-namespace ds {
-
-/**
- * @brief Template class for managing bit flags of any integral type
- *
- * @tparam T The integral type used to store the flags
  */
 template<typename T>
 class BaseBitFlag {

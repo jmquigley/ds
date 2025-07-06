@@ -1,10 +1,3 @@
-/**
- * @brief a special node case used by tree structures.
- *
- * This file provides the node structured that will be used by Tree
- * type structures
- */
-
 #pragma once
 
 #include <BaseNode.hpp>
@@ -12,10 +5,6 @@
 #include <property.hpp>
 #include <vector>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes.
- */
 namespace ds {
 
 /**

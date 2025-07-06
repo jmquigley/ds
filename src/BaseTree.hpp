@@ -1,8 +1,3 @@
-/**
- * @brief Defines the abstract interface for tree structures
- *
- */
-
 #pragma once
 
 #include <Collection.hpp>
@@ -13,10 +8,6 @@
 #include <property.hpp>
 #include <vector>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes.
- */
 namespace ds {
 
 /**

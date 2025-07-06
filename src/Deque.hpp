@@ -1,11 +1,3 @@
-/**
- * @brief Defines a deque double ended queue structure
- *
- * A deque (double-ended queue) is a data structure that allows insertion and
- * removal of elements from both ends efficiently. It combines the features of
- * stacks and queues
- */
-
 #pragma once
 
 #include <Queue.hpp>
@@ -15,18 +7,15 @@
 #include <property.hpp>
 #include <vector>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes.
- */
 namespace ds {
 
 /**
  * @class Deque
  * @brief A double ended queue
  *
- * The Deque provides a queue that allows for changes at both ends.  It can be
- * used as a method for aging itens in the queue.
+ * A deque (double-ended queue) is a data structure that allows insertion and
+ * removal of elements from both ends efficiently. It combines the features of
+ * stacks and queues
  *
  * @tparam T The type of data stored within the queue.
  */

@@ -1,16 +1,8 @@
-/**
- * @brief Defines a FIFO queue structure
- */
-
 #pragma once
 
 #include <List.hpp>
 #include <vector>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes.
- */
 namespace ds {
 
 /**

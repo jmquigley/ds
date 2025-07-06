@@ -1,7 +1,3 @@
-/**
- * @brief Defines the Stack data structure, a LIFO (Last In, First Out) collection.
- */
-
 #pragma once
 
 #include <List.hpp>
@@ -10,10 +6,6 @@
 #include <memory>
 #include <vector>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes.
- */
 namespace ds {
 
 /**

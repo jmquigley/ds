@@ -174,13 +174,20 @@ exitOnError $? "Error installing project, terminating"
 
 if [ ${NODOCS_OPT} == 0 ]; then
     banner "Documentation"
+
+    # Build the sphinx documention
     pushd ../docs
     make html
     exitOnError $? "Error creating project documentation, terminating"
     popd
 
+    # Copy the doxygen documentation
+    pushd doxygen
+    yes | cp -rf html/ ../docs/html/doxygen
+    popd
+
     if [ -d /var/www/html ]; then
-        yes | cp -rfv docs/html/* /var/www/html/.
+        yes | cp -rf docs/html/* /var/www/html/.
     fi
 fi
 

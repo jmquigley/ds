@@ -1,19 +1,7 @@
-/**
- * @brief Provides utility functions for C-style string manipulation.
- *
- * This header defines a collection of functions that perform common string
- * operations on C-style (null-terminated) character arrays, as well as
- * conversions between C strings and C++ std::string objects.
- */
-
 #pragma once
 
 #include <string>
 
-/**
- * @namespace ds
- * @brief Contains data structure and utility functions.
- */
 namespace ds {
 
 /**
