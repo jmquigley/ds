@@ -19,22 +19,25 @@ namespace ds {
 template<typename T>
 class TreeNode : public BaseNode<T, TreeNode> {
 	/// @brief A vector to hold child nodes in a general tree
-	PROPERTY_SCOPED(_children, Children, std::vector<T>, protected:);
+	PROPERTY_SCOPED(children, Children, std::vector<T>, protected:);
+
+protected:
+
 	/// @brief A shared pointer to the parent node.
-	PROPERTY_SCOPED(_parent, Parent, std::weak_ptr<TreeNode<T>>, protected:);
+	std::weak_ptr<TreeNode<T>> _parent;
 
 public:
 
 	/**
 	 * @brief Default constructor
 	 */
-	TreeNode() : BaseNode<T, TreeNode>() {}
+	TreeNode() : BaseNode<T, TreeNode>(), _parent(std::weak_ptr<TreeNode<T>>()) {}
 
 	/**
 	 * @brief Constructor with data initialization
 	 * @param data The data to store in this node
 	 */
-	TreeNode(T data) : BaseNode<T, TreeNode>(data) {}
+	TreeNode(T data) : BaseNode<T, TreeNode>(data), _parent(std::weak_ptr<TreeNode<T>>()) {}
 
 	/**
 	 * @brief Constructor with parent node and data
@@ -64,14 +67,6 @@ public:
 		  _parent(parent) {}
 
 	/**
-	 * @brief A convenience method for returning the child structure
-	 * @return A vector of children related to this tree's node
-	 */
-	std::vector<T> children() const {
-		return this->_children;
-	}
-
-	/**
 	 * @brief Creates a deep copy of this node
 	 *
 	 * This function creates a true deep copy of the node,
@@ -93,6 +88,14 @@ public:
 	 */
 	inline std::shared_ptr<TreeNode<T>> parent() const {
 		return this->_parent.lock();
+	}
+
+	/**
+	 * @brief setting for the parent pointer of a node
+	 * @param value `std::shared_ptr<TreeNode<T>>` to set as the parent
+	 */
+	void setParent(std::shared_ptr<TreeNode<T>> value) {
+		this->_parent = value;
 	}
 };
 

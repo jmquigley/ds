@@ -28,11 +28,11 @@ public:
 	 * @brief Constructor that initializes the iterator with a node pointer.
 	 * @param lp Shared pointer to the starting node for iteration
 	 */
-	BaseIterator(std::weak_ptr<C<T>> lp) : lp(lp) {}
+	BaseIterator(std::weak_ptr<C<T>> lp) : _lp(lp) {}
 
 	~BaseIterator() {
-		if (lp.lock()) {
-			lp.reset();
+		if (_lp.lock()) {
+			_lp.reset();
 		}
 	}
 
@@ -91,8 +91,8 @@ public:
 	 * @return true if both iterators point to the same node, false otherwise
 	 */
 	bool operator==(const BaseIterator &rhs) const {
-		auto p = this->lp.lock();
-		auto rp = rhs.lp.lock();
+		auto p = this->_lp.lock();
+		auto rp = rhs._lp.lock();
 
 		return p == rp;
 	}
@@ -106,8 +106,8 @@ public:
 	 * @return true if the iterators point to different nodes, false otherwise
 	 */
 	bool operator!=(const BaseIterator &rhs) const {
-		auto p = this->lp.lock();
-		auto rp = rhs.lp.lock();
+		auto p = this->_lp.lock();
+		auto rp = rhs._lp.lock();
 
 		return p != rp;
 	}
@@ -123,8 +123,8 @@ public:
 	T operator*() const {
 		T nil = 0;
 
-		if (!lp.expired()) {
-			return lp.lock()->getData();
+		if (!_lp.expired()) {
+			return _lp.lock()->getData();
 		}
 
 		return nil;
@@ -140,7 +140,7 @@ public:
 	 * @return Reference to the output stream after writing
 	 */
 	friend std::ostream &operator<<(std::ostream &st, const BaseIterator &it) {
-		return st << it.lp.lock();
+		return st << it._lp.lock();
 	}
 
 	/**
@@ -153,10 +153,10 @@ public:
 	 * @return Reference to this iterator after advancing
 	 */
 	BaseIterator &next() {
-		auto p = this->lp.lock();
+		auto p = this->_lp.lock();
 
 		if (p) {
-			lp = p->getRight();
+			_lp = p->getRight();
 		}
 
 		return *this;
@@ -172,10 +172,10 @@ public:
 	 * @return Reference to this iterator after advancing
 	 */
 	BaseIterator &previous() {
-		auto p = this->lp.lock();
+		auto p = this->_lp.lock();
 
 		if (p) {
-			lp = p->getLeft();
+			_lp = p->getLeft();
 		}
 
 		return *this;

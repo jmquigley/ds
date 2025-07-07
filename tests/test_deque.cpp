@@ -26,8 +26,8 @@ TEST_F(TestDeque, CreateQueue) {
 	q.enqueue(5);
 
 	EXPECT_EQ(q.size(), 5);
-	EXPECT_EQ(q.front(), 1);
-	EXPECT_EQ(q.back(), 5);
+	EXPECT_EQ(q.first(), 1);
+	EXPECT_EQ(q.last(), 5);
 
 	EXPECT_EQ(q.dequeue(), 1);
 	EXPECT_EQ(q.size(), 4);

@@ -84,8 +84,8 @@ public:
 	 * @brief returns the item at the end of the queue
 	 * @returns a `T` object at the back of the queue
 	 */
-	inline T back() const {
-		return List<T>::back();
+	inline T first() const {
+		return List<T>::first();
 	}
 
 	/**
@@ -137,8 +137,8 @@ public:
 	 * @brief returns the item at the front of the queue
 	 * @returns a `T` object at the front of the queue
 	 */
-	inline T front() {
-		return List<T>::front();
+	inline T last() {
+		return List<T>::last();
 	}
 
 	/**

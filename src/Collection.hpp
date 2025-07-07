@@ -7,10 +7,6 @@
 #include <property.hpp>
 #include <stdexcept>
 
-/**
- * @namespace ds
- * @brief Contains data structure related classes for a set of collection classes
- */
 namespace ds {
 
 /**
@@ -27,22 +23,22 @@ protected:
 	 * @brief Pointer to the first/front element in the collection.
 	 * @protected
 	 */
-	PROPERTY_SCOPED(_front, Front, std::weak_ptr<C<T>>, protected:);
+	PROPERTY_SCOPED(front, Front, std::weak_ptr<C<T>>, protected:);
 	/**
 	 * @brief Pointer to the last/back element in the collection.
 	 * @protected
 	 */
-	PROPERTY_SCOPED(_back, Back, std::weak_ptr<C<T>>, protected:);
+	PROPERTY_SCOPED(back, Back, std::weak_ptr<C<T>>, protected:);
 	/**
 	 * @brief The number of elements currently in the collection.
 	 * @protected
 	 */
-	PROPERTY_SCOPED(_size, Size, size_t, protected:);
+	PROPERTY_SCOPED(size, Size, size_t, protected:);
 	/**
 	 * @brief Pointer to the root element of tree-like collections.
 	 * @protected
 	 */
-	PROPERTY_SCOPED(_root, Root, std::shared_ptr<C<T>>, protected:);
+	PROPERTY_SCOPED(root, Root, std::shared_ptr<C<T>>, protected:);
 
 protected:
 
@@ -124,15 +120,6 @@ public:
 	}
 
 	/**
-	 * @brief retrieves the element at the end of the collection
-	 * @return a `T` data element
-	 * @throws std::bad_weak_ptr if the requested back pointer is not available
-	 */
-	inline T back() const {
-		return this->_back.lock()->getData();
-	}
-
-	/**
 	 * @brief Clears all elements from the collection, making it empty.
 	 * @pure
 	 */
@@ -158,7 +145,7 @@ public:
 	 * @brief retrieves the element at the front of the collection
 	 * @return a `T` data element
 	 */
-	inline T front() const {
+	inline T first() const {
 		return this->_front.lock()->getData();
 	}
 
@@ -171,19 +158,12 @@ public:
 	virtual std::string json() const = 0;
 
 	/**
-	 * @brief returns the size of the collection class
-	 * @returns the size of the collection
+	 * @brief retrieves the element at the end of the collection
+	 * @return a `T` data element
+	 * @throws std::bad_weak_ptr if the requested back pointer is not available
 	 */
-	inline size_t size() const {
-		return this->_size;
-	}
-
-	/**
-	 * @brief a convenience method to get the current root pointer
-	 * @returns a `std::shared_ptr<Node<T>>` that contains the current root
-	 */
-	inline virtual std::shared_ptr<C<T>> root() const {
-		return this->_root;
+	inline T last() const {
+		return this->_back.lock()->getData();
 	}
 
 	/**

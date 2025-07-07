@@ -19,16 +19,16 @@ TEST_F(TestSortedList, CreateList) {
 	EXPECT_EQ(slist.size(), 1);
 	EXPECT_EQ(slist.at(0), 5);
 	EXPECT_EQ(**slist.getRoot(), 5);
-	EXPECT_EQ(slist.front(), 5);
-	EXPECT_EQ(slist.back(), 5);
+	EXPECT_EQ(slist.first(), 5);
+	EXPECT_EQ(slist.last(), 5);
 
 	slist.insert(1);
 	EXPECT_EQ(slist.size(), 2);
 	EXPECT_EQ(slist.at(0), 1);
 	EXPECT_EQ(slist.at(1), 5);
 	EXPECT_EQ(**slist.getRoot(), 1);
-	EXPECT_EQ(slist.front(), 1);
-	EXPECT_EQ(slist.back(), 5);
+	EXPECT_EQ(slist.first(), 1);
+	EXPECT_EQ(slist.last(), 5);
 
 	slist.insert(3);
 	EXPECT_EQ(slist.size(), 3);
@@ -36,8 +36,8 @@ TEST_F(TestSortedList, CreateList) {
 	EXPECT_EQ(slist.at(1), 3);
 	EXPECT_EQ(slist.at(2), 5);
 	EXPECT_EQ(**slist.getRoot(), 1);
-	EXPECT_EQ(slist.front(), 1);
-	EXPECT_EQ(slist.back(), 5);
+	EXPECT_EQ(slist.first(), 1);
+	EXPECT_EQ(slist.last(), 5);
 
 	slist.insert(2);
 	EXPECT_EQ(slist.size(), 4);
@@ -46,8 +46,8 @@ TEST_F(TestSortedList, CreateList) {
 	EXPECT_EQ(slist.at(2), 3);
 	EXPECT_EQ(slist.at(3), 5);
 	EXPECT_EQ(**slist.getRoot(), 1);
-	EXPECT_EQ(slist.front(), 1);
-	EXPECT_EQ(slist.back(), 5);
+	EXPECT_EQ(slist.first(), 1);
+	EXPECT_EQ(slist.last(), 5);
 
 	slist.insert(4);
 	EXPECT_EQ(slist.size(), 5);
@@ -57,8 +57,8 @@ TEST_F(TestSortedList, CreateList) {
 	EXPECT_EQ(slist.at(3), 4);
 	EXPECT_EQ(slist.at(4), 5);
 	EXPECT_EQ(**slist.getRoot(), 1);
-	EXPECT_EQ(slist.front(), 1);
-	EXPECT_EQ(slist.back(), 5);
+	EXPECT_EQ(slist.first(), 1);
+	EXPECT_EQ(slist.last(), 5);
 
 	slist.insert(6);
 	EXPECT_EQ(slist.size(), 6);
@@ -69,8 +69,8 @@ TEST_F(TestSortedList, CreateList) {
 	EXPECT_EQ(slist.at(4), 5);
 	EXPECT_EQ(slist.at(5), 6);
 	EXPECT_EQ(**slist.getRoot(), 1);
-	EXPECT_EQ(slist.front(), 1);
-	EXPECT_EQ(slist.back(), 6);
+	EXPECT_EQ(slist.first(), 1);
+	EXPECT_EQ(slist.last(), 6);
 }
 
 TEST_F(TestSortedList, SortedListInitializer) {
@@ -83,8 +83,8 @@ TEST_F(TestSortedList, SortedListInitializer) {
 	EXPECT_EQ(slist.at(3), 4);
 	EXPECT_EQ(slist.at(4), 5);
 	EXPECT_EQ(**slist.getRoot(), 1);
-	EXPECT_EQ(slist.front(), 1);
-	EXPECT_EQ(slist.back(), 5);
+	EXPECT_EQ(slist.first(), 1);
+	EXPECT_EQ(slist.last(), 5);
 }
 
 TEST_F(TestSortedList, SortedListCopyConstructor) {

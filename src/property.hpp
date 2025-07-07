@@ -6,12 +6,16 @@
 #pragma once
 
 // Creates a getter function for the given variable
-#define ACCESSOR(variable, fn) \
-                               \
-public:                        \
-                               \
-	auto get##fn() const {     \
-		return this->variable; \
+#define ACCESSOR(variable, fn)    \
+                                  \
+public:                           \
+                                  \
+	auto get##fn() const {        \
+		return this->_##variable; \
+	}                             \
+                                  \
+	auto variable() const {       \
+		return this->_##variable; \
 	}
 
 // Creates a setter function for the given variable
@@ -20,7 +24,7 @@ public:                        \
 public:                              \
                                      \
 	void set##fn(dtype value) {      \
-		this->variable = value;      \
+		this->_##variable = value;   \
 	};
 
 /**
@@ -63,7 +67,7 @@ public:                              \
  *     n/a
  */
 #define PROPERTY_SCOPED_D(variable, fn, dtype, scope, def) \
-	scope dtype variable def;                              \
+	scope dtype _##variable def;                           \
 	ACCESSOR(variable, fn);                                \
 	MUTATOR(variable, fn, dtype);
 
@@ -77,7 +81,7 @@ public:                              \
                                                       \
 private:                                              \
                                                       \
-	dtype variable def;                               \
+	dtype _##variable def;                            \
 	ACCESSOR(variable, fn);
 
 #define PROPERTY_READONLY(variable, fn, dtype) PROPERTY_READONLY_D(variable, fn, dtype, );

@@ -38,13 +38,13 @@ enum NodeFlag : unsigned char {
 template<typename T, template<class> class C>
 class BaseNode {
 	/// @brief The data payload of the node.
-	PROPERTY_SCOPED_D(_data, Data, T, protected:, {});
+	PROPERTY_SCOPED_D(data, Data, T, protected:, {});
 	/// @brief flags used to determine bit properties in a node
-	PROPERTY_SCOPED(_flags, Flags, ByteFlag, protected:);
+	PROPERTY_SCOPED(flags, Flags, ByteFlag, protected:);
 	/// @brief A shared pointer to the left child node.
-	PROPERTY_SCOPED(_left, Left, std::shared_ptr<C<T>>, protected:);
+	PROPERTY_SCOPED(left, Left, std::shared_ptr<C<T>>, protected:);
 	/// @brief A shared pointer to the right child node.
-	PROPERTY_SCOPED(_right, Right, std::shared_ptr<C<T>>, protected:);
+	PROPERTY_SCOPED(right, Right, std::shared_ptr<C<T>>, protected:);
 
 private:
 
@@ -63,6 +63,7 @@ private:
 		this->_data = src._data;
 		this->_right = src._right;
 		this->_left = src._left;
+		this->_flags = src._flags;
 
 		return *this;
 	}
@@ -223,9 +224,9 @@ public:
 	 * @returns a std::shared_ptr<Node<T>> object that represents the left
 	 * child node pointer.
 	 */
-	inline std::shared_ptr<C<T>> left() const {
-		return this->_left;
-	}
+	// inline std::shared_ptr<C<T>> left() const {
+	// 	return this->_left;
+	// }
 
 	/**
 	 * @brief Helper function to implement move semantics.
@@ -250,9 +251,9 @@ public:
 	 * @returns a std::shared_ptr<Node<T>> object that represents the right
 	 * child node pointer.
 	 */
-	inline std::shared_ptr<C<T>> right() const {
-		return this->_right;
-	}
+	// inline std::shared_ptr<C<T>> right() const {
+	// 	return this->_right;
+	// }
 
 	/**
 	 * Sets this node's color to red.

@@ -22,7 +22,7 @@ namespace ds {
 template<typename T>
 class Deque : public Queue<T> {
 	/// @brief The maximum size of the Deque
-	PROPERTY_D(_maxSize, MaxSize, size_t, = std::numeric_limits<std::size_t>::max());
+	PROPERTY_D(maxSize, MaxSize, size_t, = std::numeric_limits<std::size_t>::max());
 
 private:
 

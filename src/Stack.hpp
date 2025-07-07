@@ -201,7 +201,7 @@ public:
 			throw std::out_of_range("Cannot get the top of an empty stack");
 		}
 
-		return List<T>::front();
+		return List<T>::first();
 	}
 };
 }  // namespace ds

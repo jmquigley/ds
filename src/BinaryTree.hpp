@@ -135,9 +135,9 @@ private:
 				tnode = newNode(data, parent);
 				this->_latestNode = tnode;
 
-				if (this->comparator(data, this->front()) < 0) {
+				if (this->comparator(data, this->first()) < 0) {
 					this->_front = tnode;
-				} else if (this->comparator(data, this->back())) {
+				} else if (this->comparator(data, this->last())) {
 					this->_back = tnode;
 				}
 
