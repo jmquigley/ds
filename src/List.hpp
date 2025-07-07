@@ -345,14 +345,6 @@ public:
 	}
 
 	/**
-	 * @brief Converts the list to a JSON string representation.
-	 * @return std::string JSON representation of the list
-	 */
-	inline virtual std::string json() const override {
-		return this->str();
-	}
-
-	/**
 	 * @brief Removes the specified element from the list by its index.
 	 * @param index (`size_t`) the position within the list to remove
 	 * @param tnode (`std::shared_ptr<Node<T>>`) a reference to the node that will

@@ -86,4 +86,42 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 		comma = ",";
 	}
 	std::cout << std::endl;
+
+	out.clear();
+	bt.reverseorder([&](auto &node) { out.push_back(node.getData()); });
+
+	EXPECT_EQ(out.size(), 7);
+	EXPECT_EQ(out[0], 7);
+	EXPECT_EQ(out[1], 6);
+	EXPECT_EQ(out[2], 5);
+	EXPECT_EQ(out[3], 4);
+	EXPECT_EQ(out[4], 3);
+	EXPECT_EQ(out[5], 2);
+	EXPECT_EQ(out[6], 1);
+
+	comma = "";
+	std::cout << "reverseorder: ";
+	for (auto it: out) {
+		std::cout << comma << it;
+		comma = ",";
+	}
+	std::cout << std::endl;
+}
+
+TEST_F(TestBinaryTree, Search) {
+	ds::BinaryTree<int> bt {1, 2, 3, 4, 5, 6, 7};
+
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_EQ(bt.size(), 7);
+
+	ds::Match<int, ds::TreeNode> m;
+
+	m = bt.find(4);
+	EXPECT_TRUE(m.found());
+
+	m = bt.find(999);
+	EXPECT_FALSE(m.found());
+
+	EXPECT_TRUE(bt.contains(5));
+	EXPECT_FALSE(bt.contains(999));
 }

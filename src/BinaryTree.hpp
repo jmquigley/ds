@@ -7,6 +7,7 @@
 #include <TreeNode.hpp>
 #include <cstddef>
 #include <functional>
+#include <initializer_list>
 #include <limits>
 #include <property.hpp>
 #include <string>
@@ -269,6 +270,28 @@ private:
 	}
 
 	/**
+	 * @brief Helper function to perform reverse-order traversal of the tree
+	 *
+	 * Recursively visits right subtree, the node itself, and then the left subtree
+	 *
+	 * @param node The current node in the traversal
+	 * @param callback a callback function that will be executed using each
+	 * node as it is encountered (if defined).
+	 */
+	void reverseorderDelegate(std::shared_ptr<TreeNode<T>> node,
+							  std::function<void(TreeNode<T> &node)> callback = nullptr) {
+		if (node == nullptr) {
+			return;
+		}
+
+		this->reverseorderDelegate(node->getRight(), callback);
+		if (callback) {
+			callback(*node);
+		}
+		this->reverseorderDelegate(node->getLeft(), callback);
+	}
+
+	/**
 	 * @brief Performs a left rotation on the given node
 	 *
 	 * A left rotation is a local operation in a binary search tree that changes the structure
@@ -353,15 +376,26 @@ public:
 
 	BinaryTree() : BaseTree<T, TreeNode>() {}
 
-	~BinaryTree() {
-		this->clear();
-	}
-
 	/**
 	 * @brief Constructor for BinaryTree that takes a custom comparator.
 	 * @param comparator An object used to compare elements of type T.
 	 */
 	BinaryTree(Comparator<T> comparator) : BaseTree<T, TreeNode>(comparator) {}
+
+	/**
+	 * @brief Constructor that takes an initializer_list to insert values into
+	 * the tree.
+	 * @param il (`std::initializer_list`) a list of values to seed the tree
+	 */
+	BinaryTree(std::initializer_list<T> il) : BinaryTree<T>() {
+		for (auto it: il) {
+			this->insert(it);
+		}
+	}
+
+	~BinaryTree() {
+		this->clear();
+	}
 
 	/**
 	 * @brief Iterates through the tree and saves all date elements into an array.
@@ -388,14 +422,45 @@ public:
 		this->_size = 0;
 	}
 
-	bool contains(T data) const override {
-		// TODO: implements contains in BinaryTree
-		return false;
+	/**
+	 * @brief Checks if a `T` data element exists within the binary tree
+	 * @returns true if the data element exists in the list, otherwise false.
+	 */
+	inline bool contains(T data) const override {
+		Match<T, TreeNode> match = find(data);
+		return match.found();
 	}
 
+	/**
+	 * @brief Searches for a node with the specified data in the binary tree
+	 *
+	 * This method traverses the binary tree to find a node that matches the
+	 * given data according to the comparator function. If found, the Match
+	 * object will contain information about the found node.
+	 *
+	 * @param data The value to search for
+	 * @return Match object containing the result of the search
+	 */
 	Match<T, TreeNode> find(T data) const override {
-		// TODO: implement find in BinaryTree
+		std::shared_ptr<TreeNode<T>> tnode = this->_root;
 		Match<T, TreeNode> match;
+
+		while (tnode != nullptr) {
+			int result = this->comparator(tnode->getData(), data);
+
+			if (result == 0) {
+				match.setData(data);
+				match.setFound(true);
+				match.setIndex(0);
+				match.setRef(tnode);
+				return match;
+			} else if (result < 0) {
+				tnode = tnode->right();
+			} else {
+				tnode = tnode->left();
+			}
+		}
+
 		return match;
 	}
 
@@ -452,11 +517,6 @@ public:
 		}
 	}
 
-	std::string json() const override {
-		// TODO: implement json in BinaryTree
-		return "";
-	}
-
 	/**
 	 * @brief Performs a post-order traversal of the tree
 	 *
@@ -504,6 +564,21 @@ public:
 		// TODO: implement removeValue in BinaryTree
 		T data {};
 		return data;
+	}
+
+	/**
+	 * @brief Performs an reverse-order traversal of the tree
+	 *
+	 * Reverse-order traversal visits nodes in the order: right subtree, root,
+	 * then left subtree.  This traversal is useful to retrieve the data in
+	 * reverse sorted order.  As each node is encounterd it is passed to a callback
+	 * function for use.
+	 *
+	 * @param callback a function pointer that will be executed on each node as it is
+	 * encountered.
+	 */
+	void reverseorder(std::function<void(TreeNode<T> &node)> callback) {
+		this->reverseorderDelegate(this->_root, callback);
 	}
 
 	std::string str() const override {

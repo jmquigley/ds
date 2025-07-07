@@ -134,6 +134,14 @@ public:
 	}
 
 	/**
+	 * @brief returns the contents of the stack as a JSON string
+	 * @returns a string that holds the stack in a JSON string
+	 */
+	std::string json() const override {
+		return List<T>::json();
+	}
+
+	/**
 	 * @brief returns the item at the front of the queue
 	 * @returns a `T` object at the front of the queue
 	 */
@@ -147,6 +155,16 @@ public:
 	 */
 	inline size_t size() const {
 		return List<T>::size();
+	}
+
+	/**
+	 * @brief Returns a string representation of the stack.
+	 *
+	 * Currently, it formats the stack's data into a simple JSON-like string.
+	 * @return A string representing the node's content.
+	 */
+	std::string str() const override {
+		return List<T>::str();
 	}
 };
 

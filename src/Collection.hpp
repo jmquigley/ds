@@ -155,7 +155,9 @@ public:
 	 * collection
 	 * @pure
 	 */
-	virtual std::string json() const = 0;
+	virtual std::string json() const {
+		return this->str();
+	}
 
 	/**
 	 * @brief retrieves the element at the end of the collection
