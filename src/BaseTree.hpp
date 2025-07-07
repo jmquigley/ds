@@ -19,7 +19,7 @@ namespace ds {
 template<typename T, template<class> class C>
 class BaseTree : public Collection<T, C>, public Iterable<T, C> {
 	/// @brief The current height of the tree
-	PROPERTY_D(_height, Height, size_t, = 0);
+	PROPERTY_WITH_DEFAULT(_height, Height, size_t, {0});
 
 public:
 

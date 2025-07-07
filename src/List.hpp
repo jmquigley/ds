@@ -235,7 +235,7 @@ public:
 	 * @returns true if the data element exists in the list, otherwise false.
 	 */
 	inline bool contains(T data) const override {
-		Match<T> match = find(data);
+		Match<T, Node> match = find(data);
 		return match.found();
 	}
 
@@ -261,10 +261,10 @@ public:
 	 * @returns a `Match<T>` object that contains information about the `Node`
 	 * that was found in the search.
 	 */
-	virtual Match<T> find(T data) const override {
+	virtual Match<T, Node> find(T data) const override {
 		size_t index = 0;
 		std::shared_ptr<Node<T>> lp = this->_root;
-		Match<T> match;
+		Match<T, Node> match;
 		std::shared_ptr<Node<T>> next;
 
 		while (lp) {
@@ -272,7 +272,7 @@ public:
 				match.setData(data);
 				match.setFound(true);
 				match.setIndex(index);
-				match.setNode(lp);
+				match.setRef(lp);
 
 				return match;
 			}
@@ -407,9 +407,9 @@ public:
 			throw std::out_of_range("Invalid list position requested for remove");
 		}
 
-		Match<T> match = find(value);
+		Match<T, Node> match = find(value);
 		if (match.found()) {
-			return removeAt(match.getIndex(), match.getNode().lock());
+			return removeAt(match.getIndex(), match.getRef().lock());
 		}
 
 		std::stringstream ss;

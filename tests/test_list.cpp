@@ -364,7 +364,7 @@ TEST_F(TestList, ListToStringEmpty) {
 
 TEST_F(TestList, ListSearch) {
 	ds::List<int> list;
-	ds::Match<int> match;
+	ds::Match<int, ds::Node> match;
 
 	list.insert(1);
 	list.insert(2);
@@ -392,7 +392,7 @@ TEST_F(TestList, ListSearch) {
 
 TEST_F(TestList, ListSearchEmpty) {
 	ds::List<int> list;
-	ds::Match<int> match;
+	ds::Match<int, ds::Node> match;
 
 	EXPECT_EQ(list.size(), 0);
 

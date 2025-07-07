@@ -1,5 +1,6 @@
 #pragma once
 
+#include <BaseNode.hpp>
 #include <Node.hpp>
 #include <memory>
 #include <property.hpp>
@@ -17,32 +18,35 @@ namespace ds {
  *
  * @tparam T The type of data stored within the Match
  */
-template<typename T>
+template<typename T, template<class> class C>
 class Match {
 	/// @brief The data value found during the search operation
-	PROPERTY_D(data, Data, T, {0});
+	PROPERTY_WITH_DEFAULT(data, Data, T, {0});
 
 	/// @brief Flag indicating whether the search operation was successful
-	PROPERTY_D(_found, Found, bool, {false});
+	PROPERTY_WITH_DEFAULT(found, Found, bool, {false});
 
 	/// @brief The position or index where the item was found (if applicable)
-	PROPERTY_D(index, Index, size_t, {0});
+	PROPERTY_WITH_DEFAULT(index, Index, size_t, {0});
 
 	/// @brief Weak pointer to the node containing the found value
-	PROPERTY(node, Node, std::weak_ptr<Node<T>>);
+	PROPERTY(ref, Ref, std::weak_ptr<C<T>>);
 
 public:
 
+	Match() : _data(0), _found(false), _index(0), _ref(std::weak_ptr<C<T>>()) {}
+
 	/**
-	 * @brief A convenience function to check if the search operation was successful
-	 *
-	 * This method provides a more intuitive way to check the success status
-	 * compared to directly accessing the Found property.
-	 *
-	 * @returns true if this Match object holds a found value, otherwise false
+	 * @brief a copy constructor for the Match object
+	 * @param match the `Match` object to copy
 	 */
-	inline bool found() const {
-		return this->getFound();
+	Match(Match &match) : Match<T, C>() {
+		this->_data = match._data;
+		this->_found = match._found;
+		this->_index = match._index;
+		this->_ref = match._ref;
 	}
+
+	virtual ~Match() {}
 };
 }  // namespace ds

@@ -64,7 +64,7 @@ public:
 	 * @return Match<T> A match object indicating whether the element was found
 	 * @pure
 	 */
-	virtual Match<T> find(T data) const = 0;
+	virtual Match<T, C> find(T data) const = 0;
 
 	/**
 	 * @brief Insert the given data into a collection at back of the collection

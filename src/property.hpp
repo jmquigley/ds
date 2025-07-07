@@ -66,22 +66,25 @@ public:                              \
  * Returns:
  *     n/a
  */
-#define PROPERTY_SCOPED_D(variable, fn, dtype, scope, def) \
-	scope dtype _##variable def;                           \
-	ACCESSOR(variable, fn);                                \
+#define PROPERTY_SCOPED_WITH_DEFAULT(variable, fn, dtype, scope, def) \
+	scope dtype _##variable def;                                      \
+	ACCESSOR(variable, fn);                                           \
 	MUTATOR(variable, fn, dtype);
 
-#define PROPERTY_SCOPED(variable, fn, dtype, scope) PROPERTY_SCOPED_D(variable, fn, dtype, scope, );
+#define PROPERTY_SCOPED(variable, fn, dtype, scope) \
+	PROPERTY_SCOPED_WITH_DEFAULT(variable, fn, dtype, scope, );
 
-#define PROPERTY_D(variable, fn, dtype, def) PROPERTY_SCOPED_D(variable, fn, dtype, private:, def);
+#define PROPERTY_WITH_DEFAULT(variable, fn, dtype, def) \
+	PROPERTY_SCOPED_WITH_DEFAULT(variable, fn, dtype, private:, def);
 
-#define PROPERTY(variable, fn, dtype) PROPERTY_D(variable, fn, dtype, );
+#define PROPERTY(variable, fn, dtype) PROPERTY_WITH_DEFAULT(variable, fn, dtype, );
 
-#define PROPERTY_READONLY_D(variable, fn, dtype, def) \
-                                                      \
-private:                                              \
-                                                      \
-	dtype _##variable def;                            \
+#define PROPERTY_READONLY_WITH_DEFAULT(variable, fn, dtype, def) \
+                                                                 \
+private:                                                         \
+                                                                 \
+	dtype _##variable def;                                       \
 	ACCESSOR(variable, fn);
 
-#define PROPERTY_READONLY(variable, fn, dtype) PROPERTY_READONLY_D(variable, fn, dtype, );
+#define PROPERTY_READONLY(variable, fn, dtype) \
+	PROPERTY_READONLY_WITH_DEFAULT(variable, fn, dtype, );

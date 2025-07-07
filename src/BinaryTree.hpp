@@ -393,9 +393,9 @@ public:
 		return false;
 	}
 
-	Match<T> find(T data) const override {
+	Match<T, TreeNode> find(T data) const override {
 		// TODO: implement find in BinaryTree
-		Match<T> match;
+		Match<T, TreeNode> match;
 		return match;
 	}
 
