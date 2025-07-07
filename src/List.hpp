@@ -161,18 +161,26 @@ public:
 	 * @returns the data element located at the given index
 	 * @throws std::out_of_range error if an invalid index is requested
 	 */
-	T at(size_t index) const override {
-		if (index < 0 or index >= this->_size) {
+	T at(size_t index) override {
+		if (index >= this->_size) {
 			throw std::out_of_range("Invalid list position index requested");
 		}
 
-		std::shared_ptr<Node<T>> lp = this->_root;
-
-		for (size_t i = 0; i < index; i++) {
-			lp = lp->getRight();
+		// Fast path for first element
+		if (index == 0) {
+			return this->_root->getData();
 		}
 
-		return lp->getData();
+		// Fast path for last element
+		if (index == this->_size - 1) {
+			return this->_back.lock()->getData();
+		}
+
+		// Use the existing optimized getNodeByIndex method
+		// This already chooses the optimal traversal direction
+		std::shared_ptr<Node<T>> node = const_cast<List<T> *>(this)->getNodeByIndex(index);
+
+		return node->getData();
 	}
 
 	/**

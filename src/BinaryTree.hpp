@@ -93,17 +93,19 @@ private:
 	 * @param callback a callback function that will be executed using each
 	 * node as it is encountered (if defined).
 	 */
-	void inorderDelegate(std::shared_ptr<TreeNode<T>> node,
-						 std::function<void(TreeNode<T> &node)> callback = nullptr) {
-		if (node == nullptr) {
-			return;
+	bool inorderDelegate(std::shared_ptr<TreeNode<T>> node,
+						 std::function<bool(TreeNode<T> &)> callback) {
+		if (!node) {
+			return false;
 		}
 
-		this->inorderDelegate(node->getLeft(), callback);
-		if (callback) {
-			callback(*node);
+		if (this->inorderDelegate(node->left(), callback)) {
+			return true;
 		}
-		this->inorderDelegate(node->getRight(), callback);
+		if (callback(*node)) {
+			return true;
+		}
+		return this->inorderDelegate(node->right(), callback);
 	}
 
 	/**
@@ -234,17 +236,21 @@ private:
 	 * @param callback a callback function that will be executed using each
 	 * node as it is encountered (if defined).
 	 */
-	void postorderDelegate(std::shared_ptr<TreeNode<T>> node,
-						   std::function<void(TreeNode<T> &node)> callback = nullptr) {
+	bool postorderDelegate(std::shared_ptr<TreeNode<T>> node,
+						   std::function<bool(TreeNode<T> &node)> callback = nullptr) {
 		if (node == nullptr) {
-			return;
+			return false;
 		}
 
-		this->postorderDelegate(node->getLeft(), callback);
-		this->postorderDelegate(node->getRight(), callback);
-		if (callback) {
-			callback(*node);
+		if (this->postorderDelegate(node->getLeft(), callback)) {
+			return true;
 		}
+
+		if (this->postorderDelegate(node->getRight(), callback)) {
+			return true;
+		}
+
+		return callback(*node);
 	}
 
 	/**
@@ -256,17 +262,21 @@ private:
 	 * @param callback a callback function that will be executed using each
 	 * node as it is encountered (if defined).
 	 */
-	void preorderDelegate(std::shared_ptr<TreeNode<T>> node,
-						  std::function<void(TreeNode<T> &node)> callback = nullptr) {
+	bool preorderDelegate(std::shared_ptr<TreeNode<T>> node,
+						  std::function<bool(TreeNode<T> &node)> callback = nullptr) {
 		if (node == nullptr) {
-			return;
+			return false;
 		}
 
 		if (callback) {
-			callback(*node);
+			if (callback(*node)) {
+				return true;
+			}
 		}
-		this->preorderDelegate(node->getLeft(), callback);
-		this->preorderDelegate(node->getRight(), callback);
+		if (this->preorderDelegate(node->getLeft(), callback)) {
+			return true;
+		}
+		return this->preorderDelegate(node->getRight(), callback);
 	}
 
 	/**
@@ -278,17 +288,21 @@ private:
 	 * @param callback a callback function that will be executed using each
 	 * node as it is encountered (if defined).
 	 */
-	void reverseorderDelegate(std::shared_ptr<TreeNode<T>> node,
-							  std::function<void(TreeNode<T> &node)> callback = nullptr) {
+	bool reverseorderDelegate(std::shared_ptr<TreeNode<T>> node,
+							  std::function<bool(TreeNode<T> &node)> callback = nullptr) {
 		if (node == nullptr) {
-			return;
+			return false;
 		}
 
-		this->reverseorderDelegate(node->getRight(), callback);
-		if (callback) {
-			callback(*node);
+		if (this->reverseorderDelegate(node->getRight(), callback)) {
+			return true;
 		}
-		this->reverseorderDelegate(node->getLeft(), callback);
+		if (callback) {
+			if (callback(*node)) {
+				return true;
+			}
+		}
+		return this->reverseorderDelegate(node->getLeft(), callback);
 	}
 
 	/**
@@ -404,19 +418,86 @@ public:
 	 * @param out a referece to the vector that should contain each data element
 	 */
 	void array(std::vector<T> &out) {
-		inorderDelegate(this->root(), [&](TreeNode<T> &node) { out.push_back(node.getData()); });
+		inorderDelegate(this->root(), [&](TreeNode<T> &node) -> bool {
+			out.push_back(node.getData());
+			return false;
+		});
 	}
 
-	T at(size_t index) const override {
-		// TODO: implement at in BinaryTree
+	/**
+	 * @brief Retrieves the element at the specified index position in the binary tree.
+	 *
+	 * This method peforms an inorder or reverseorder traversal of the tree and counts
+	 * the current position.  When it is encountered it will stop the traversal and
+	 * return the data at that node.  This is an O(N) operation and NOT an indexed
+	 * operation.  Just NOTE that this is not a fast lookup index operation.
+	 *
+	 * @param index (`size_t`) the index position within the tree, using inorder traversal ordering
+	 * @returns the data element located at the given index
+	 * @throws std::out_of_range error if an invalid index is requested
+	 */
+	T at(size_t index) override {
+		// Boundary check
+		if (index >= this->_size) {
+			throw std::out_of_range("Invalid tree position index requested");
+		}
+
+		// Fast path for first element in inorder traversal
+		if (index == 0 && this->_front.lock()) {
+			return this->_front.lock()->getData();
+		}
+
+		// Fast path for last element in inorder traversal
+		if (index == this->_size - 1 && this->_back.lock()) {
+			return this->_back.lock()->getData();
+		}
+
 		T data {};
+		bool found = false;
+
+		// Choose optimal traversal direction based on which end is closer
+		if (index < this->_size / 2) {
+			// Use inorder traversal for indices in first half
+			size_t currentPos = 0;
+			inorderDelegate(this->_root, [&](TreeNode<T> &node) -> bool {
+				if (currentPos == index) {
+					data = node.getData();
+					found = true;
+					return true;  // Stop traversal
+				}
+				currentPos++;
+				return false;  // Continue traversal
+			});
+		} else {
+			// Use reverseorder traversal for indices in second half
+			size_t currentPos = this->_size - 1;
+			reverseorderDelegate(this->_root, [&](TreeNode<T> &node) -> bool {
+				if (currentPos == index) {
+					data = node.getData();
+					found = true;
+					return true;  // Stop traversal
+				}
+				currentPos--;
+				return false;  // Continue traversal
+			});
+		}
+
+		if (!found) {
+			throw std::runtime_error("Element at index not found during traversal");
+		}
+
 		return data;
 	}
 
+	/**
+	 * Removes all nodes from the current tree.
+	 */
 	void clear() {
-		this->clearDelegate(this->_root);
+		clearDelegate(this->_root);
 
-		this->_root.reset();
+		if (this->_root) {
+			this->_root.reset();
+		}
 		this->_front.reset();
 		this->_back.reset();
 		this->_size = 0;
@@ -497,8 +578,8 @@ public:
 	 * @param callback a function pointer that will be executed on each node as it is
 	 * encountered.
 	 */
-	void inorder(std::function<void(TreeNode<T> &node)> callback) {
-		this->inorderDelegate(this->_root, callback);
+	bool inorder(std::function<bool(TreeNode<T> &node)> callback) {
+		return this->inorderDelegate(this->_root, callback);
 	}
 
 	/**
@@ -527,8 +608,8 @@ public:
 	 * @param callback a function pointer that will be executed on each node as it is
 	 * encountered.
 	 */
-	void postorder(std::function<void(TreeNode<T> &node)> callback) {
-		this->postorderDelegate(this->_root, callback);
+	bool postorder(std::function<bool(TreeNode<T> &node)> callback) {
+		return this->postorderDelegate(this->_root, callback);
 	}
 
 	/**
@@ -541,8 +622,8 @@ public:
 	 * @param callback a function pointer that will be executed on each node as it is
 	 * encountered.
 	 */
-	void preorder(std::function<void(TreeNode<T> &node)> callback) {
-		this->preorderDelegate(this->_root, callback);
+	bool preorder(std::function<bool(TreeNode<T> &node)> callback) {
+		return this->preorderDelegate(this->_root, callback);
 	}
 
 	/**
@@ -577,8 +658,8 @@ public:
 	 * @param callback a function pointer that will be executed on each node as it is
 	 * encountered.
 	 */
-	void reverseorder(std::function<void(TreeNode<T> &node)> callback) {
-		this->reverseorderDelegate(this->_root, callback);
+	bool reverseorder(std::function<bool(TreeNode<T> &node)> callback) {
+		return this->reverseorderDelegate(this->_root, callback);
 	}
 
 	std::string str() const override {

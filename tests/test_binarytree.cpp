@@ -3,6 +3,7 @@
 #include <BinaryTree.hpp>
 #include <TreeNode.hpp>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -48,7 +49,10 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 	std::cout << std::endl;
 
 	out.clear();
-	bt.postorder([&](auto &node) { out.push_back(node.getData()); });
+	bt.postorder([&](auto &node) -> bool {
+		out.push_back(node.getData());
+		return false;
+	});
 
 	EXPECT_EQ(out.size(), 7);
 	EXPECT_EQ(out[0], 1);
@@ -68,7 +72,10 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 	std::cout << std::endl;
 
 	out.clear();
-	bt.preorder([&](auto &node) { out.push_back(node.getData()); });
+	bt.preorder([&](auto &node) -> bool {
+		out.push_back(node.getData());
+		return false;
+	});
 
 	EXPECT_EQ(out.size(), 7);
 	EXPECT_EQ(out[0], 2);
@@ -86,9 +93,11 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 		comma = ",";
 	}
 	std::cout << std::endl;
-
 	out.clear();
-	bt.reverseorder([&](auto &node) { out.push_back(node.getData()); });
+	bt.reverseorder([&](auto &node) -> bool {
+		out.push_back(node.getData());
+		return false;
+	});
 
 	EXPECT_EQ(out.size(), 7);
 	EXPECT_EQ(out[0], 7);
@@ -124,4 +133,29 @@ TEST_F(TestBinaryTree, Search) {
 
 	EXPECT_TRUE(bt.contains(5));
 	EXPECT_FALSE(bt.contains(999));
+}
+
+TEST_F(TestBinaryTree, At) {
+	ds::BinaryTree<int> bt {1, 2, 3, 4, 5, 6, 7};
+
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_EQ(bt.size(), 7);
+
+	EXPECT_EQ(bt.at(0), 1);
+	EXPECT_EQ(bt.at(1), 2);
+	EXPECT_EQ(bt.at(2), 3);
+	EXPECT_EQ(bt.at(3), 4);
+	EXPECT_EQ(bt.at(4), 5);
+	EXPECT_EQ(bt.at(5), 6);
+	EXPECT_EQ(bt.at(6), 7);
+
+	EXPECT_EQ(bt[0], 1);
+	EXPECT_EQ(bt[1], 2);
+	EXPECT_EQ(bt[2], 3);
+	EXPECT_EQ(bt[3], 4);
+	EXPECT_EQ(bt[4], 5);
+	EXPECT_EQ(bt[5], 6);
+	EXPECT_EQ(bt[6], 7);
+
+	EXPECT_THROW(bt.at(999), std::out_of_range);
 }
