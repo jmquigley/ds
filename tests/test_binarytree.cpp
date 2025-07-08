@@ -40,6 +40,16 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 	EXPECT_EQ(out[5], 6);
 	EXPECT_EQ(out[6], 7);
 
+	std::vector<int> out2 = bt.array();
+	EXPECT_EQ(out.size(), 7);
+	EXPECT_EQ(out[0], 1);
+	EXPECT_EQ(out[1], 2);
+	EXPECT_EQ(out[2], 3);
+	EXPECT_EQ(out[3], 4);
+	EXPECT_EQ(out[4], 5);
+	EXPECT_EQ(out[5], 6);
+	EXPECT_EQ(out[6], 7);
+
 	comma = "";
 	std::cout << "inorder: ";
 	for (auto it: out) {
@@ -49,10 +59,7 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 	std::cout << std::endl;
 
 	out.clear();
-	bt.postorder([&](auto &node) -> bool {
-		out.push_back(node.getData());
-		return false;
-	});
+	bt.postorder([&](auto &node) { out.push_back(node.getData()); });
 
 	EXPECT_EQ(out.size(), 7);
 	EXPECT_EQ(out[0], 1);
@@ -72,10 +79,7 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 	std::cout << std::endl;
 
 	out.clear();
-	bt.preorder([&](auto &node) -> bool {
-		out.push_back(node.getData());
-		return false;
-	});
+	bt.preorder([&](auto &node) { out.push_back(node.getData()); });
 
 	EXPECT_EQ(out.size(), 7);
 	EXPECT_EQ(out[0], 2);
@@ -93,11 +97,9 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 		comma = ",";
 	}
 	std::cout << std::endl;
+
 	out.clear();
-	bt.reverseorder([&](auto &node) -> bool {
-		out.push_back(node.getData());
-		return false;
-	});
+	bt.reverseorder([&](auto &node) { out.push_back(node.getData()); });
 
 	EXPECT_EQ(out.size(), 7);
 	EXPECT_EQ(out[0], 7);

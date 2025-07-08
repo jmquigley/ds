@@ -93,19 +93,28 @@ private:
 	 * @param callback a callback function that will be executed using each
 	 * node as it is encountered (if defined).
 	 */
-	bool inorderDelegate(std::shared_ptr<TreeNode<T>> node,
-						 std::function<bool(TreeNode<T> &)> callback) {
+	template<typename Callback>
+	bool inorderDelegate(std::shared_ptr<TreeNode<T>> node, Callback callback) {
 		if (!node) {
 			return false;
 		}
 
-		if (this->inorderDelegate(node->left(), callback)) {
+		// Process left subtree
+		if (inorderDelegate(node->left(), callback)) {
 			return true;
 		}
-		if (callback(*node)) {
-			return true;
+
+		// Process current node
+		if constexpr (std::is_same_v<decltype(callback(*node)), bool>) {
+			if (callback(*node)) {
+				return true;
+			}
+		} else {
+			callback(*node);
 		}
-		return this->inorderDelegate(node->right(), callback);
+
+		// Process right subtree
+		return inorderDelegate(node->right(), callback);
 	}
 
 	/**
@@ -236,21 +245,27 @@ private:
 	 * @param callback a callback function that will be executed using each
 	 * node as it is encountered (if defined).
 	 */
-	bool postorderDelegate(std::shared_ptr<TreeNode<T>> node,
-						   std::function<bool(TreeNode<T> &node)> callback = nullptr) {
+	template<typename Callback>
+	bool postorderDelegate(std::shared_ptr<TreeNode<T>> node, Callback callback) {
 		if (node == nullptr) {
 			return false;
 		}
 
-		if (this->postorderDelegate(node->getLeft(), callback)) {
+		if (this->postorderDelegate(node->left(), callback)) {
 			return true;
 		}
 
-		if (this->postorderDelegate(node->getRight(), callback)) {
+		if (this->postorderDelegate(node->right(), callback)) {
 			return true;
 		}
 
-		return callback(*node);
+		// Process current node
+		if constexpr (std::is_same_v<decltype(callback(*node)), bool>) {
+			return callback(*node);
+		} else {
+			callback(*node);
+			return false;
+		}
 	}
 
 	/**
@@ -262,21 +277,26 @@ private:
 	 * @param callback a callback function that will be executed using each
 	 * node as it is encountered (if defined).
 	 */
-	bool preorderDelegate(std::shared_ptr<TreeNode<T>> node,
-						  std::function<bool(TreeNode<T> &node)> callback = nullptr) {
+	template<typename Callback>
+	bool preorderDelegate(std::shared_ptr<TreeNode<T>> node, Callback callback) {
 		if (node == nullptr) {
 			return false;
 		}
 
-		if (callback) {
+		// Process current node
+		if constexpr (std::is_same_v<decltype(callback(*node)), bool>) {
 			if (callback(*node)) {
 				return true;
 			}
+		} else {
+			callback(*node);
 		}
-		if (this->preorderDelegate(node->getLeft(), callback)) {
+
+		if (this->preorderDelegate(node->left(), callback)) {
 			return true;
 		}
-		return this->preorderDelegate(node->getRight(), callback);
+
+		return this->preorderDelegate(node->right(), callback);
 	}
 
 	/**
@@ -288,21 +308,26 @@ private:
 	 * @param callback a callback function that will be executed using each
 	 * node as it is encountered (if defined).
 	 */
-	bool reverseorderDelegate(std::shared_ptr<TreeNode<T>> node,
-							  std::function<bool(TreeNode<T> &node)> callback = nullptr) {
+	template<typename Callback>
+	bool reverseorderDelegate(std::shared_ptr<TreeNode<T>> node, Callback callback) {
 		if (node == nullptr) {
 			return false;
 		}
 
-		if (this->reverseorderDelegate(node->getRight(), callback)) {
+		if (this->reverseorderDelegate(node->right(), callback)) {
 			return true;
 		}
-		if (callback) {
+
+		// Process current node
+		if constexpr (std::is_same_v<decltype(callback(*node)), bool>) {
 			if (callback(*node)) {
 				return true;
 			}
+		} else {
+			callback(*node);
 		}
-		return this->reverseorderDelegate(node->getLeft(), callback);
+
+		return this->reverseorderDelegate(node->left(), callback);
 	}
 
 	/**
@@ -414,14 +439,27 @@ public:
 	/**
 	 * @brief Iterates through the tree and saves all date elements into an array.
 	 *
-	 * This function follows an inorder traverslal to build the list.
-	 * @param out a referece to the vector that should contain each data element
+	 * This function follows an inorder traversal to build the list.
+	 *
+	 * @param out a referece to the vector that should contain each data elemetn
 	 */
 	void array(std::vector<T> &out) {
-		inorderDelegate(this->root(), [&](TreeNode<T> &node) -> bool {
-			out.push_back(node.getData());
-			return false;
-		});
+		inorderDelegate(this->root(), [&](TreeNode<T> &node) { out.push_back(node.getData()); });
+	}
+
+	/**
+	 * @brief Iterates through the tree and saves all data elemnts into an array.
+	 *
+	 * This function is a wrapper around the main array method.  It will allocate
+	 * a vector, fill it, and return it.  The main method is givent a vector, where
+	 * this one creates the vector and returns it.
+	 *
+	 * @returns a `std::vector<T>` that contains all data elements in order.
+	 */
+	std::vector<T> array() {
+		std::vector<T> out;
+		array(out);
+		return out;
 	}
 
 	/**
@@ -578,7 +616,8 @@ public:
 	 * @param callback a function pointer that will be executed on each node as it is
 	 * encountered.
 	 */
-	bool inorder(std::function<bool(TreeNode<T> &node)> callback) {
+	template<typename Callback>
+	bool inorder(Callback callback) {
 		return this->inorderDelegate(this->_root, callback);
 	}
 
@@ -608,7 +647,8 @@ public:
 	 * @param callback a function pointer that will be executed on each node as it is
 	 * encountered.
 	 */
-	bool postorder(std::function<bool(TreeNode<T> &node)> callback) {
+	template<typename Callback>
+	bool postorder(Callback callback) {
 		return this->postorderDelegate(this->_root, callback);
 	}
 
@@ -622,7 +662,8 @@ public:
 	 * @param callback a function pointer that will be executed on each node as it is
 	 * encountered.
 	 */
-	bool preorder(std::function<bool(TreeNode<T> &node)> callback) {
+	template<typename Callback>
+	bool preorder(Callback callback) {
 		return this->preorderDelegate(this->_root, callback);
 	}
 
@@ -658,7 +699,8 @@ public:
 	 * @param callback a function pointer that will be executed on each node as it is
 	 * encountered.
 	 */
-	bool reverseorder(std::function<bool(TreeNode<T> &node)> callback) {
+	template<typename Callback>
+	bool reverseorder(Callback callback) {
 		return this->reverseorderDelegate(this->_root, callback);
 	}
 
