@@ -31,13 +31,15 @@ public:
 	/**
 	 * @brief Default constructor
 	 */
-	TreeNode() : BaseNode<T, TreeNode>(), _parent(std::weak_ptr<TreeNode<T>>()) {}
+	TreeNode()
+		: BaseNode<T, TreeNode>(), _parent(std::weak_ptr<TreeNode<T>>()) {}
 
 	/**
 	 * @brief Constructor with data initialization
 	 * @param data The data to store in this node
 	 */
-	TreeNode(T data) : BaseNode<T, TreeNode>(data), _parent(std::weak_ptr<TreeNode<T>>()) {}
+	TreeNode(T data)
+		: BaseNode<T, TreeNode>(data), _parent(std::weak_ptr<TreeNode<T>>()) {}
 
 	/**
 	 * @brief Constructor with parent node and data
@@ -58,12 +60,15 @@ public:
 	 * @param flags Node flags for additional properties
 	 * @param data The data to store in this node
 	 */
-	TreeNode(std::weak_ptr<TreeNode<T>> parent, std::shared_ptr<TreeNode<T>> left,
+	TreeNode(std::weak_ptr<TreeNode<T>> parent,
+			 std::shared_ptr<TreeNode<T>> left,
 			 std::shared_ptr<TreeNode<T>> right, ByteFlag flags, T data)
 		: BaseNode<T, TreeNode>::_data(data),
 		  BaseNode<T, TreeNode>::_flags(flags),
-		  BaseNode<T, TreeNode>::_left(std::static_pointer_cast<BaseNode<T, TreeNode>>(left)),
-		  BaseNode<T, TreeNode>::_right(std::static_pointer_cast<BaseNode<T, TreeNode>>(right)),
+		  BaseNode<T, TreeNode>::_left(
+			  std::static_pointer_cast<BaseNode<T, TreeNode>>(left)),
+		  BaseNode<T, TreeNode>::_right(
+			  std::static_pointer_cast<BaseNode<T, TreeNode>>(right)),
 		  _parent(parent) {}
 
 	/**
@@ -78,7 +83,8 @@ public:
 	 */
 	TreeNode<T> deepcopy() const {
 		TreeNodeBuilder<T> builder;
-		auto newNode = builder.withData(this->_data).withFlags(this->_flags).build();
+		auto newNode =
+			builder.withData(this->_data).withFlags(this->_flags).build();
 		return *newNode;
 	}
 

@@ -24,8 +24,8 @@ TEST_F(TestQueue, CreateQueue) {
 	q.enqueue(5);
 
 	EXPECT_EQ(q.size(), 5);
-	EXPECT_EQ(q.first(), 1);
-	EXPECT_EQ(q.last(), 5);
+	EXPECT_EQ(q.minimum(), 1);
+	EXPECT_EQ(q.maximum(), 5);
 
 	EXPECT_EQ(q.dequeue(), 1);
 	EXPECT_EQ(q.size(), 4);
@@ -55,8 +55,8 @@ TEST_F(TestQueue, OperatorAddElements) {
 	q += 5;
 
 	EXPECT_EQ(q.size(), 5);
-	EXPECT_EQ(q.first(), 1);
-	EXPECT_EQ(q.last(), 5);
+	EXPECT_EQ(q.minimum(), 1);
+	EXPECT_EQ(q.maximum(), 5);
 }
 
 TEST_F(TestQueue, DequeueFromEmpty) {

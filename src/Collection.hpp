@@ -43,10 +43,11 @@ protected:
 protected:
 
 	/**
-	 * @brief A comparator object used for ordering elements within the collection.
+	 * @brief A comparator object used for ordering elements within the
+	 * collection.
 	 *
-	 * A default comparison object that is available to all classes that are part
-	 * of the collection.
+	 * A default comparison object that is available to all classes that are
+	 * part of the collection.
 	 */
 	Comparator<T> comparator;
 
@@ -60,7 +61,8 @@ public:
 
 	/**
 	 * @brief Constructor for Collection that takes a custom comparator.
-	 * @param comparator (`Comparator<T>`) An object used to compare elements of type T.
+	 * @param comparator (`Comparator<T>`) An object used to compare elements of
+	 * type T.
 	 */
 	Collection(Comparator<T> comparator) : Collection() {
 		this->comparator = comparator;
@@ -142,14 +144,6 @@ public:
 	}
 
 	/**
-	 * @brief retrieves the element at the front of the collection
-	 * @return a `T` data element
-	 */
-	inline T first() const {
-		return this->_front.lock()->getData();
-	}
-
-	/**
 	 * @brief returns a JSON representation of the given collection.
 	 * @returns a std::string that contains a json representation of the
 	 * collection
@@ -164,8 +158,16 @@ public:
 	 * @return a `T` data element
 	 * @throws std::bad_weak_ptr if the requested back pointer is not available
 	 */
-	inline T last() const {
+	inline T maximum() {
 		return this->_back.lock()->getData();
+	}
+
+	/**
+	 * @brief retrieves the element at the front of the collection
+	 * @return a `T` data element
+	 */
+	inline T minimum() const {
+		return this->_front.lock()->getData();
 	}
 
 	/**

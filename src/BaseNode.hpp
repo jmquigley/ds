@@ -2,6 +2,7 @@
 
 #include <BaseBitFlag.hpp>
 #include <BaseNodeBuilder.hpp>
+#include <cstddef>
 #include <helpers.hpp>
 #include <iomanip>
 #include <iostream>
@@ -19,19 +20,22 @@ namespace ds {
  * @brief Bit flags for node properties used in tree data structures.
  *
  * Defines flags that can be set on nodes to determine their characteristics.
- * Implemented using bit positions for memory-efficient storage of boolean properties.
+ * Implemented using bit positions for memory-efficient storage of boolean
+ * properties.
  */
-enum NodeFlag : unsigned char {
+enum class NodeFlag : BYTE {
 	Color = 1 << 0,	 // 0 = RED, 1 = BLACK
 };
+
+enum class NodeColor { Red = 0, Black = 1 };
 
 /**
  * @class BaseNode
  * @brief A generic node class template for tree-like data structures.
  *
- * This class represents a single node in a tree, capable of holding generic data,
- * a unique identifier, and references to left, and right child nodes.
- * It uses the PROPERTY macro for automatic getter/setter generation.
+ * This class represents a single node in a tree, capable of holding generic
+ * data, a unique identifier, and references to left, and right child nodes. It
+ * uses the PROPERTY macro for automatic getter/setter generation.
  *
  * @tparam T The type of data stored within the node.
  */
@@ -52,9 +56,9 @@ private:
 	 * @brief Copy assignment helper function.
 	 *
 	 * Creates a deep copy of the source node into this node. The current node
-	 * is initialized with a new ID before copying all properties from the source.
-	 * This ensures that the resulting node is a distinct entity with the same
-	 * content as the source.
+	 * is initialized with a new ID before copying all properties from the
+	 * source. This ensures that the resulting node is a distinct entity with
+	 * the same content as the source.
 	 *
 	 * @param src The source Node object to copy from
 	 * @return Reference to this node after the copy operation
@@ -95,7 +99,8 @@ public:
 	 * @param flags initial internal flag settings for the new node
 	 * @param data The data to be stored in the node.
 	 */
-	BaseNode(std::shared_ptr<C<T>> left, std::shared_ptr<C<T>> right, ByteFlag flags, T data)
+	BaseNode(std::shared_ptr<C<T>> left, std::shared_ptr<C<T>> right,
+			 ByteFlag flags, T data)
 		: _data(data), _flags(flags), _left(left), _right(right) {}
 
 	/**
@@ -110,8 +115,9 @@ public:
 	/**
 	 * @brief Move constructor for Node.
 	 *
-	 * Creates a new node by transferring ownership of resources from another node.
-	 * The source node will be left in a valid but unspecified state after the move.
+	 * Creates a new node by transferring ownership of resources from another
+	 * node. The source node will be left in a valid but unspecified state after
+	 * the move.
 	 *
 	 * @param other The source Node object to move resources from
 	 */
@@ -122,12 +128,13 @@ public:
 	/**
 	 * @brief Move constructor for Node.
 	 *
-	 * Efficiently transfers ownership of resources from the source node to this node.
+	 * Efficiently transfers ownership of resources from the source node to this
+	 * node.
 	 * - Preserves the generated ID of the moved-from node
 	 * - Transfers data and relationship pointers
 	 *
-	 * @param other (`Node<T>`) The Node object to move from (will be left in a valid but
-	 * unspecified state)
+	 * @param other (`Node<T>`) The Node object to move from (will be left in a
+	 * valid but unspecified state)
 	 */
 	BaseNode(C<T> &&other) {
 		move(std::move(other));
@@ -165,9 +172,10 @@ public:
 	/**
 	 * @brief Move assignment operator.
 	 *
-	 * Transfers ownership of all resources from the right-hand side node to this node.
-	 * This is more efficient than copy assignment as it avoids deep copying by
-	 * moving resources from the source node, leaving it in a valid but unspecified state.
+	 * Transfers ownership of all resources from the right-hand side node to
+	 * this node. This is more efficient than copy assignment as it avoids deep
+	 * copying by moving resources from the source node, leaving it in a valid
+	 * but unspecified state.
 	 *
 	 * @param rhs The right-hand side Node object to move resources from
 	 * @return Reference to this node after the assignment
@@ -178,7 +186,8 @@ public:
 	}
 
 	/**
-	 * @brief When dereferencing a node this operator will return the data in the node
+	 * @brief When dereferencing a node this operator will return the data in
+	 * the node
 	 * @returns The `T` data that is associated with this node.
 	 */
 	T &operator*() {
@@ -186,7 +195,8 @@ public:
 	}
 
 	/**
-	 * @brief Clears the node's identifiers and pointers, then re-initializes a new ID.
+	 * @brief Clears the node's identifiers and pointers, then re-initializes a
+	 * new ID.
 	 *
 	 * Sets right, left to nullptr,
 	 */
@@ -201,6 +211,14 @@ public:
 	 */
 	inline T &data() {
 		return this->_data;
+	}
+
+	/**
+	 * @brief Returns the current color enumeration setting for this node
+	 * @returns a `NodeColor` enum reference to Red or Black
+	 */
+	NodeColor getColor() {
+		return this->isRed() ? NodeColor::Red : NodeColor::Black;
 	}
 
 	/**
@@ -238,11 +256,29 @@ public:
 	}
 
 	/**
+	 * @brief Convenience function for setting teh color of a node based on
+	 * the given enum.
+	 *
+	 * This function is a thin wrapper around the setRed/setBlack methods
+	 * using an enum class named NodeColor.  There are times where the
+	 * individual colors are needed (to be passed around).
+	 *
+	 * @param color (`NodeColor`) the color value to set.
+	 */
+	void setColor(NodeColor color) {
+		if (color == NodeColor::Red) {
+			this->setRed();
+		} else {
+			this->setBlack();
+		}
+	}
+
+	/**
 	 * Sets this node's color to red.
 	 * In the Red-Black tree, red is represented by unsetting the Color flag.
 	 */
 	inline void setRed() {
-		this->_flags.unset(NodeFlag::Color);
+		this->_flags.unset(static_cast<BYTE>(NodeFlag::Color));
 	}
 
 	/**
@@ -250,7 +286,7 @@ public:
 	 * In the Red-Black tree, black is represented by setting the Color flag.
 	 */
 	inline void setBlack() {
-		this->_flags.set(NodeFlag::Color);
+		this->_flags.set(static_cast<BYTE>(NodeFlag::Color));
 	}
 
 	/**

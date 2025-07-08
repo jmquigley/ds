@@ -11,6 +11,21 @@ class TestBinaryTree : public TestingBase {
 public:
 
 	TestBinaryTree() : TestingBase() {}
+
+	void showInorder(ds::BinaryTree<int> &bt) {
+		std::vector<int> out;
+		std::string comma;
+
+		bt.inorder([&](auto &node) { out.push_back(node.getData()); });
+
+		comma = "";
+		std::cout << "show->inorder: ";
+		for (auto it: out) {
+			std::cout << comma << it;
+			comma = ",";
+		}
+		std::cout << std::endl;
+	}
 };
 
 TEST_F(TestBinaryTree, CreateBinaryTree) {
@@ -160,4 +175,35 @@ TEST_F(TestBinaryTree, At) {
 	EXPECT_EQ(bt[6], 7);
 
 	EXPECT_THROW(bt.at(999), std::out_of_range);
+}
+
+TEST_F(TestBinaryTree, Remove) {
+	ds::BinaryTree<int> bt {1, 2, 3, 4, 5, 6, 7};
+
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_EQ(bt.size(), 7);
+
+	bt.removeValue(7);
+	showInorder(bt);
+
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_EQ(bt.size(), 6);
+
+	EXPECT_EQ(bt[0], 1);
+	EXPECT_EQ(bt[1], 2);
+	EXPECT_EQ(bt[2], 3);
+	EXPECT_EQ(bt[3], 4);
+	EXPECT_EQ(bt[4], 5);
+	EXPECT_EQ(bt[5], 6);
+
+	bt.removeValue(3);
+
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_EQ(bt.size(), 5);
+
+	EXPECT_EQ(bt[0], 1);
+	EXPECT_EQ(bt[1], 2);
+	EXPECT_EQ(bt[2], 4);
+	EXPECT_EQ(bt[3], 5);
+	EXPECT_EQ(bt[4], 6);
 }

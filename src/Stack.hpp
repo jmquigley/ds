@@ -12,9 +12,9 @@ namespace ds {
  * @class Stack
  * @brief A generic stack class template for tree-like data structures.
  *
- * This class represents a stack data structure.  A stack is a fundamental abstract
- * data type (ADT) that serves as a collection of elements, operating on a **Last In,
- * First Out (LIFO)** principle.
+ * This class represents a stack data structure.  A stack is a fundamental
+ * abstract data type (ADT) that serves as a collection of elements, operating
+ * on a **Last In, First Out (LIFO)** principle.
  *
  * @tparam T The type of data stored within the stack.
  */
@@ -115,8 +115,8 @@ public:
 	 *
 	 * This array copy operation does not change the current stack.  This is a
 	 * new vector that is a snapshot of the stack in time.  It does not
-	 * track any changes once the current statck deviates.  Each call will return
-	 * a new vector.
+	 * track any changes once the current statck deviates.  Each call will
+	 * return a new vector.
 	 *
 	 * @returns a `vector<T>` collection that contains each element of the stack
 	 */
@@ -201,7 +201,7 @@ public:
 			throw std::out_of_range("Cannot get the top of an empty stack");
 		}
 
-		return List<T>::first();
+		return List<T>::minimum();
 	}
 };
 }  // namespace ds

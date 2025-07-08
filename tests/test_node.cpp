@@ -110,12 +110,26 @@ TEST_F(TestNode, Color) {
 	EXPECT_TRUE(node.isBlack());
 	EXPECT_FALSE(node.isRed());
 	EXPECT_EQ(node.str(), resultBlack);
+	EXPECT_EQ(node.getColor(), ds::NodeColor::Black);
 
 	// Test setting back to red
 	node.setRed();
 	EXPECT_TRUE(node.isRed());
 	EXPECT_FALSE(node.isBlack());
 	EXPECT_EQ(node.str(), resultRed);
+	EXPECT_EQ(node.getColor(), ds::NodeColor::Red);
+
+	// Test setting back to black
+	node.setColor(ds::NodeColor::Black);
+	EXPECT_TRUE(node.isBlack());
+	EXPECT_FALSE(node.isRed());
+	EXPECT_EQ(node.getColor(), ds::NodeColor::Black);
+
+	// Test setting back to red
+	node.setColor(ds::NodeColor::Red);
+	EXPECT_TRUE(node.isRed());
+	EXPECT_FALSE(node.isBlack());
+	EXPECT_EQ(node.getColor(), ds::NodeColor::Red);
 }
 
 TEST_F(TestNode, ColorWithBuilder) {

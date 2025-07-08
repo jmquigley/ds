@@ -81,14 +81,6 @@ public:
 	}
 
 	/**
-	 * @brief returns the item at the end of the queue
-	 * @returns a `T` object at the back of the queue
-	 */
-	inline T first() const {
-		return List<T>::first();
-	}
-
-	/**
 	 * @brief Checks if an element exists in the Queue
 	 * @returns true if the item is in the Queue otherwise false
 	 */
@@ -116,7 +108,8 @@ public:
 	}
 
 	/**
-	 * @brief Removes the first occurrence of the specified element from the queue.
+	 * @brief Removes the first occurrence of the specified element from the
+	 * queue.
 	 * @param data The element to remove
 	 * @return The removed element
 	 * @throws std::range_error if the element is not found in the queue
@@ -145,8 +138,16 @@ public:
 	 * @brief returns the item at the front of the queue
 	 * @returns a `T` object at the front of the queue
 	 */
-	inline T last() {
-		return List<T>::last();
+	inline T maximum() {
+		return List<T>::maximum();
+	}
+
+	/**
+	 * @brief returns the item at the end of the queue
+	 * @returns a `T` object at the back of the queue
+	 */
+	inline T minimum() const {
+		return List<T>::minimum();
 	}
 
 	/**

@@ -6,6 +6,7 @@
 #include <Node.hpp>
 #include <TreeNode.hpp>
 #include <cstddef>
+#include <format>
 #include <functional>
 #include <initializer_list>
 #include <limits>
@@ -54,9 +55,10 @@ private:
 	/**
 	 * @brief Calculates the height of a subtree rooted at the given node
 	 *
-	 * This recursive function computes the height of a binary tree, defined as the
-	 * maximum number of edges from the node to the most distant leaf node.
-	 * A leaf node has a height of 0, and an empty tree (null node) has a height of -1.
+	 * This recursive function computes the height of a binary tree, defined as
+	 * the maximum number of edges from the node to the most distant leaf node.
+	 * A leaf node has a height of 0, and an empty tree (null node) has a height
+	 * of -1.
 	 *
 	 * The algorithm works by:
 	 * 1. Returning -1 if the node is null (base case)
@@ -64,10 +66,12 @@ private:
 	 * 3. Taking the maximum of those heights and adding 1 for the current level
 	 *
 	 * Time complexity: O(n) where n is the number of nodes in the subtree
-	 * Space complexity: O(h) where h is the height of the tree (for recursion stack)
+	 * Space complexity: O(h) where h is the height of the tree (for recursion
+	 * stack)
 	 *
 	 * @param node The root of the subtree whose height is being calculated
-	 * @return The height of the subtree as a signed integer (or -1 for empty trees)
+	 * @return The height of the subtree as a signed integer (or -1 for empty
+	 * trees)
 	 */
 	ssize_t findHeight(std::shared_ptr<TreeNode<T>> node) {
 		if (node == nullptr) {
@@ -87,7 +91,8 @@ private:
 	/**
 	 * @brief Helper function to perform in-order traversal of the tree
 	 *
-	 * Recursively visits left subtree, the node itself, and then the right subtree
+	 * Recursively visits left subtree, the node itself, and then the right
+	 * subtree
 	 *
 	 * @param node The current node in the traversal
 	 * @param callback a callback function that will be executed using each
@@ -120,16 +125,18 @@ private:
 	/**
 	 * @brief Helper function to insert a node into the binary tree
 	 *
-	 * Recursively traverses the tree to find the appropriate position for the new node
-	 * based on the comparator, then inserts it.
+	 * Recursively traverses the tree to find the appropriate position for the
+	 * new node based on the comparator, then inserts it.
 	 *
 	 * @param data The data to be inserted
 	 * @param node The current node in the recursion
 	 * @param parent The parent of the current node
-	 * @return Shared pointer to the inserted node or the current node in recursion
+	 * @return Shared pointer to the inserted node or the current node in
+	 * recursion
 	 */
-	std::shared_ptr<TreeNode<T>> insertDelegate(T data, std::shared_ptr<TreeNode<T>> node,
-												std::shared_ptr<TreeNode<T>> parent) {
+	std::shared_ptr<TreeNode<T>> insertDelegate(
+		T data, std::shared_ptr<TreeNode<T>> node,
+		std::shared_ptr<TreeNode<T>> parent) {
 		std::shared_ptr<TreeNode<T>> tnode;
 
 		if (this->_root == nullptr) {
@@ -147,9 +154,9 @@ private:
 				tnode = newNode(data, parent);
 				this->_latestNode = tnode;
 
-				if (this->comparator(data, this->first()) < 0) {
+				if (this->comparator(data, this->minimum()) < 0) {
 					this->_front = tnode;
-				} else if (this->comparator(data, this->last())) {
+				} else if (this->comparator(data, this->maximum())) {
 					this->_back = tnode;
 				}
 
@@ -223,12 +230,55 @@ private:
 	}
 
 	/**
+	 * Searches a tree from a given node for the maximum value in that
+	 * (sub)tree.  This is really used to recompute the maximum value when it
+	 * is removed from the tree.
+	 * @param node `(Node<T>)` the node location to start the search.  By
+	 * default this is the root node if no node is given.
+	 * @return `(Node<T>`) the largest node in the (sub)tree.
+	 */
+	std::shared_ptr<TreeNode<T>> maximumTreeNode(
+		std::shared_ptr<TreeNode<T>> node) {
+		if (node == nullptr) {
+			return nullptr;
+		}
+
+		while (node->right() != nullptr) {
+			node = node->right();
+		}
+
+		return node;
+	}
+
+	/**
+	 * From a node, searches a tree or subtree for the minimum value in that
+	 * (sub)tree. This is really used to recompute the minimum value when it is
+	 * removed from the tree.
+	 * @param node (`Node<T>`) the node location to start the search.  By
+	 * default this is the root node if no node is given.
+	 * @return (`Node<T>`) the smallest node in the (sub)tree.
+	 */
+	std::shared_ptr<TreeNode<T>> minimumTreeNode(
+		std::shared_ptr<TreeNode<T>> node) {
+		if (node == nullptr) {
+			return nullptr;
+		}
+
+		while (node->left() != nullptr) {
+			node = node->left();
+		}
+
+		return node;
+	}
+
+	/**
 	 * @brief Creates a new node with the specified data and parent
 	 * @param data Data to store in the new node
 	 * @param parent Parent node for the new node
 	 * @return std::shared_ptr<Node<T>> Shared pointer to the newly created node
 	 */
-	std::shared_ptr<TreeNode<T>> newNode(T data, std::shared_ptr<TreeNode<T>> &parent) {
+	std::shared_ptr<TreeNode<T>> newNode(T data,
+										 std::shared_ptr<TreeNode<T>> &parent) {
 		std::shared_ptr<ds::TreeNode<T>> node;
 		TreeNodeBuilder<T> builder;
 
@@ -246,7 +296,8 @@ private:
 	 * node as it is encountered (if defined).
 	 */
 	template<typename Callback>
-	bool postorderDelegate(std::shared_ptr<TreeNode<T>> node, Callback callback) {
+	bool postorderDelegate(std::shared_ptr<TreeNode<T>> node,
+						   Callback callback) {
 		if (node == nullptr) {
 			return false;
 		}
@@ -271,14 +322,16 @@ private:
 	/**
 	 * @brief Helper function to perform pre-order traversal of the tree
 	 *
-	 * Recursively visits the node itself, then left subtree, then right subtree.
+	 * Recursively visits the node itself, then left subtree, then right
+	 * subtree.
 	 *
 	 * @param node The current node in the traversal
 	 * @param callback a callback function that will be executed using each
 	 * node as it is encountered (if defined).
 	 */
 	template<typename Callback>
-	bool preorderDelegate(std::shared_ptr<TreeNode<T>> node, Callback callback) {
+	bool preorderDelegate(std::shared_ptr<TreeNode<T>> node,
+						  Callback callback) {
 		if (node == nullptr) {
 			return false;
 		}
@@ -300,16 +353,93 @@ private:
 	}
 
 	/**
+	 * @brief Fixes violations of Red-Black tree properties after deletion
+	 *
+	 * Rebalances the tree and recolors nodes as necessary to maintain
+	 * Red-Black tree invariants after a node is inserted.
+	 *
+	 * @param xnode (`std::shared_ptr<Node<T>>`) The newly removed node that
+	 * might cause violations
+	 */
+	void removeFixUp(std::shared_ptr<TreeNode<T>> xnode) {
+		std::shared_ptr<TreeNode<T>> wnode;
+
+		while (xnode != this->_root && xnode->isBlack()) {
+			if (xnode == xnode->parent()->left()) {
+				wnode = xnode->parent()->right();
+
+				if (wnode->isRed()) {
+					wnode->setBlack();
+					xnode->parent()->setRed();
+					rotateLeft(xnode->parent());
+					wnode = xnode->parent()->right();
+				}
+
+				if (wnode->left()->isBlack() && wnode->right()->isBlack()) {
+					wnode->setRed();
+					xnode = xnode->parent();
+				} else {
+					if (wnode->right()->isBlack()) {
+						wnode->left()->setBlack();
+						wnode->setRed();
+						rotateRight(wnode);
+						wnode = xnode->parent()->right();
+					}
+
+					(xnode->parent()->isRed()) ? wnode->setRed()
+											   : wnode->setBlack();
+					xnode->parent()->setBlack();
+					wnode->right()->setBlack();
+					rotateLeft(xnode->parent());
+					xnode = this->_root;
+				}
+			} else {
+				wnode = xnode->parent()->left();
+
+				if (wnode->isRed()) {
+					wnode->setBlack();
+					xnode->parent()->setRed();
+					rotateRight(xnode->parent());
+				}
+
+				if (wnode->left()->isBlack() && wnode->right()->isBlack()) {
+					wnode->setRed();
+					xnode = xnode->parent();
+				} else {
+					if (wnode->left()->isBlack()) {
+						wnode->right()->setBlack();
+						wnode->setBlack();
+						rotateLeft(wnode);
+						wnode = xnode->parent()->left();
+					}
+
+					(xnode->parent()->isRed()) ? wnode->setRed()
+											   : wnode->setBlack();
+
+					xnode->parent()->setBlack();
+					wnode->left()->setBlack();
+					rotateRight(xnode->parent());
+					xnode = this->_root;
+				}
+			}
+		}
+
+		xnode->setBlack();
+	}
+
+	/**
 	 * @brief Helper function to perform reverse-order traversal of the tree
 	 *
-	 * Recursively visits right subtree, the node itself, and then the left subtree
+	 * Recursively visits right subtree, the node itself, and then the left
+	 * subtree
 	 *
 	 * @param node The current node in the traversal
 	 * @param callback a callback function that will be executed using each
 	 * node as it is encountered (if defined).
 	 */
 	template<typename Callback>
-	bool reverseorderDelegate(std::shared_ptr<TreeNode<T>> node, Callback callback) {
+	bool reverseorderDelegate(std::shared_ptr<TreeNode<T>> node,
+							  Callback callback) {
 		if (node == nullptr) {
 			return false;
 		}
@@ -333,15 +463,17 @@ private:
 	/**
 	 * @brief Performs a left rotation on the given node
 	 *
-	 * A left rotation is a local operation in a binary search tree that changes the structure
-	 * without interfering with the in-order traversal order of the nodes. It's commonly
-	 * used in self-balancing trees like Red-Black trees and AVL trees.
+	 * A left rotation is a local operation in a binary search tree that changes
+	 * the structure without interfering with the in-order traversal order of
+	 * the nodes. It's commonly used in self-balancing trees like Red-Black
+	 * trees and AVL trees.
 	 *
-	 * The rotation takes the right child of xnode (ynode) and makes it the new root
-	 * of the subtree, with xnode becoming the left child of ynode. The left child of
-	 * ynode (if any) becomes the right child of xnode.
+	 * The rotation takes the right child of xnode (ynode) and makes it the new
+	 * root of the subtree, with xnode becoming the left child of ynode. The
+	 * left child of ynode (if any) becomes the right child of xnode.
 	 *
-	 * @param xnode The node to rotate around, which will become the left child after rotation
+	 * @param xnode The node to rotate around, which will become the left child
+	 * after rotation
 	 */
 	void rotateLeft(std::shared_ptr<TreeNode<T>> xnode) {
 		std::shared_ptr<TreeNode<T>> ynode = xnode->getRight();
@@ -373,15 +505,17 @@ private:
 	/**
 	 * @brief Performs a right rotation on the given node
 	 *
-	 * A right rotation is a local operation in a binary search tree that changes the structure
-	 * without interfering with the in-order traversal order of the nodes. It's commonly
-	 * used in self-balancing trees like Red-Black trees and AVL trees.
+	 * A right rotation is a local operation in a binary search tree that
+	 * changes the structure without interfering with the in-order traversal
+	 * order of the nodes. It's commonly used in self-balancing trees like
+	 * Red-Black trees and AVL trees.
 	 *
-	 * The rotation takes the left child of xnode (ynode) and makes it the new root
-	 * of the subtree, with xnode becoming the right child of ynode. The right child of
-	 * ynode (if any) becomes the left child of xnode.
+	 * The rotation takes the left child of xnode (ynode) and makes it the new
+	 * root of the subtree, with xnode becoming the right child of ynode. The
+	 * right child of ynode (if any) becomes the left child of xnode.
 	 *
-	 * @param xnode The node to rotate around, which will become the right child after rotation
+	 * @param xnode The node to rotate around, which will become the right child
+	 * after rotation
 	 */
 	void rotateRight(std::shared_ptr<TreeNode<T>> xnode) {
 		std::shared_ptr<TreeNode<T>> ynode = xnode->getLeft();
@@ -411,6 +545,49 @@ private:
 		xnode->setParent(ynode);  // fix y's left child parent pointer
 	}
 
+	/**
+	 * The successor of a node is the node with the smallest key greater than
+	 * node.
+	 * @param node (`Node<T>`) the node location to start the search for a
+	 * successor.
+	 * @return (`Node<T>`) a reference to the successor node.
+	 */
+	std::shared_ptr<TreeNode<T>> successorNode(
+		std::shared_ptr<TreeNode<T>> node) {
+		if (node->right() == nullptr) {
+			return minimumTreeNode(node->right());
+		}
+
+		std::shared_ptr<TreeNode<T>> ynode = node->parent();
+		while (ynode != nullptr && node == ynode->right()) {
+			node = ynode;
+			ynode = ynode.parent();
+		}
+
+		return ynode;
+	}
+
+	/**
+	 * Replaces one subtree as a child of its parent with another subtree
+	 * @param u `(TreeNode<T>)` parent subtree
+	 * @param v `(Node<T>)` child subtree to use in replacement
+	 */
+	void transplant(std::shared_ptr<TreeNode<T>> u,
+					std::shared_ptr<TreeNode<T>> v) {
+		std::shared_ptr<TreeNode<T>> parent = u->parent();
+		if (parent == nullptr) {
+			this->_root = v;
+		} else if (u == parent->left()) {
+			parent->setLeft(v);
+		} else {
+			parent->setRight(v);
+		}
+
+		if (v != nullptr) {
+			v->setParent(parent);
+		}
+	}
+
 public:
 
 	BinaryTree() : BaseTree<T, TreeNode>() {}
@@ -437,22 +614,26 @@ public:
 	}
 
 	/**
-	 * @brief Iterates through the tree and saves all date elements into an array.
+	 * @brief Iterates through the tree and saves all date elements into an
+	 * array.
 	 *
 	 * This function follows an inorder traversal to build the list.
 	 *
 	 * @param out a referece to the vector that should contain each data elemetn
 	 */
 	void array(std::vector<T> &out) {
-		inorderDelegate(this->root(), [&](TreeNode<T> &node) { out.push_back(node.getData()); });
+		inorderDelegate(this->root(), [&](TreeNode<T> &node) {
+			out.push_back(node.getData());
+		});
 	}
 
 	/**
-	 * @brief Iterates through the tree and saves all data elemnts into an array.
+	 * @brief Iterates through the tree and saves all data elemnts into an
+	 * array.
 	 *
-	 * This function is a wrapper around the main array method.  It will allocate
-	 * a vector, fill it, and return it.  The main method is givent a vector, where
-	 * this one creates the vector and returns it.
+	 * This function is a wrapper around the main array method.  It will
+	 * allocate a vector, fill it, and return it.  The main method is givent a
+	 * vector, where this one creates the vector and returns it.
 	 *
 	 * @returns a `std::vector<T>` that contains all data elements in order.
 	 */
@@ -463,14 +644,17 @@ public:
 	}
 
 	/**
-	 * @brief Retrieves the element at the specified index position in the binary tree.
+	 * @brief Retrieves the element at the specified index position in the
+	 * binary tree.
 	 *
-	 * This method peforms an inorder or reverseorder traversal of the tree and counts
-	 * the current position.  When it is encountered it will stop the traversal and
-	 * return the data at that node.  This is an O(N) operation and NOT an indexed
-	 * operation.  Just NOTE that this is not a fast lookup index operation.
+	 * This method peforms an inorder or reverseorder traversal of the tree and
+	 * counts the current position.  When it is encountered it will stop the
+	 * traversal and return the data at that node.  This is an O(N) operation
+	 * and NOT an indexed operation.  Just NOTE that this is not a fast lookup
+	 * index operation.
 	 *
-	 * @param index (`size_t`) the index position within the tree, using inorder traversal ordering
+	 * @param index (`size_t`) the index position within the tree, using inorder
+	 * traversal ordering
 	 * @returns the data element located at the given index
 	 * @throws std::out_of_range error if an invalid index is requested
 	 */
@@ -521,7 +705,8 @@ public:
 		}
 
 		if (!found) {
-			throw std::runtime_error("Element at index not found during traversal");
+			throw std::runtime_error(
+				"Element at index not found during traversal");
 		}
 
 		return data;
@@ -560,7 +745,7 @@ public:
 	 * @param data The value to search for
 	 * @return Match object containing the result of the search
 	 */
-	Match<T, TreeNode> find(T data) const override {
+	virtual Match<T, TreeNode> find(T data) const override {
 		std::shared_ptr<TreeNode<T>> tnode = this->_root;
 		Match<T, TreeNode> match;
 
@@ -586,17 +771,19 @@ public:
 	/**
 	 * @brief Calculates the height of the binary tree
 	 *
-	 * The height of a tree is defined as the number of edges on the longest path
-	 * from the root node to any leaf node. An empty tree has a height of 0, and
-	 * a tree with only a root node also has a height of 0.
+	 * The height of a tree is defined as the number of edges on the longest
+	 * path from the root node to any leaf node. An empty tree has a height of
+	 * 0, and a tree with only a root node also has a height of 0.
 	 *
 	 * This method serves as a public interface that:
 	 * 1. Calls the private recursive findHeight() method starting at the root
-	 * 2. Transforms the result to ensure empty or invalid trees return 0 instead of -1
+	 * 2. Transforms the result to ensure empty or invalid trees return 0
+	 * instead of -1
 	 * 3. Presents a consistent height definition to external callers
 	 *
 	 * Time complexity: O(n) where n is the number of nodes in the tree
-	 * Space complexity: O(h) where h is the height of the tree (for recursion stack)
+	 * Space complexity: O(h) where h is the height of the tree (for recursion
+	 * stack)
 	 *
 	 * @return The height of the tree as a non-negative integer
 	 */
@@ -609,12 +796,13 @@ public:
 	/**
 	 * @brief Performs an in-order traversal of the tree
 	 *
-	 * In-order traversal visits nodes in the order: left subtree, root, then right subtree.
-	 * This traversal is useful to retrieve the data in sorted order.  As each node is
-	 * encounterd it is passed to a callback function for use.
+	 * In-order traversal visits nodes in the order: left subtree, root, then
+	 * right subtree. This traversal is useful to retrieve the data in sorted
+	 * order.  As each node is encounterd it is passed to a callback function
+	 * for use.
 	 *
-	 * @param callback a function pointer that will be executed on each node as it is
-	 * encountered.
+	 * @param callback a function pointer that will be executed on each node as
+	 * it is encountered.
 	 */
 	template<typename Callback>
 	bool inorder(Callback callback) {
@@ -625,7 +813,7 @@ public:
 	 * @brief Inserts a new element into the binary tree
 	 * @param data The data to insert into the tree
 	 */
-	void insert(T data) {
+	virtual void insert(T data) override {
 		std::shared_ptr<TreeNode<T>> tnode;
 
 		std::shared_ptr<TreeNode<T>> snode;
@@ -640,12 +828,13 @@ public:
 	/**
 	 * @brief Performs a post-order traversal of the tree
 	 *
-	 * Post-order traversal visits nodes in the order: left subtree, right subtree, then root.
-	 * This traversal is useful for operations where child nodes must be processed before parent
-	 * nodes, such as when deleting nodes or calculating a tree's height.
+	 * Post-order traversal visits nodes in the order: left subtree, right
+	 * subtree, then root. This traversal is useful for operations where child
+	 * nodes must be processed before parent nodes, such as when deleting nodes
+	 * or calculating a tree's height.
 	 *
-	 * @param callback a function pointer that will be executed on each node as it is
-	 * encountered.
+	 * @param callback a function pointer that will be executed on each node as
+	 * it is encountered.
 	 */
 	template<typename Callback>
 	bool postorder(Callback callback) {
@@ -655,12 +844,13 @@ public:
 	/**
 	 * @brief Performs a pre-order traversal of the tree
 	 *
-	 * Pre-order traversal visits nodes in the order: root, left subtree, then right subtree.
-	 * This traversal is useful for creating a copy of the tree or generating a prefix expression
-	 * from an expression tree. It also naturally corresponds to depth-first search.
+	 * Pre-order traversal visits nodes in the order: root, left subtree, then
+	 * right subtree. This traversal is useful for creating a copy of the tree
+	 * or generating a prefix expression from an expression tree. It also
+	 * naturally corresponds to depth-first search.
 	 *
-	 * @param callback a function pointer that will be executed on each node as it is
-	 * encountered.
+	 * @param callback a function pointer that will be executed on each node as
+	 * it is encountered.
 	 */
 	template<typename Callback>
 	bool preorder(Callback callback) {
@@ -668,23 +858,86 @@ public:
 	}
 
 	/**
-	 * @brief Removes an element from the tree at the given position (based on its
-	 * inorder traversal position).
+	 * @brief Removes an element from the tree at the given position (based on
+	 * its inorder traversal position).
 	 *
 	 * @param index (`size_t`) the location within the tree to remove
-	 * @param tnode (`std::shared_ptr<TreeNode<T>>`) a convenience cache node from
-	 * a search to help short circuit a lookup for deletion that has already occurred.
+	 * @param tnode (`std::shared_ptr<TreeNode<T>>`) a convenience cache node
+	 * from a search to help short circuit a lookup for deletion that has
+	 * already occurred.
 	 * @returns the value that was removed from the tree
 	 */
-	T removeAt(size_t index, std::shared_ptr<TreeNode<T>> tnode = nullptr) {
+	virtual T removeAt(size_t index,
+					   std::shared_ptr<TreeNode<T>> tnode = nullptr) override {
 		// TODO: implmeent removeAt in BinaryTree
 		T data {};
 		return data;
 	}
 
-	T removeValue(T value) {
-		// TODO: implement removeValue in BinaryTree
+	/**
+	 * @brief Removes the first instance of the given value from the tree.
+	 * @param value (`T`) a data value to find and remove from the tree.
+	 * @returns the T value that was removed from the tree
+	 */
+	virtual T removeValue(T value) override {
+		std::shared_ptr<TreeNode<T>> znode;
+		Match<T, TreeNode> match = find(value);
 		T data {};
+
+		if (!match.found()) {
+			throw std::invalid_argument(
+				std::format("data value not found in tree ({})", value));
+		} else {
+			znode = match.getRef().lock();
+			data = znode->getData();
+		}
+
+		std::shared_ptr<TreeNode<T>> xnode;
+		std::shared_ptr<TreeNode<T>> ynode = znode;
+		NodeColor yOrigColor = ynode->getColor();
+
+		if (znode->left() == nullptr) {
+			xnode = znode->right();
+			transplant(znode, znode->right());
+		} else if (znode->right() == nullptr) {
+			xnode = znode->left();
+			transplant(znode, znode->left());
+		} else {
+			ynode = minimumTreeNode(znode->right());
+			yOrigColor = ynode->getColor();
+			xnode = ynode->right();
+
+			if (ynode->parent() == znode) {
+				xnode->setParent(ynode);
+			} else {
+				transplant(ynode, ynode->right());
+				ynode->setRight(znode->right());
+				ynode->right()->setParent(ynode);
+			}
+
+			transplant(znode, ynode);
+			ynode->setLeft(znode->left());
+			ynode->left()->setParent(ynode);
+			ynode->setColor(znode->getColor());
+		}
+
+		if (yOrigColor == NodeColor::Black) {
+			removeFixUp(xnode);
+		}
+
+		this->_size--;
+
+		if (this->_size != 0) {
+			if (this->comparator(znode->getData(), this->minimum()) == 0) {
+				this->_front = minimumTreeNode(this->_root);
+			} else if (this->comparator(znode->getData(), this->maximum()) ==
+					   0) {
+				this->_back = maximumTreeNode(this->_root);
+			}
+		} else {
+			clear();
+		}
+
 		return data;
 	}
 
@@ -693,11 +946,11 @@ public:
 	 *
 	 * Reverse-order traversal visits nodes in the order: right subtree, root,
 	 * then left subtree.  This traversal is useful to retrieve the data in
-	 * reverse sorted order.  As each node is encounterd it is passed to a callback
-	 * function for use.
+	 * reverse sorted order.  As each node is encounterd it is passed to a
+	 * callback function for use.
 	 *
-	 * @param callback a function pointer that will be executed on each node as it is
-	 * encountered.
+	 * @param callback a function pointer that will be executed on each node as
+	 * it is encountered.
 	 */
 	template<typename Callback>
 	bool reverseorder(Callback callback) {
