@@ -362,9 +362,13 @@ private:
 	 * might cause violations
 	 */
 	void removeFixUp(std::shared_ptr<TreeNode<T>> xnode) {
+		if (!xnode) {
+			return;
+		}
+
 		std::shared_ptr<TreeNode<T>> wnode;
 
-		while (xnode != this->_root && xnode->isBlack()) {
+		while (xnode && xnode != this->_root && xnode->isBlack()) {
 			if (xnode == xnode->parent()->left()) {
 				wnode = xnode->parent()->right();
 

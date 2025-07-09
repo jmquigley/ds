@@ -206,4 +206,14 @@ TEST_F(TestBinaryTree, Remove) {
 	EXPECT_EQ(bt[2], 4);
 	EXPECT_EQ(bt[3], 5);
 	EXPECT_EQ(bt[4], 6);
+
+	bt.removeValue(2);
+
+	EXPECT_EQ(bt.height(), 2);
+	EXPECT_EQ(bt.size(), 4);
+
+	EXPECT_EQ(bt[0], 1);
+	EXPECT_EQ(bt[1], 4);
+	EXPECT_EQ(bt[2], 5);
+	EXPECT_EQ(bt[3], 6);
 }
