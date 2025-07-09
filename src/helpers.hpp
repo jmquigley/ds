@@ -19,7 +19,8 @@ namespace ds {
  * @return The integer representation of the enumeration value
  */
 template<typename Enumeration>
-auto as_integer(Enumeration const value) -> typename std::underlying_type<Enumeration>::type {
+auto as_integer(Enumeration const value) ->
+	typename std::underlying_type<Enumeration>::type {
 	return static_cast<typename std::underlying_type<Enumeration>::type>(value);
 };
 
@@ -45,17 +46,19 @@ std::string pointerToString(std::shared_ptr<T> p) {
 /**
  * @brief Converts a weak pointer to a string representation
  *
- * This function attempts to lock the weak pointer and obtain a string representation
- * of the pointed-to object. If the weak pointer is expired (i.e., the object
- * has been deleted), it returns "invalid".
+ * This function attempts to lock the weak pointer and obtain a string
+ * representation of the pointed-to object. If the weak pointer is expired
+ * (i.e., the object has been deleted), it returns "invalid".
  *
  * @tparam T The type of object pointed to by the weak pointer
  * @param wp The weak pointer to convert to a string
  * @param message The message to return when the pointer is invalid
- * @return A string representation of the pointer address or "invalid" if expired
+ * @return A string representation of the pointer address or "invalid" if
+ * expired
  */
 template<typename T>
-std::string weakPointerToString(std::weak_ptr<T> wp, std::string message = "invalid") {
+std::string weakPointerToString(std::weak_ptr<T> wp,
+								std::string message = "invalid") {
 	std::shared_ptr<T> p = wp.lock();
 
 	if (p) {

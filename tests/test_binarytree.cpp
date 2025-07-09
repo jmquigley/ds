@@ -177,7 +177,7 @@ TEST_F(TestBinaryTree, At) {
 	EXPECT_THROW(bt.at(999), std::out_of_range);
 }
 
-TEST_F(TestBinaryTree, Remove) {
+TEST_F(TestBinaryTree, RemoveValue) {
 	ds::BinaryTree<int> bt {1, 2, 3, 4, 5, 6, 7};
 
 	EXPECT_EQ(bt.height(), 3);
@@ -216,4 +216,82 @@ TEST_F(TestBinaryTree, Remove) {
 	EXPECT_EQ(bt[1], 4);
 	EXPECT_EQ(bt[2], 5);
 	EXPECT_EQ(bt[3], 6);
+
+	bt.removeValue(1);
+
+	EXPECT_EQ(bt.height(), 2);
+	EXPECT_EQ(bt.size(), 3);
+
+	EXPECT_EQ(bt[0], 4);
+	EXPECT_EQ(bt[1], 5);
+	EXPECT_EQ(bt[2], 6);
+}
+
+TEST_F(TestBinaryTree, RemoveValueLarge) {
+	ds::BinaryTree<int> bt {};
+
+	for (int i = 0; i < 256; i++) {
+		bt.insert(i);
+	}
+
+	EXPECT_EQ(bt.size(), 256);
+	EXPECT_EQ(bt.height(), 13);
+
+	for (int i = 255; i >= 0; i--) {
+		bt.removeValue(i);
+	}
+
+	EXPECT_EQ(bt.size(), 0);
+	EXPECT_EQ(bt.height(), 0);
+}
+
+TEST_F(TestBinaryTree, RemoveValueBad) {
+	ds::BinaryTree<int> bt {1, 2, 3, 4, 5, 6, 7};
+
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_EQ(bt.size(), 7);
+
+	EXPECT_THROW(bt.removeValue(999), std::invalid_argument);
+	EXPECT_THROW(bt.removeAt(999), std::out_of_range);
+}
+
+TEST_F(TestBinaryTree, RemoveAt) {
+	ds::BinaryTree<int> bt {1, 2, 3, 4, 5, 6, 7};
+
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_EQ(bt.size(), 7);
+
+	bt.removeAt(6);
+	showInorder(bt);
+
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_EQ(bt.size(), 6);
+
+	EXPECT_EQ(bt[0], 1);
+	EXPECT_EQ(bt[1], 2);
+	EXPECT_EQ(bt[2], 3);
+	EXPECT_EQ(bt[3], 4);
+	EXPECT_EQ(bt[4], 5);
+	EXPECT_EQ(bt[5], 6);
+
+	bt.removeAt(0);
+
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_EQ(bt.size(), 5);
+
+	EXPECT_EQ(bt[0], 2);
+	EXPECT_EQ(bt[1], 3);
+	EXPECT_EQ(bt[2], 4);
+	EXPECT_EQ(bt[3], 5);
+	EXPECT_EQ(bt[4], 6);
+}
+
+TEST_F(TestBinaryTree, RemoveFromEmpty) {
+	ds::BinaryTree<int> bt {};
+
+	EXPECT_EQ(bt.height(), 0);
+	EXPECT_EQ(bt.size(), 0);
+
+	EXPECT_THROW(bt.removeValue(0), std::invalid_argument);
+	EXPECT_THROW(bt.removeAt(0), std::out_of_range);
 }

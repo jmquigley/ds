@@ -372,19 +372,22 @@ private:
 			if (xnode == xnode->parent()->left()) {
 				wnode = xnode->parent()->right();
 
-				if (wnode->isRed()) {
+				if (wnode && wnode->isRed()) {
 					wnode->setBlack();
 					xnode->parent()->setRed();
 					rotateLeft(xnode->parent());
 					wnode = xnode->parent()->right();
 				}
 
-				if (wnode->left()->isBlack() && wnode->right()->isBlack()) {
+				if (wnode->_left && wnode->_left->isBlack() && wnode->_right &&
+					wnode->_right->isBlack()) {
 					wnode->setRed();
 					xnode = xnode->parent();
 				} else {
-					if (wnode->right()->isBlack()) {
-						wnode->left()->setBlack();
+					if (wnode->_right && wnode->right()->isBlack()) {
+						if (wnode->_left) {
+							wnode->left()->setBlack();
+						}
 						wnode->setRed();
 						rotateRight(wnode);
 						wnode = xnode->parent()->right();
@@ -664,7 +667,7 @@ public:
 	 */
 	T at(size_t index) override {
 		// Boundary check
-		if (index >= this->_size) {
+		if (index >= this->_size || this->_size == 0) {
 			throw std::out_of_range("Invalid tree position index requested");
 		}
 
@@ -873,9 +876,15 @@ public:
 	 */
 	virtual T removeAt(size_t index,
 					   std::shared_ptr<TreeNode<T>> tnode = nullptr) override {
-		// TODO: implmeent removeAt in BinaryTree
 		T data {};
-		return data;
+
+		if (!tnode) {
+			data = at(index);
+		} else {
+			data = tnode->getData();
+		}
+
+		return removeValue(data);
 	}
 
 	/**
