@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <format>
 #include <functional>
+#include <helpers.hpp>
 #include <initializer_list>
 #include <limits>
 #include <property.hpp>
@@ -368,63 +369,66 @@ private:
 
 		std::shared_ptr<TreeNode<T>> wnode;
 
-		while (xnode && xnode != this->_root && xnode->isBlack()) {
-			if (xnode == xnode->parent()->left()) {
+		while (all(xnode, this->_root) && xnode != this->_root &&
+			   xnode->isBlack()) {
+			if (all(xnode, xnode->parent()) &&
+				xnode == xnode->parent()->left()) {
 				wnode = xnode->parent()->right();
 
 				if (wnode && wnode->isRed()) {
 					wnode->setBlack();
-					xnode->parent()->setRed();
+					if (xnode->parent()) xnode->parent()->setRed();
 					rotateLeft(xnode->parent());
-					wnode = xnode->parent()->right();
+					if (xnode->parent()) wnode = xnode->parent()->right();
 				}
 
-				if (wnode->_left && wnode->_left->isBlack() && wnode->_right &&
-					wnode->_right->isBlack()) {
+				if (all(wnode, wnode->left(), wnode->right()) &&
+					wnode->left()->isBlack() && wnode->right()->isBlack()) {
 					wnode->setRed();
-					xnode = xnode->parent();
+					if (xnode->parent()) xnode = xnode->parent();
 				} else {
-					if (wnode->_right && wnode->right()->isBlack()) {
-						if (wnode->_left) {
-							wnode->left()->setBlack();
-						}
+					if (all(wnode, wnode->right()) &&
+						wnode->right()->isBlack()) {
+						if (wnode->left()) wnode->left()->setBlack();
 						wnode->setRed();
 						rotateRight(wnode);
-						wnode = xnode->parent()->right();
+						if (xnode->parent()) wnode = xnode->parent()->right();
 					}
 
-					(xnode->parent()->isRed()) ? wnode->setRed()
-											   : wnode->setBlack();
-					xnode->parent()->setBlack();
-					wnode->right()->setBlack();
+					(all(xnode, xnode->parent()) && xnode->parent()->isRed())
+						? wnode->setRed()
+						: wnode->setBlack();
+					if (xnode->parent()) xnode->parent()->setBlack();
+					if (wnode->right()) wnode->right()->setBlack();
 					rotateLeft(xnode->parent());
 					xnode = this->_root;
 				}
 			} else {
-				wnode = xnode->parent()->left();
+				if (all(xnode, xnode->parent())) wnode = xnode->parent()->left();
 
-				if (wnode->isRed()) {
+				if (wnode && wnode->isRed()) {
 					wnode->setBlack();
-					xnode->parent()->setRed();
+					if (all(xnode, xnode->parent())) xnode->parent()->setRed();
 					rotateRight(xnode->parent());
 				}
 
-				if (wnode->left()->isBlack() && wnode->right()->isBlack()) {
+				if (all(wnode, wnode->left(), wnode->right()) &&
+					wnode->left()->isBlack() && wnode->right()->isBlack()) {
 					wnode->setRed();
-					xnode = xnode->parent();
+					if (xnode->parent()) xnode = xnode->parent();
 				} else {
-					if (wnode->left()->isBlack()) {
-						wnode->right()->setBlack();
+					if (all(wnode, wnode->left()) && wnode->left()->isBlack()) {
+						if (wnode->right()) wnode->right()->setBlack();
 						wnode->setBlack();
 						rotateLeft(wnode);
-						wnode = xnode->parent()->left();
+						if (xnode->parent()) wnode = xnode->parent()->left();
 					}
 
-					(xnode->parent()->isRed()) ? wnode->setRed()
+					(all(xnode, xnode->parent()) && xnode->parent()->isRed()) ? wnode->setRed()
 											   : wnode->setBlack();
 
-					xnode->parent()->setBlack();
-					wnode->left()->setBlack();
+					if (all(xnode, xnode->parent())) xnode->parent()->setBlack();
+					if (all(wnode, wnode->left())) wnode->left()->setBlack();
 					rotateRight(xnode->parent());
 					xnode = this->_root;
 				}

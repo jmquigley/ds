@@ -1,9 +1,9 @@
+#include <testing_base.h>
+
+#include <helpers.hpp>
 #include <iostream>
 #include <memory>
 #include <string>
-
-#include "helpers.hpp"
-#include "testing_base.h"
 
 class TestHelpers : public TestingBase {
 public:
@@ -43,4 +43,24 @@ TEST_F(TestHelpers, InvalidWeakPointer) {
 
 	s = ds::weakPointerToString(wp, "different message");
 	EXPECT_EQ(s, "different message");
+}
+
+TEST_F(TestHelpers, CheckForAllGoodPointers) {
+	std::shared_ptr<int> pa1 = std::make_shared<int>(1);
+	std::shared_ptr<int> pa2 = std::make_shared<int>(2);
+	std::shared_ptr<int> pa3 = std::make_shared<int>(3);
+	std::shared_ptr<int> pa4;
+
+	EXPECT_TRUE(ds::all(pa1, pa2, pa3));
+	EXPECT_FALSE(ds::all(pa1, pa2, pa4));
+}
+
+TEST_F(TestHelpers, CheckForAnyGoodPointers) {
+	std::shared_ptr<int> pa1;
+	std::shared_ptr<int> pa2;
+	std::shared_ptr<int> pa3 = std::make_shared<int>(3);
+	std::shared_ptr<int> pa4 = std::make_shared<int>(4);
+
+	EXPECT_TRUE(ds::any(pa1, pa2, pa3));
+	EXPECT_FALSE(ds::any(pa1, pa2));
 }

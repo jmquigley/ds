@@ -229,15 +229,16 @@ TEST_F(TestBinaryTree, RemoveValue) {
 
 TEST_F(TestBinaryTree, RemoveValueLarge) {
 	ds::BinaryTree<int> bt {};
+    int treeSize {10000};
 
-	for (int i = 0; i < 256; i++) {
+	for (int i = 0; i < treeSize; i++) {
 		bt.insert(i);
 	}
 
-	EXPECT_EQ(bt.size(), 256);
-	EXPECT_EQ(bt.height(), 13);
+	EXPECT_EQ(bt.size(), treeSize);
+	EXPECT_EQ(bt.height(), 23);
 
-	for (int i = 255; i >= 0; i--) {
+	for (int i = treeSize - 1; i >= 0; i--) {
 		bt.removeValue(i);
 	}
 
