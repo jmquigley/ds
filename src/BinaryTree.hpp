@@ -4,6 +4,7 @@
 #include <BaseTree.hpp>
 #include <Match.hpp>
 #include <Node.hpp>
+#include <Queue.hpp>
 #include <TreeNode.hpp>
 #include <cstddef>
 #include <format>
@@ -781,6 +782,44 @@ public:
 		}
 
 		return data;
+	}
+
+	/**
+	 * @brief performs a breadth first traversal of the tree.
+	 *
+	 * Breadth-first search is a tree traversal algorithm that explores all
+	 * nodes at the present depth level before moving on to nodes at the next
+	 * depth level. This is in contrast to depth-first search algorithms (like
+	 * pre-order, in-order, and post-order traversals) which explore as far as
+	 * possible along each branch before backtracking.
+	 *
+	 * @param callback a function pointer that will be executed on each node as
+	 * it is encountered.
+	 */
+	template<typename Callback>
+	void breadth(Callback callback) {
+		std::shared_ptr<TreeNode<T>> node;
+		ds::Queue<std::shared_ptr<TreeNode<T>>> q {this->_root};
+
+		while (!q.empty()) {
+			node = q.dequeue();
+
+			// allows for a callback with a short circuit return value
+			if constexpr (std::is_same_v<decltype(callback(*node)), bool>) {
+				if (!callback(*node)) {
+					return;	 // short circuit if callback returns false
+				}
+			} else {
+				callback(*node);
+			}
+
+			if (node->left()) {
+				q.enqueue(node->left());
+			}
+			if (node->right()) {
+				q.enqueue(node->right());
+			}
+		}
 	}
 
 	/**

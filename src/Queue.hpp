@@ -108,6 +108,14 @@ public:
 	}
 
 	/**
+	 * @brief Check if the queue is empty
+	 * @return true if the queue is empty, otherwise false
+	 */
+	bool empty() {
+		return List<T>::empty();
+	}
+
+	/**
 	 * @brief Removes the first occurrence of the specified element from the
 	 * queue.
 	 * @param data The element to remove

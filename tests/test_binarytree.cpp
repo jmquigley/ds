@@ -133,6 +133,26 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 		comma = ",";
 	}
 	std::cout << std::endl;
+
+	out.clear();
+	bt.breadth([&](auto &node) { out.push_back(node.getData()); });
+
+	EXPECT_EQ(out.size(), 7);
+	EXPECT_EQ(out[0], 2);
+	EXPECT_EQ(out[1], 1);
+	EXPECT_EQ(out[2], 4);
+	EXPECT_EQ(out[3], 3);
+	EXPECT_EQ(out[4], 6);
+	EXPECT_EQ(out[5], 5);
+	EXPECT_EQ(out[6], 7);
+
+	comma = "";
+	std::cout << "breadth: ";
+	for (auto it: out) {
+		std::cout << comma << it;
+		comma = ",";
+	}
+	std::cout << std::endl;
 }
 
 TEST_F(TestBinaryTree, InitializerListAndOperator) {
