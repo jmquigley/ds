@@ -8,6 +8,7 @@
 #include <helpers.hpp>
 #include <limits>
 #include <property.hpp>
+#include <random>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -453,6 +454,37 @@ public:
 		}
 
 		return v;
+	}
+
+	/**
+	 * @brief Shuffles the elements of the list using the Fisher-Yates algorithm
+	 *
+	 * Performs an in-place shuffle of the list elements by randomly swapping
+	 * each element with an element at a randomly chosen position. This
+	 * implementation uses the modern version of the Fisher-Yates algorithm.
+	 *
+	 * @throws std::runtime_error If the list is empty
+	 */
+	void shuffle() {
+		// Check if list is empty
+		if (this->_size == 0) {
+			throw std::runtime_error("Cannot shuffle an empty list");
+		}
+
+		// Seed the random number generator with a random device
+		std::random_device rd;
+		std::mt19937 gen(rd());
+
+		// Start from the last element and swap it with a random element
+		// from the entire list (including itself)
+		for (size_t i = this->_size - 1; i > 0; --i) {
+			// Generate a random index between 0 and i (inclusive)
+			std::uniform_int_distribution<size_t> dist(0, i);
+			size_t j = dist(gen);
+
+			// Swap elements at positions i and j
+			swap(i, j);
+		}
 	}
 
 	/**

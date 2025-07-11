@@ -130,3 +130,22 @@ TEST_F(TestQueue, Contains) {
 	EXPECT_TRUE(q.contains(4));
 	EXPECT_FALSE(q.contains(7));
 }
+
+TEST_F(TestQueue, ToString) {
+	ds::Queue<int> q {1, 2, 3};
+	std::string result =
+		"[{\"data\":1,\"color\":\"red\"},{\"data\":2,\"color\":\"red\"},{"
+		"\"data\":3,\"color\":"
+		"\"red\"}]";
+
+	EXPECT_EQ(q.size(), 3);
+	EXPECT_EQ(q.str(), result);
+	EXPECT_EQ(q.json(), result);
+}
+
+TEST_F(TestQueue, ToStringEmpty) {
+	ds::Queue<int> q;
+
+	EXPECT_EQ(q.size(), 0);
+	EXPECT_EQ(q.str(), "[]");
+}

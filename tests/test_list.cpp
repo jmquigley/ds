@@ -134,6 +134,19 @@ TEST_F(TestList, InsertArbitrary) {
 	EXPECT_EQ(list.maximum(), 8);
 }
 
+TEST_F(TestList, InsertLargeList) {
+	ds::List<int> list;
+	int size = 10000;
+
+	for (int i = 0; i < size; i++) {
+		list.insert(i);
+	}
+
+	EXPECT_EQ(list.size(), size);
+	list.clear();
+	EXPECT_EQ(list.size(), 0);
+}
+
 TEST_F(TestList, InsertOutOfRange) {
 	ds::List<int> list;
 
@@ -580,9 +593,9 @@ TEST_F(TestList, EqualityOperator) {
 	EXPECT_EQ(l1.size(), 5);
 	EXPECT_EQ(l2.size(), 5);
 
-	// EXPECT_TRUE(l1 == l2);
-	// EXPECT_FALSE(l1 == l3);
-	// EXPECT_FALSE(l1 == l4);
+	EXPECT_TRUE(l1 == l2);
+	EXPECT_FALSE(l1 == l3);
+	EXPECT_FALSE(l1 == l4);
 }
 
 TEST_F(TestList, InequalityOperator) {
@@ -606,7 +619,7 @@ TEST_F(TestList, EqualityOperatorEmpty) {
 	EXPECT_EQ(l1.size(), 0);
 	EXPECT_EQ(l2.size(), 0);
 
-	// EXPECT_TRUE(l1 == l2);
+	EXPECT_TRUE(l1 == l2);
 }
 
 TEST_F(TestList, InequalityOperatorEmpty) {
@@ -689,4 +702,27 @@ TEST_F(TestList, BadSwap) {
 	EXPECT_EQ(list.maximum(), 7);
 
 	EXPECT_THROW(list.swap(999, 1000), std::out_of_range);
+}
+
+TEST_F(TestList, Shuffle) {
+	ds::List<int> list1 {1, 2, 3, 4, 5, 6, 7, 8};
+	ds::List<int> list2 = list1;
+	ds::List<int> list3;
+
+	list2.shuffle();
+
+	EXPECT_FALSE(list1 == list2);
+	EXPECT_TRUE(list1 != list2);
+
+	std::cout << "list1:";
+	for (auto it: list1) {
+		std::cout << it << " " << std::endl;
+	}
+
+	std::cout << "list2:";
+	for (auto it: list2) {
+		std::cout << it << " " << std::endl;
+	}
+
+	EXPECT_THROW(list3.shuffle(), std::runtime_error);
 }

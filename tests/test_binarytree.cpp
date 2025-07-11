@@ -1,6 +1,7 @@
 #include <testing_base.h>
 
 #include <BinaryTree.hpp>
+#include <List.hpp>
 #include <TreeNode.hpp>
 #include <iostream>
 #include <stdexcept>
@@ -249,14 +250,21 @@ TEST_F(TestBinaryTree, RemoveValue) {
 
 TEST_F(TestBinaryTree, RemoveValueLarge) {
 	ds::BinaryTree<int> bt {};
+	ds::List<int> l {};
 	int treeSize {10000};
 
 	for (int i = 0; i < treeSize; i++) {
-		bt.insert(i);
+		l.insert(i);
+	}
+
+	l.shuffle();
+
+	for (auto it: l) {
+		bt.insert(it);
 	}
 
 	EXPECT_EQ(bt.size(), treeSize);
-	EXPECT_EQ(bt.height(), 23);
+	EXPECT_EQ(bt.height(), 15);
 
 	for (int i = treeSize - 1; i >= 0; i--) {
 		bt.removeValue(i);
