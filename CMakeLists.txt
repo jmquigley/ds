@@ -64,6 +64,7 @@ set(DS_SOURCES
     src/List.hpp
     src/Match.hpp
     src/Node.hpp
+    src/PriorityQueue.hpp
     src/property.hpp
     src/Queue.hpp
     src/SortedList.hpp
@@ -116,6 +117,7 @@ set(TEST_SOURCES
   tests/test_iterator.cpp
   tests/test_list.cpp
   tests/test_node.cpp
+  tests/test_priorityqueue.cpp
   tests/test_queue.cpp
   tests/test_sortedlist.cpp
   tests/test_stack.cpp

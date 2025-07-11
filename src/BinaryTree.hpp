@@ -1158,6 +1158,10 @@ public:
 		return this->reverseorderDelegate(this->_root, callback);
 	}
 
+	/**
+	 * @brief gives a string representation of the current tree inorder.
+	 * @returns a string value that represents the contents of the tree
+	 */
 	std::string str() const override {
 		std::stringstream ss;
 		ss << "BinaryTree[size=" << this->_size

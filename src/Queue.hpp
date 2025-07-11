@@ -41,7 +41,7 @@ public:
 	 * @brief Destructor that cleans up queue resources.
 	 */
 	~Queue() {
-		List<T>::clear();
+		this->clear();
 	}
 
 	/**
@@ -78,6 +78,14 @@ public:
 	 */
 	std::vector<T> array() {
 		return List<T>::array();
+	}
+
+	/**
+	 * @brief deletes everything from the current queue and resets it to its
+	 * initialized state.
+	 */
+	void clear() {
+		List<T>::clear();
 	}
 
 	/**

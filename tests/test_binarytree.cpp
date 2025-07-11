@@ -196,6 +196,10 @@ TEST_F(TestBinaryTree, ToString) {
 	EXPECT_EQ(bt.json(), result);
 }
 
+TEST_F(TestBinaryTree, ComparisonOperators) {
+	// TODO: add comparison tests to the test bed
+}
+
 TEST_F(TestBinaryTree, Search) {
 	ds::BinaryTree<int> bt {1, 2, 3, 4, 5, 6, 7};
 
