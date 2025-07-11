@@ -797,7 +797,7 @@ public:
 	 * it is encountered.
 	 */
 	template<typename Callback>
-	void breadth(Callback callback) {
+	void breadth(Callback callback) const {
 		std::shared_ptr<TreeNode<T>> node;
 		ds::Queue<std::shared_ptr<TreeNode<T>>> q {this->_root};
 
@@ -820,6 +820,45 @@ public:
 				q.enqueue(node->right());
 			}
 		}
+	}
+
+	/**
+	 * @brief Searches for a node with the specified data in the binary tree
+	 * using a breadth first search
+	 *
+	 * Generally this is not the best way to search the tree. This method
+	 * traverses the binary tree to find a node that matches the
+	 * given data according to the comparator function. If found, the Match
+	 * object will contain information about the found node.  This operation
+	 * is O(N) search.
+	 *
+	 * @param data The value to search for
+	 * @return Match object containing the result of the search
+	 */
+	Match<T, TreeNode> breadthSearch(T data) const {
+		Match<T, TreeNode> match;
+		std::shared_ptr<TreeNode<T>> node;
+		ds::Queue<std::shared_ptr<TreeNode<T>>> q {this->_root};
+
+		while (!q.empty()) {
+			node = q.dequeue();
+
+			if (this->comparator(data, node->data()) == 0) {
+				match.setData(data);
+				match.setFound(true);
+				match.setRef(node);
+				break;
+			}
+
+			if (node->left()) {
+				q.enqueue(node->left());
+			}
+			if (node->right()) {
+				q.enqueue(node->right());
+			}
+		}
+
+		return match;
 	}
 
 	/**
@@ -851,7 +890,7 @@ public:
 	 * This method traverses the binary tree to find a node that matches the
 	 * given data according to the comparator function. If found, the Match
 	 * object will contain information about the found node.  This operation
-	 * is Log(n) search.
+	 * is O(Log(n)) search.
 	 *
 	 * @param data The value to search for
 	 * @return Match object containing the result of the search
@@ -989,6 +1028,22 @@ public:
 		}
 
 		return removeValue(data);
+	}
+
+	/**
+	 * Special case function to remove the smallest value in the tree
+	 * @returns the data element that was removed
+	 */
+	T removeFirst() {
+		return this->removeValue(this->minimum());
+	}
+
+	/**
+	 * Special case function to remove the largest value in the tree
+	 * @returns the data element that was removed
+	 */
+	T removeLast() {
+		return this->removeValue(this->maximum());
 	}
 
 	/**

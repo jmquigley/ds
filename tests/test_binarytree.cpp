@@ -32,6 +32,10 @@ public:
 TEST_F(TestBinaryTree, CreateBinaryTree) {
 	ds::BinaryTree<int> bt;
 
+	EXPECT_EQ(bt.size(), 0);
+	EXPECT_EQ(bt.height(), 0);
+	EXPECT_TRUE(bt.empty());
+
 	bt.insert(1);
 	bt.insert(2);
 	bt.insert(3);
@@ -42,6 +46,14 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 
 	EXPECT_EQ(bt.height(), 3);
 	EXPECT_EQ(bt.size(), 7);
+}
+
+TEST_F(TestBinaryTree, Traversals) {
+	ds::BinaryTree<int> bt {1, 2, 3, 4, 5, 6, 7};
+
+	EXPECT_EQ(bt.size(), 7);
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_FALSE(bt.empty());
 
 	std::vector<int> out;
 	std::string comma;
@@ -200,6 +212,18 @@ TEST_F(TestBinaryTree, Search) {
 
 	EXPECT_TRUE(bt.contains(5));
 	EXPECT_FALSE(bt.contains(999));
+
+	m = bt.breadthSearch(4);
+	EXPECT_TRUE(m.found());
+
+	m = bt.breadthSearch(1);
+	EXPECT_TRUE(m.found());
+
+	m = bt.breadthSearch(7);
+	EXPECT_TRUE(m.found());
+
+	m = bt.breadthSearch(999);
+	EXPECT_FALSE(m.found());
 }
 
 TEST_F(TestBinaryTree, At) {
@@ -275,6 +299,32 @@ TEST_F(TestBinaryTree, RemoveValue) {
 	EXPECT_EQ(bt[0], 4);
 	EXPECT_EQ(bt[1], 5);
 	EXPECT_EQ(bt[2], 6);
+}
+
+TEST_F(TestBinaryTree, RemoveSpecial) {
+	ds::BinaryTree<int> bt {1, 2, 3, 4, 5, 6, 7};
+
+	EXPECT_EQ(bt.size(), 7);
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_FALSE(bt.empty());
+	EXPECT_EQ(bt.minimum(), 1);
+	EXPECT_EQ(bt.maximum(), 7);
+
+	bt.removeFirst();
+
+	EXPECT_EQ(bt.size(), 6);
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_FALSE(bt.empty());
+	EXPECT_EQ(bt.minimum(), 2);
+	EXPECT_EQ(bt.maximum(), 7);
+
+	bt.removeLast();
+
+	EXPECT_EQ(bt.size(), 5);
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_FALSE(bt.empty());
+	EXPECT_EQ(bt.minimum(), 2);
+	EXPECT_EQ(bt.maximum(), 6);
 }
 
 TEST_F(TestBinaryTree, RemoveValueLarge) {
