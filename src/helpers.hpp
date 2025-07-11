@@ -10,28 +10,31 @@ namespace ds {
 
 /**
  * @brief Checks if all provided pointer-like objects are valid (non-null)
- * 
+ *
  * @tparam Ptrs Types that can be implicitly converted to bool
  * @param ptrs Pointer-like objects to check
  * @return true If all pointers are valid (non-null)
  * @return false If any pointer is invalid (null)
  */
 template<typename... Ptrs>
-[[nodiscard]] constexpr inline bool all(const Ptrs&... ptrs) noexcept(noexcept((... && bool(ptrs)))) {
-    return (... && bool(ptrs));
+[[nodiscard]] constexpr inline bool all(const Ptrs &...ptrs) noexcept(
+	noexcept((... && bool(ptrs)))) {
+	return (... && bool(ptrs));
 }
 
 /**
- * @brief Checks if any of the provided pointer-like objects are valid (non-null)
- * 
+ * @brief Checks if any of the provided pointer-like objects are valid
+ * (non-null)
+ *
  * @tparam Ptrs Types that can be implicitly converted to bool
  * @param ptrs Pointer-like objects to check
  * @return true If at least one pointer is valid (non-null)
  * @return false If all pointers are invalid (null)
  */
 template<typename... Ptrs>
-[[nodiscard]] constexpr inline bool any(const Ptrs&... ptrs) noexcept(noexcept((... || bool(ptrs)))) {
-    return (... || bool(ptrs));
+[[nodiscard]] constexpr inline bool any(const Ptrs &...ptrs) noexcept(
+	noexcept((... || bool(ptrs)))) {
+	return (... || bool(ptrs));
 }
 
 /**

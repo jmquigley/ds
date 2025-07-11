@@ -53,6 +53,7 @@ TEST_F(TestHelpers, CheckForAllGoodPointers) {
 
 	EXPECT_TRUE(ds::all(pa1, pa2, pa3));
 	EXPECT_FALSE(ds::all(pa1, pa2, pa4));
+	EXPECT_FALSE(ds::all(pa4, pa1, pa2));
 }
 
 TEST_F(TestHelpers, CheckForAnyGoodPointers) {

@@ -957,29 +957,55 @@ public:
 		std::shared_ptr<TreeNode<T>> ynode = znode;
 		NodeColor yOrigColor = ynode->getColor();
 
-		if (znode->left() == nullptr) {
-			xnode = znode->right();
-			transplant(znode, znode->right());
-		} else if (znode->right() == nullptr) {
-			xnode = znode->left();
-			transplant(znode, znode->left());
+		if (znode && znode->left() == nullptr) {
+			if (znode) {
+				xnode = znode->right();
+			}
+			if (znode) {
+				transplant(znode, znode->right());
+			}
+		} else if (znode && znode->right() == nullptr) {
+			if (znode) {
+				xnode = znode->left();
+			}
+			if (znode) {
+				transplant(znode, znode->left());
+			}
 		} else {
-			ynode = minimumTreeNode(znode->right());
-			yOrigColor = ynode->getColor();
-			xnode = ynode->right();
+			if (znode) {
+				ynode = minimumTreeNode(znode->right());
+			}
+			if (ynode) {
+				yOrigColor = ynode->getColor();
+			}
+			if (ynode) {
+				xnode = ynode->right();
+			}
 
-			if (ynode->parent() == znode) {
-				xnode->setParent(ynode);
+			if (ynode && ynode->parent() == znode) {
+				if (xnode) {
+					xnode->setParent(ynode);
+				}
 			} else {
 				transplant(ynode, ynode->right());
-				ynode->setRight(znode->right());
-				ynode->right()->setParent(ynode);
+				if (all(ynode, znode)) {
+					ynode->setRight(znode->right());
+				}
+				if (ynode) {
+					ynode->right()->setParent(ynode);
+				}
 			}
 
 			transplant(znode, ynode);
-			ynode->setLeft(znode->left());
-			ynode->left()->setParent(ynode);
-			ynode->setColor(znode->getColor());
+			if (all(ynode, znode)) {
+				ynode->setLeft(znode->left());
+			}
+			if (ynode) {
+				ynode->left()->setParent(ynode);
+			}
+			if (all(ynode, znode)) {
+				ynode->setColor(znode->getColor());
+			}
 		}
 
 		if (yOrigColor == NodeColor::Black) {
