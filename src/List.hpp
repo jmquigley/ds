@@ -53,7 +53,8 @@ protected:
 	 * @brief Retrieves the node at the specified index.
 	 * @param index (`size_t`) The index of the node to retrieve, or a
 	 * Position enum value
-	 * @return std::shared_ptr<Node<T>> Pointer to the node at the specified index
+	 * @return std::shared_ptr<Node<T>> Pointer to the node at the specified
+	 * index
 	 */
 	std::shared_ptr<Node<T>> getNodeByIndex(size_t index) {
 		std::shared_ptr<Node<T>> tnode;
@@ -125,12 +126,10 @@ public:
 	 * @brief Constructor that takes an initializer_list to insert values into
 	 * the collection.
 	 *
-	 * @param il (`std::initializer_list`) a list of values to see the list
+	 * @param il (`std::initializer_list`) a list of values to seed the list
 	 */
 	List(std::initializer_list<T> il) : Collection<T, Node>() {
-		for (auto it: il) {
-			this->insert(it);
-		}
+		operator=(il);
 	}
 
 	/**
@@ -152,6 +151,23 @@ public:
 	 */
 	friend std::ostream &operator<<(std::ostream &st, const List<T> &list) {
 		return st << list.str();
+	}
+
+	/**
+	 * @brief Allows for the use of an initializer list after a list has
+	 * been defined.
+	 *
+	 * @param il (`std::initializer_list`) a list of values to seedthe list
+	 * @returns a reference to the list that was initilaized.
+	 */
+	List<T> &operator=(std::initializer_list<T> il) {
+		this->clear();
+
+		for (auto it: il) {
+			this->insert(it);
+		}
+
+		return *this;
 	}
 
 	/**
@@ -178,7 +194,8 @@ public:
 
 		// Use the existing optimized getNodeByIndex method
 		// This already chooses the optimal traversal direction
-		std::shared_ptr<Node<T>> node = const_cast<List<T> *>(this)->getNodeByIndex(index);
+		std::shared_ptr<Node<T>> node =
+			const_cast<List<T> *>(this)->getNodeByIndex(index);
 
 		return node->getData();
 	}
@@ -355,13 +372,14 @@ public:
 	/**
 	 * @brief Removes the specified element from the list by its index.
 	 * @param index (`size_t`) the position within the list to remove
-	 * @param tnode (`std::shared_ptr<Node<T>>`) a reference to the node that will
-	 * be deleted.  This is a convenience reference to speed up the search if it has
-	 * already been performed.
+	 * @param tnode (`std::shared_ptr<Node<T>>`) a reference to the node that
+	 * will be deleted.  This is a convenience reference to speed up the search
+	 * if it has already been performed.
 	 * @returns the T value that was removed from the list
 	 * @throws an out_of_range exception if the requested index is invalid
 	 */
-	virtual T removeAt(size_t index, std::shared_ptr<Node<T>> tnode = nullptr) override {
+	virtual T removeAt(size_t index,
+					   std::shared_ptr<Node<T>> tnode = nullptr) override {
 		if (this->_size == 0) {
 			throw std::out_of_range("Cannot remove item from an empty list");
 		}
@@ -404,7 +422,8 @@ public:
 	 */
 	virtual T removeValue(T value) override {
 		if (this->_size == 0) {
-			throw std::out_of_range("Invalid list position requested for remove");
+			throw std::out_of_range(
+				"Invalid list position requested for remove");
 		}
 
 		Match<T, Node> match = find(value);
@@ -419,7 +438,8 @@ public:
 
 	/**
 	 * @brief Creates a vector containing all elements in reverse order.
-	 * @return std::vector<T> A vector containing copies of all elements in reverse order
+	 * @return std::vector<T> A vector containing copies of all elements in
+	 * reverse order
 	 */
 	std::vector<T> reverse() {
 		std::shared_ptr<Node<T>> lp = this->_back.lock();
@@ -457,6 +477,114 @@ public:
 		ss << "]";
 
 		return ss.str();
+	}
+
+	/**
+	 * @brief Swaps two nodes in the list by their positions
+	 *
+	 * Swaps the nodes at the specified positions while maintaining the correct
+	 * linked list structure. This operation preserves the links between nodes
+	 * and updates list boundaries (front, back, root) if necessary.
+	 *
+	 * @param pos1 Index of the first node to swap
+	 * @param pos2 Index of the second node to swap
+	 * @throws std::out_of_range If either position is invalid or if the list is
+	 * empty
+	 */
+	void swap(size_t pos1, size_t pos2) {
+		// Check if list is empty
+		if (this->_size == 0) {
+			throw std::out_of_range("Cannot swap nodes in an empty list");
+		}
+
+		// Validate positions
+		if (pos1 >= this->_size || pos2 >= this->_size) {
+			throw std::out_of_range("Invalid position for swap operation");
+		}
+
+		// If positions are the same, no swap needed
+		if (pos1 == pos2) {
+			return;
+		}
+
+		// Ensure pos1 is the smaller index for consistent handling
+		if (pos1 > pos2) {
+			std::swap(pos1, pos2);
+		}
+
+		// Retrieve nodes
+		std::shared_ptr<Node<T>> node1 = getNodeByIndex(pos1);
+		std::shared_ptr<Node<T>> node2 = getNodeByIndex(pos2);
+
+		// Store adjacent nodes
+		std::shared_ptr<Node<T>> node1Left = node1->getLeft();
+		std::shared_ptr<Node<T>> node1Right = node1->getRight();
+		std::shared_ptr<Node<T>> node2Left = node2->getLeft();
+		std::shared_ptr<Node<T>> node2Right = node2->getRight();
+
+		// Check if nodes are adjacent
+		bool adjacent = (node1Right == node2);
+
+		// Handle connections based on whether nodes are adjacent or not
+		if (adjacent) {
+			// Adjacent nodes require special handling
+
+			// Connect node1 to node2's right
+			node1->setRight(node2Right);
+			if (node2Right) {
+				node2Right->setLeft(node1);
+			}
+
+			// Connect node2 to node1's left
+			node2->setLeft(node1Left);
+			if (node1Left) {
+				node1Left->setRight(node2);
+			}
+
+			// Connect node1 and node2 to each other
+			node1->setLeft(node2);
+			node2->setRight(node1);
+		} else {
+			// Non-adjacent nodes
+
+			// Update node1 connections
+			node1->setLeft(node2Left);
+			node1->setRight(node2Right);
+			if (node2Left) {
+				node2Left->setRight(node1);
+			}
+			if (node2Right) {
+				node2Right->setLeft(node1);
+			}
+
+			// Update node2 connections
+			node2->setLeft(node1Left);
+			node2->setRight(node1Right);
+			if (node1Left) {
+				node1Left->setRight(node2);
+			}
+			if (node1Right) {
+				node1Right->setLeft(node2);
+			}
+		}
+
+		// Update list boundaries if necessary
+
+		// Update root if node1 was at the front
+		if (pos1 == 0) {
+			this->_root = node2;
+			this->_front = node2;
+		} else if (pos2 == 0) {
+			this->_root = node1;
+			this->_front = node1;
+		}
+
+		// Update back if node2 was at the back
+		if (pos2 == this->_size - 1) {
+			this->_back = node1;
+		} else if (pos1 == this->_size - 1) {
+			this->_back = node2;
+		}
 	}
 };
 }  // namespace ds

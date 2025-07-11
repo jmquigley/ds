@@ -377,58 +377,87 @@ private:
 
 				if (wnode && wnode->isRed()) {
 					wnode->setBlack();
-					if (xnode->parent()) xnode->parent()->setRed();
+					if (xnode->parent()) {
+						xnode->parent()->setRed();
+					}
 					rotateLeft(xnode->parent());
-					if (xnode->parent()) wnode = xnode->parent()->right();
+					if (xnode->parent()) {
+						wnode = xnode->parent()->right();
+					}
 				}
 
 				if (all(wnode, wnode->left(), wnode->right()) &&
 					wnode->left()->isBlack() && wnode->right()->isBlack()) {
 					wnode->setRed();
-					if (xnode->parent()) xnode = xnode->parent();
+					if (xnode->parent()) {
+						xnode = xnode->parent();
+					}
 				} else {
 					if (all(wnode, wnode->right()) &&
 						wnode->right()->isBlack()) {
-						if (wnode->left()) wnode->left()->setBlack();
+						if (wnode->left()) {
+							wnode->left()->setBlack();
+						}
 						wnode->setRed();
 						rotateRight(wnode);
-						if (xnode->parent()) wnode = xnode->parent()->right();
+						if (xnode->parent()) {
+							wnode = xnode->parent()->right();
+						}
 					}
 
 					(all(xnode, xnode->parent()) && xnode->parent()->isRed())
 						? wnode->setRed()
 						: wnode->setBlack();
-					if (xnode->parent()) xnode->parent()->setBlack();
-					if (wnode->right()) wnode->right()->setBlack();
+					if (xnode->parent()) {
+						xnode->parent()->setBlack();
+					}
+					if (wnode->right()) {
+						wnode->right()->setBlack();
+					}
 					rotateLeft(xnode->parent());
 					xnode = this->_root;
 				}
 			} else {
-				if (all(xnode, xnode->parent())) wnode = xnode->parent()->left();
+				if (all(xnode, xnode->parent())) {
+					wnode = xnode->parent()->left();
+				}
 
 				if (wnode && wnode->isRed()) {
 					wnode->setBlack();
-					if (all(xnode, xnode->parent())) xnode->parent()->setRed();
+					if (all(xnode, xnode->parent())) {
+						xnode->parent()->setRed();
+					}
 					rotateRight(xnode->parent());
 				}
 
 				if (all(wnode, wnode->left(), wnode->right()) &&
 					wnode->left()->isBlack() && wnode->right()->isBlack()) {
 					wnode->setRed();
-					if (xnode->parent()) xnode = xnode->parent();
+					if (xnode->parent()) {
+						xnode = xnode->parent();
+					}
 				} else {
 					if (all(wnode, wnode->left()) && wnode->left()->isBlack()) {
-						if (wnode->right()) wnode->right()->setBlack();
+						if (wnode->right()) {
+							wnode->right()->setBlack();
+						}
 						wnode->setBlack();
 						rotateLeft(wnode);
-						if (xnode->parent()) wnode = xnode->parent()->left();
+						if (xnode->parent()) {
+							wnode = xnode->parent()->left();
+						}
 					}
 
-					(all(xnode, xnode->parent()) && xnode->parent()->isRed()) ? wnode->setRed()
-											   : wnode->setBlack();
+					(all(xnode, xnode->parent()) && xnode->parent()->isRed())
+						? wnode->setRed()
+						: wnode->setBlack();
 
-					if (all(xnode, xnode->parent())) xnode->parent()->setBlack();
-					if (all(wnode, wnode->left())) wnode->left()->setBlack();
+					if (all(xnode, xnode->parent())) {
+						xnode->parent()->setBlack();
+					}
+					if (all(wnode, wnode->left())) {
+						wnode->left()->setBlack();
+					}
 					rotateRight(xnode->parent());
 					xnode = this->_root;
 				}
@@ -615,13 +644,28 @@ public:
 	 * @param il (`std::initializer_list`) a list of values to seed the tree
 	 */
 	BinaryTree(std::initializer_list<T> il) : BinaryTree<T>() {
-		for (auto it: il) {
-			this->insert(it);
-		}
+		operator=(il);
 	}
 
 	~BinaryTree() {
 		this->clear();
+	}
+
+	/**
+	 * @brief Allows for the use of an initializer list after a tree has
+	 * been defined.
+	 *
+	 * @param il (`std::initializer_list`) a list of values to seed the tree
+	 * @returns a reference to the tree that was initilaized.
+	 */
+	BinaryTree<T> &operator=(std::initializer_list<T> il) {
+		this->clear();
+
+		for (auto it: il) {
+			this->insert(it);
+		}
+
+		return *this;
 	}
 
 	/**

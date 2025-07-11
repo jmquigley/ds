@@ -22,7 +22,7 @@ AllowShortBlocksOnASingleLine: Empty
 # AllowShortCaseExpressionOnASingleLine: true
 AllowShortCompoundRequirementOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Empty
-AllowShortIfStatementsOnASingleLine WithoutElse
+# AllowShortIfStatementsOnASingleLine WithoutElse
 AllowShortLoopsOnASingleLine: true
 BraceWrapping:
   AfterCaseLabel:  false

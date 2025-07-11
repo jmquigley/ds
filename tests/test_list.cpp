@@ -12,7 +12,7 @@ public:
 	TestList() : TestingBase() {}
 };
 
-TEST_F(TestList, ListCreate) {
+TEST_F(TestList, Create) {
 	ds::List<int> list;
 	EXPECT_EQ(list.size(), 0);
 
@@ -29,7 +29,7 @@ TEST_F(TestList, ListCreate) {
 	EXPECT_EQ(list.maximum(), 3);
 }
 
-TEST_F(TestList, ListInsertFront) {
+TEST_F(TestList, InsertFront) {
 	ds::List<int> list;
 
 	list.insert(1, ds::Position::FRONT);
@@ -44,7 +44,7 @@ TEST_F(TestList, ListInsertFront) {
 	EXPECT_EQ(list.maximum(), 1);
 }
 
-TEST_F(TestList, ListInsertBack) {
+TEST_F(TestList, InsertBack) {
 	ds::List<int> list;
 
 	list.insert(1, ds::Position::BACK);
@@ -59,7 +59,7 @@ TEST_F(TestList, ListInsertBack) {
 	EXPECT_EQ(list.maximum(), 3);
 }
 
-TEST_F(TestList, ListInsertArbitrary) {
+TEST_F(TestList, InsertArbitrary) {
 	ds::List<int> list;
 
 	list.insert(1, ds::Position::BACK);
@@ -134,7 +134,7 @@ TEST_F(TestList, ListInsertArbitrary) {
 	EXPECT_EQ(list.maximum(), 8);
 }
 
-TEST_F(TestList, ListInsertOutOfRange) {
+TEST_F(TestList, InsertOutOfRange) {
 	ds::List<int> list;
 
 	list.insert(1, ds::Position::BACK);
@@ -149,7 +149,7 @@ TEST_F(TestList, ListInsertOutOfRange) {
 	EXPECT_EQ(list.maximum(), 3);
 }
 
-TEST_F(TestList, ListInsertOperator) {
+TEST_F(TestList, InsertOperator) {
 	ds::List<int> list;
 
 	list += 1;
@@ -164,15 +164,39 @@ TEST_F(TestList, ListInsertOperator) {
 	EXPECT_EQ(list.maximum(), 3);
 }
 
-TEST_F(TestList, ListCopyConstructor) {
-	ds::List<int> l1 = {1, 2, 3, 4, 5};
+TEST_F(TestList, EqualOperator) {
+	ds::List<int> list {1, 2, 3, 4, 5};
+
+	EXPECT_EQ(list.size(), 5);
+	EXPECT_EQ(list.minimum(), 1);
+	EXPECT_EQ(list.maximum(), 5);
+	EXPECT_EQ(list.at(0), 1);
+	EXPECT_EQ(list.at(1), 2);
+	EXPECT_EQ(list.at(2), 3);
+	EXPECT_EQ(list.at(3), 4);
+	EXPECT_EQ(list.at(4), 5);
+
+	list = {9, 8, 7, 6, 5};
+
+	EXPECT_EQ(list.size(), 5);
+	EXPECT_EQ(list.minimum(), 9);
+	EXPECT_EQ(list.maximum(), 5);
+	EXPECT_EQ(list.at(0), 9);
+	EXPECT_EQ(list.at(1), 8);
+	EXPECT_EQ(list.at(2), 7);
+	EXPECT_EQ(list.at(3), 6);
+	EXPECT_EQ(list.at(4), 5);
+}
+
+TEST_F(TestList, CopyConstructor) {
+	ds::List<int> l1 {1, 2, 3, 4, 5};
 	EXPECT_EQ(l1.size(), 5);
 
 	ds::List<int> l2(l1);
 	EXPECT_EQ(l2.size(), 5);
 }
 
-TEST_F(TestList, ListToVector) {
+TEST_F(TestList, ToVector) {
 	ds::List<int> list;
 
 	list.insert(1);
@@ -188,7 +212,7 @@ TEST_F(TestList, ListToVector) {
 	EXPECT_EQ(v[2], 3);
 }
 
-TEST_F(TestList, ListToVectorReverse) {
+TEST_F(TestList, ToVectorReverse) {
 	ds::List<int> list;
 
 	list.insert(1);
@@ -204,14 +228,14 @@ TEST_F(TestList, ListToVectorReverse) {
 	EXPECT_EQ(v[2], 1);
 }
 
-TEST_F(TestList, ListToVectorReverseEmpty) {
+TEST_F(TestList, ToVectorReverseEmpty) {
 	ds::List<int> list;
 
 	std::vector<int> v = list.reverse();
 	EXPECT_EQ(v.size(), 0);
 }
 
-TEST_F(TestList, ListIterator) {
+TEST_F(TestList, Iterator) {
 	ds::List<int> list;
 
 	list.insert(1);
@@ -257,7 +281,7 @@ TEST_F(TestList, ListIterator) {
 	list.clear();
 };
 
-TEST_F(TestList, ListIteratorReverse) {
+TEST_F(TestList, IteratorReverse) {
 	ds::List<int> list;
 
 	list.insert(1);
@@ -295,7 +319,7 @@ TEST_F(TestList, ListIteratorReverse) {
 	list.clear();
 }
 
-TEST_F(TestList, ListClear) {
+TEST_F(TestList, Clear) {
 	ds::List<int> list;
 
 	list.insert(1);
@@ -310,7 +334,7 @@ TEST_F(TestList, ListClear) {
 	EXPECT_EQ(list.getRoot(), nullptr);
 }
 
-TEST_F(TestList, ListClearOperator) {
+TEST_F(TestList, ClearOperator) {
 	ds::List<int> list;
 
 	list.insert(1);
@@ -325,7 +349,7 @@ TEST_F(TestList, ListClearOperator) {
 	EXPECT_EQ(list.getRoot(), nullptr);
 }
 
-TEST_F(TestList, ListAt) {
+TEST_F(TestList, At) {
 	ds::List<int> list;
 
 	list.insert(1);
@@ -343,7 +367,7 @@ TEST_F(TestList, ListAt) {
 	list.clear();
 }
 
-TEST_F(TestList, ListToString) {
+TEST_F(TestList, ToString) {
 	ds::List<int> list;
 	std::string result =
 		"[{\"data\":1,\"color\":\"red\"},{\"data\":2,\"color\":\"red\"},{"
@@ -359,14 +383,14 @@ TEST_F(TestList, ListToString) {
 	EXPECT_EQ(list.json(), result);
 }
 
-TEST_F(TestList, ListToStringEmpty) {
+TEST_F(TestList, ToStringEmpty) {
 	ds::List<int> list;
 
 	EXPECT_EQ(list.size(), 0);
 	EXPECT_EQ(list.str(), "[]");
 }
 
-TEST_F(TestList, ListSearch) {
+TEST_F(TestList, Search) {
 	ds::List<int> list;
 	ds::Match<int, ds::Node> match;
 
@@ -394,7 +418,7 @@ TEST_F(TestList, ListSearch) {
 	EXPECT_EQ(match.getIndex(), 0);
 }
 
-TEST_F(TestList, ListSearchEmpty) {
+TEST_F(TestList, SearchEmpty) {
 	ds::List<int> list;
 	ds::Match<int, ds::Node> match;
 
@@ -415,7 +439,7 @@ TEST_F(TestList, Contains) {
 	EXPECT_FALSE(list.contains(7));
 }
 
-TEST_F(TestList, ListDeleteFront) {
+TEST_F(TestList, DeleteFront) {
 	ds::List<int> list = {1, 2, 3, 4, 5};
 
 	EXPECT_EQ(list.size(), 5);
@@ -436,7 +460,7 @@ TEST_F(TestList, ListDeleteFront) {
 	EXPECT_EQ(list.getRoot()->getLeft(), nullptr);
 }
 
-TEST_F(TestList, ListDeleteBack) {
+TEST_F(TestList, DeleteBack) {
 	ds::List<int> list = {1, 2, 3, 4, 5};
 
 	EXPECT_EQ(list.size(), 5);
@@ -457,7 +481,7 @@ TEST_F(TestList, ListDeleteBack) {
 	EXPECT_EQ(list.getRoot()->getLeft(), nullptr);
 }
 
-TEST_F(TestList, ListDeleteArbitrary) {
+TEST_F(TestList, DeleteArbitrary) {
 	ds::List<int> list = {1, 2, 3, 4, 5};
 
 	EXPECT_EQ(list.size(), 5);
@@ -486,7 +510,7 @@ TEST_F(TestList, ListDeleteArbitrary) {
 	EXPECT_EQ(list.maximum(), 5);
 }
 
-TEST_F(TestList, ListDeleteEmpty) {
+TEST_F(TestList, DeleteEmpty) {
 	ds::List<int> list;
 
 	EXPECT_EQ(list.size(), 0);
@@ -495,7 +519,7 @@ TEST_F(TestList, ListDeleteEmpty) {
 	EXPECT_THROW(list.removeAt(999), std::out_of_range);
 }
 
-TEST_F(TestList, ListDeleteLastEntry) {
+TEST_F(TestList, DeleteLastEntry) {
 	ds::List<int> list = {1};
 
 	EXPECT_EQ(list.size(), 1);
@@ -507,7 +531,7 @@ TEST_F(TestList, ListDeleteLastEntry) {
 	EXPECT_EQ(list.size(), 0);
 }
 
-TEST_F(TestList, ListInitializer) {
+TEST_F(TestList, Initializer) {
 	ds::List<int> list = {1, 2, 3, 4, 5};
 
 	EXPECT_EQ(list.size(), 5);
@@ -521,7 +545,7 @@ TEST_F(TestList, ListInitializer) {
 	EXPECT_EQ(list.maximum(), 5);
 }
 
-TEST_F(TestList, ListDeleteByValue) {
+TEST_F(TestList, DeleteByValue) {
 	ds::List<int> list = {1, 2, 3, 4, 5};
 
 	EXPECT_EQ(list.size(), 5);
@@ -540,14 +564,14 @@ TEST_F(TestList, ListDeleteByValue) {
 	EXPECT_EQ(list.at(3), 5);
 }
 
-TEST_F(TestList, ListDeleteValueError) {
+TEST_F(TestList, DeleteValueError) {
 	ds::List<int> list;
 	EXPECT_EQ(list.size(), 0);
 	EXPECT_THROW(list.removeValue(1), std::out_of_range)
 		<< "Can't request invalid location";
 }
 
-TEST_F(TestList, ListEqualityOperator) {
+TEST_F(TestList, EqualityOperator) {
 	ds::List<int> l1 = {1, 2, 3, 4, 5};
 	ds::List<int> l2 = {1, 2, 3, 4, 5};
 	ds::List<int> l3 = {5, 4, 3, 2, 1};
@@ -561,7 +585,7 @@ TEST_F(TestList, ListEqualityOperator) {
 	// EXPECT_FALSE(l1 == l4);
 }
 
-TEST_F(TestList, ListInequalityOperator) {
+TEST_F(TestList, InequalityOperator) {
 	ds::List<int> l1 = {1, 2, 3, 4, 5};
 	ds::List<int> l2 = {1, 2, 3, 4, 5};
 	ds::List<int> l3 = {5, 4, 3, 2, 1};
@@ -575,7 +599,7 @@ TEST_F(TestList, ListInequalityOperator) {
 	EXPECT_TRUE(l1 != l4);
 }
 
-TEST_F(TestList, ListEqualityOperatorEmpty) {
+TEST_F(TestList, EqualityOperatorEmpty) {
 	ds::List<int> l1;
 	ds::List<int> l2;
 
@@ -585,7 +609,7 @@ TEST_F(TestList, ListEqualityOperatorEmpty) {
 	// EXPECT_TRUE(l1 == l2);
 }
 
-TEST_F(TestList, ListInequalityOperatorEmpty) {
+TEST_F(TestList, InequalityOperatorEmpty) {
 	ds::List<int> l1;
 	ds::List<int> l2;
 
@@ -593,4 +617,76 @@ TEST_F(TestList, ListInequalityOperatorEmpty) {
 	EXPECT_EQ(l2.size(), 0);
 
 	EXPECT_FALSE(l1 != l2);
+}
+
+TEST_F(TestList, Swap) {
+	ds::List<int> list {1, 2, 3, 4, 5, 6, 7};
+
+	EXPECT_EQ(list.size(), 7);
+	EXPECT_EQ(list.minimum(), 1);
+	EXPECT_EQ(list.maximum(), 7);
+
+	EXPECT_EQ(list.at(0), 1);
+	EXPECT_EQ(list.at(1), 2);
+	EXPECT_EQ(list.at(2), 3);
+	EXPECT_EQ(list.at(3), 4);
+	EXPECT_EQ(list.at(4), 5);
+	EXPECT_EQ(list.at(5), 6);
+	EXPECT_EQ(list.at(6), 7);
+
+	list.swap(0, 0);
+	list.swap(0, 6);
+
+	EXPECT_EQ(list.size(), 7);
+	EXPECT_EQ(list.minimum(), 7);
+	EXPECT_EQ(list.maximum(), 1);
+
+	EXPECT_EQ(list.at(0), 7);
+	EXPECT_EQ(list.at(1), 2);
+	EXPECT_EQ(list.at(2), 3);
+	EXPECT_EQ(list.at(3), 4);
+	EXPECT_EQ(list.at(4), 5);
+	EXPECT_EQ(list.at(5), 6);
+	EXPECT_EQ(list.at(6), 1);
+
+	list.swap(4, 2);
+
+	EXPECT_EQ(list.size(), 7);
+	EXPECT_EQ(list.minimum(), 7);
+	EXPECT_EQ(list.maximum(), 1);
+
+	EXPECT_EQ(list.at(0), 7);
+	EXPECT_EQ(list.at(1), 2);
+	EXPECT_EQ(list.at(2), 5);
+	EXPECT_EQ(list.at(3), 4);
+	EXPECT_EQ(list.at(4), 3);
+	EXPECT_EQ(list.at(5), 6);
+	EXPECT_EQ(list.at(6), 1);
+
+	list.swap(0, 1);
+
+	EXPECT_EQ(list.size(), 7);
+	EXPECT_EQ(list.minimum(), 2);
+	EXPECT_EQ(list.maximum(), 1);
+
+	EXPECT_EQ(list.at(0), 2);
+	EXPECT_EQ(list.at(1), 7);
+	EXPECT_EQ(list.at(2), 5);
+	EXPECT_EQ(list.at(3), 4);
+	EXPECT_EQ(list.at(4), 3);
+	EXPECT_EQ(list.at(5), 6);
+	EXPECT_EQ(list.at(6), 1);
+}
+
+TEST_F(TestList, BadSwap) {
+	ds::List<int> list;
+
+	EXPECT_THROW(list.swap(0, 1), std::out_of_range);
+	list = {1, 2, 3, 4, 5, 6, 7};
+
+	EXPECT_EQ(list.size(), 7);
+	EXPECT_EQ(list.minimum(), 1);
+	EXPECT_EQ(list.maximum(), 7);
+
+	EXPECT_THROW(list.swap(999, 1000), std::out_of_range);
 }

@@ -134,6 +134,26 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 	std::cout << std::endl;
 }
 
+TEST_F(TestBinaryTree, InitializerListAndOperator) {
+	ds::BinaryTree<int> bt {1, 2, 3, 4, 5};
+
+	EXPECT_EQ(bt.size(), 5);
+	EXPECT_EQ(bt[0], 1);
+	EXPECT_EQ(bt[1], 2);
+	EXPECT_EQ(bt[2], 3);
+	EXPECT_EQ(bt[3], 4);
+	EXPECT_EQ(bt[4], 5);
+
+	bt = {6, 7, 8, 9, 10};
+
+	EXPECT_EQ(bt.size(), 5);
+	EXPECT_EQ(bt[0], 6);
+	EXPECT_EQ(bt[1], 7);
+	EXPECT_EQ(bt[2], 8);
+	EXPECT_EQ(bt[3], 9);
+	EXPECT_EQ(bt[4], 10);
+}
+
 TEST_F(TestBinaryTree, Search) {
 	ds::BinaryTree<int> bt {1, 2, 3, 4, 5, 6, 7};
 
@@ -229,7 +249,7 @@ TEST_F(TestBinaryTree, RemoveValue) {
 
 TEST_F(TestBinaryTree, RemoveValueLarge) {
 	ds::BinaryTree<int> bt {};
-    int treeSize {10000};
+	int treeSize {10000};
 
 	for (int i = 0; i < treeSize; i++) {
 		bt.insert(i);
