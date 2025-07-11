@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <initializer_list>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -10,31 +11,38 @@ namespace ds {
 
 /**
  * @brief Checks if all provided pointer-like objects are valid (non-null)
- *
- * @tparam Ptrs Types that can be implicitly converted to bool
- * @param ptrs Pointer-like objects to check
- * @return true If all pointers are valid (non-null)
- * @return false If any pointer is invalid (null)
+ * with short-circuit evaluation
+ * @returns true if all values are valid, otherwise false
  */
-template<typename... Ptrs>
-[[nodiscard]] constexpr inline bool all(const Ptrs &...ptrs) noexcept(
-	noexcept((... && bool(ptrs)))) {
-	return (... && bool(ptrs));
+template<typename P, typename... Ptrs>
+[[nodiscard]] constexpr inline bool all(const P &p,
+										const Ptrs &...ptrs) noexcept {
+	if (!bool(p)) {
+		return false;
+	}
+	if constexpr (sizeof...(ptrs) == 0) {
+		return true;
+	} else {
+		return all(ptrs...);
+	}
 }
 
 /**
  * @brief Checks if any of the provided pointer-like objects are valid
- * (non-null)
- *
- * @tparam Ptrs Types that can be implicitly converted to bool
- * @param ptrs Pointer-like objects to check
- * @return true If at least one pointer is valid (non-null)
- * @return false If all pointers are invalid (null)
+ * (non-null) with short-circuit evaluation
+ * @returns true if any pointer in the list is valid, otherwise false.
  */
-template<typename... Ptrs>
-[[nodiscard]] constexpr inline bool any(const Ptrs &...ptrs) noexcept(
-	noexcept((... || bool(ptrs)))) {
-	return (... || bool(ptrs));
+template<typename P, typename... Ptrs>
+[[nodiscard]] constexpr inline bool any(const P &p,
+										const Ptrs &...ptrs) noexcept {
+	if (bool(p)) {
+		return true;
+	}
+	if constexpr (sizeof...(ptrs) == 0) {
+		return false;
+	} else {
+		return any(ptrs...);
+	}
 }
 
 /**

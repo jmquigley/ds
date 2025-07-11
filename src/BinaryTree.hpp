@@ -369,102 +369,91 @@ private:
 
 		std::shared_ptr<TreeNode<T>> wnode;
 
-		while (all(xnode, this->_root) && xnode != this->_root &&
-			   xnode->isBlack()) {
-			if (all(xnode, xnode->parent()) &&
-				xnode == xnode->parent()->left()) {
+		while (xnode && xnode != this->_root && xnode->isBlack()) {
+			if (!xnode->parent()) {
+				break;
+			}
+
+			if (xnode == xnode->parent()->left()) {
 				wnode = xnode->parent()->right();
 
 				if (wnode && wnode->isRed()) {
 					wnode->setBlack();
-					if (xnode->parent()) {
-						xnode->parent()->setRed();
-					}
+					xnode->parent()->setRed();
 					rotateLeft(xnode->parent());
-					if (xnode->parent()) {
-						wnode = xnode->parent()->right();
-					}
+					wnode =
+						xnode->parent() ? xnode->parent()->right() : nullptr;
 				}
 
-				if (all(wnode, wnode->left(), wnode->right()) &&
-					wnode->left()->isBlack() && wnode->right()->isBlack()) {
+				if (wnode && (!wnode->left() || wnode->left()->isBlack()) &&
+					(!wnode->right() || wnode->right()->isBlack())) {
 					wnode->setRed();
-					if (xnode->parent()) {
-						xnode = xnode->parent();
-					}
+					xnode = xnode->parent();
 				} else {
-					if (all(wnode, wnode->right()) &&
-						wnode->right()->isBlack()) {
+					if (wnode &&
+						(!wnode->right() || wnode->right()->isBlack())) {
 						if (wnode->left()) {
 							wnode->left()->setBlack();
 						}
 						wnode->setRed();
 						rotateRight(wnode);
-						if (xnode->parent()) {
-							wnode = xnode->parent()->right();
-						}
+						wnode = xnode->parent() ? xnode->parent()->right()
+												: nullptr;
 					}
 
-					(all(xnode, xnode->parent()) && xnode->parent()->isRed())
-						? wnode->setRed()
-						: wnode->setBlack();
-					if (xnode->parent()) {
+					if (wnode && xnode->parent()) {
+						wnode->setColor(xnode->parent()->getColor());
 						xnode->parent()->setBlack();
-					}
-					if (wnode->right()) {
-						wnode->right()->setBlack();
-					}
-					rotateLeft(xnode->parent());
-					xnode = this->_root;
-				}
-			} else {
-				if (all(xnode, xnode->parent())) {
-					wnode = xnode->parent()->left();
-				}
-
-				if (wnode && wnode->isRed()) {
-					wnode->setBlack();
-					if (all(xnode, xnode->parent())) {
-						xnode->parent()->setRed();
-					}
-					rotateRight(xnode->parent());
-				}
-
-				if (all(wnode, wnode->left(), wnode->right()) &&
-					wnode->left()->isBlack() && wnode->right()->isBlack()) {
-					wnode->setRed();
-					if (xnode->parent()) {
-						xnode = xnode->parent();
-					}
-				} else {
-					if (all(wnode, wnode->left()) && wnode->left()->isBlack()) {
 						if (wnode->right()) {
 							wnode->right()->setBlack();
 						}
-						wnode->setBlack();
+					}
+
+					rotateLeft(xnode->parent());
+					xnode = this->_root;
+				}
+			} else {  // xnode is right child
+				wnode = xnode->parent()->left();
+
+				if (wnode && wnode->isRed()) {
+					wnode->setBlack();
+					xnode->parent()->setRed();
+					rotateRight(xnode->parent());
+					wnode = xnode->parent() ? xnode->parent()->left() : nullptr;
+				}
+
+				if (wnode && (!wnode->left() || wnode->left()->isBlack()) &&
+					(!wnode->right() || wnode->right()->isBlack())) {
+					wnode->setRed();
+					xnode = xnode->parent();
+				} else {
+					if (wnode && (!wnode->left() || wnode->left()->isBlack())) {
+						if (wnode->right()) {
+							wnode->right()->setBlack();
+						}
+						wnode->setRed();
 						rotateLeft(wnode);
-						if (xnode->parent()) {
-							wnode = xnode->parent()->left();
+						wnode =
+							xnode->parent() ? xnode->parent()->left() : nullptr;
+					}
+
+					if (wnode && xnode->parent()) {
+						wnode->setColor(xnode->parent()->getColor());
+						xnode->parent()->setBlack();
+						if (wnode->left()) {
+							wnode->left()->setBlack();
 						}
 					}
 
-					(all(xnode, xnode->parent()) && xnode->parent()->isRed())
-						? wnode->setRed()
-						: wnode->setBlack();
-
-					if (all(xnode, xnode->parent())) {
-						xnode->parent()->setBlack();
-					}
-					if (all(wnode, wnode->left())) {
-						wnode->left()->setBlack();
-					}
 					rotateRight(xnode->parent());
 					xnode = this->_root;
 				}
 			}
 		}
 
-		xnode->setBlack();
+		if (xnode) {
+			xnode->setBlack();
+		}
 	}
 
 	/**
@@ -518,28 +507,39 @@ private:
 	void rotateLeft(std::shared_ptr<TreeNode<T>> xnode) {
 		std::shared_ptr<TreeNode<T>> ynode = xnode->getRight();
 
-		xnode->setRight(ynode->getLeft());
+		if (xnode && ynode) {
+			xnode->setRight(ynode->getLeft());
+		}
 
-		if (ynode->getLeft() != nullptr) {
+		if (ynode && ynode->getLeft() != nullptr) {
 			// fix y's left child parent pointer
 			ynode->getLeft()->setParent(xnode);
 		}
 
-		ynode->setParent(xnode->parent());	// link x's parent to y
+		if (xnode && ynode) {
+			ynode->setParent(xnode->parent());	// link x's parent to y
+		}
 
-		if (xnode->parent() == nullptr) {
+		if (xnode && xnode->parent() == nullptr) {
 			// special case fix when rotating root
 			this->_root = ynode;
 		} else {
-			if (xnode == xnode->parent()->getLeft()) {
-				xnode->parent()->setLeft(ynode);
-			} else {
-				xnode->parent()->setRight(ynode);
+			if (xnode && xnode->parent()) {
+				if (xnode == xnode->parent()->getLeft()) {
+					xnode->parent()->setLeft(ynode);
+				} else {
+					xnode->parent()->setRight(ynode);
+				}
 			}
 		}
 
-		ynode->setLeft(xnode);	  // move previous x into y's left child
-		xnode->setParent(ynode);  // fix the parent pointer after previous move
+		if (ynode) {
+			ynode->setLeft(xnode);	// move previous x into y's left child
+		}
+		if (xnode) {
+			xnode->setParent(
+				ynode);	 // fix the parent pointer after previous move
+		}
 	}
 
 	/**
@@ -561,28 +561,38 @@ private:
 		std::shared_ptr<TreeNode<T>> ynode = xnode->getLeft();
 
 		// turn y's right subtree into x's left subtree
-		xnode->setLeft(ynode->getRight());
+		if (xnode && ynode) {
+			xnode->setLeft(ynode->getRight());
+		}
 
-		if (ynode->getRight() != nullptr) {
+		if (ynode && ynode->getRight() != nullptr) {
 			// fix y's right child parent pointer
 			ynode->getRight()->setParent(xnode);
 		}
 
-		ynode->setParent(xnode->parent());	// link x's parent to y
+		if (ynode && xnode) {
+			ynode->setParent(xnode->parent());	// link x's parent to y
+		}
 
-		if (xnode->parent() == nullptr) {
+		if (xnode && xnode->parent() == nullptr) {
 			// special case fix when rotation root
 			this->_root = ynode;
 		} else {
-			if (xnode == xnode->parent()->getRight()) {
-				xnode->parent()->setRight(ynode);
-			} else {
-				xnode->parent()->setLeft(ynode);
+			if (xnode && xnode->parent()) {
+				if (xnode == xnode->parent()->getRight()) {
+					xnode->parent()->setRight(ynode);
+				} else {
+					xnode->parent()->setLeft(ynode);
+				}
 			}
 		}
 
-		ynode->setRight(xnode);	  // move previous x into y's right child
-		xnode->setParent(ynode);  // fix y's left child parent pointer
+		if (ynode) {
+			ynode->setRight(xnode);	 // move previous x into y's right child
+		}
+		if (xnode) {
+			xnode->setParent(ynode);  // fix y's left child parent pointer
+		}
 	}
 
 	/**
@@ -594,14 +604,18 @@ private:
 	 */
 	std::shared_ptr<TreeNode<T>> successorNode(
 		std::shared_ptr<TreeNode<T>> node) {
-		if (node->right() == nullptr) {
+		if (!node) {
+			return nullptr;
+		}
+
+		if (node->right() != nullptr) {
 			return minimumTreeNode(node->right());
 		}
 
 		std::shared_ptr<TreeNode<T>> ynode = node->parent();
 		while (ynode != nullptr && node == ynode->right()) {
 			node = ynode;
-			ynode = ynode.parent();
+			ynode = ynode->parent();  // Fixed from ynode.parent()
 		}
 
 		return ynode;
@@ -708,6 +722,8 @@ public:
 	 * and NOT an indexed operation.  Just NOTE that this is not a fast lookup
 	 * index operation.
 	 *
+	 * TODO: investigate a caching solution for this method
+	 *
 	 * @param index (`size_t`) the index position within the tree, using inorder
 	 * traversal ordering
 	 * @returns the data element located at the given index
@@ -730,7 +746,7 @@ public:
 		}
 
 		T data {};
-		bool found = false;
+		bool found {false};
 
 		// Choose optimal traversal direction based on which end is closer
 		if (index < this->_size / 2) {
@@ -795,7 +811,8 @@ public:
 	 *
 	 * This method traverses the binary tree to find a node that matches the
 	 * given data according to the comparator function. If found, the Match
-	 * object will contain information about the found node.
+	 * object will contain information about the found node.  This operation
+	 * is Log(n) search.
 	 *
 	 * @param data The value to search for
 	 * @return Match object containing the result of the search
@@ -943,15 +960,18 @@ public:
 	virtual T removeValue(T value) override {
 		std::shared_ptr<TreeNode<T>> znode;
 		Match<T, TreeNode> match = find(value);
-		T data {};
 
 		if (!match.found()) {
 			throw std::invalid_argument(
 				std::format("data value not found in tree ({})", value));
-		} else {
-			znode = match.getRef().lock();
-			data = znode->getData();
 		}
+
+		znode = match.getRef().lock();
+		if (!znode) {
+			throw std::runtime_error("Node reference exired during removal");
+		}
+
+		T data = znode->getData();
 
 		std::shared_ptr<TreeNode<T>> xnode;
 		std::shared_ptr<TreeNode<T>> ynode = znode;
@@ -988,7 +1008,7 @@ public:
 				}
 			} else {
 				transplant(ynode, ynode->right());
-				if (all(ynode, znode)) {
+				if (ynode && znode) {
 					ynode->setRight(znode->right());
 				}
 				if (ynode) {
@@ -997,13 +1017,13 @@ public:
 			}
 
 			transplant(znode, ynode);
-			if (all(ynode, znode)) {
+			if (ynode && znode) {
 				ynode->setLeft(znode->left());
 			}
 			if (ynode) {
 				ynode->left()->setParent(ynode);
 			}
-			if (all(ynode, znode)) {
+			if (ynode && znode) {
 				ynode->setColor(znode->getColor());
 			}
 		}
@@ -1045,8 +1065,25 @@ public:
 	}
 
 	std::string str() const override {
-		// TODO: implement str in BinaryTree
-		return "";
+		std::stringstream ss;
+		ss << "BinaryTree[size=" << this->_size
+		   << ", height=" << const_cast<BinaryTree<T> *>(this)->height() << "]";
+
+		// Add tree structure visualization
+		if (this->_root) {
+			ss << " {";
+			bool first = true;
+			const_cast<BinaryTree<T> *>(this)->inorder([&](TreeNode<T> &node) {
+				if (!first) {
+					ss << ", ";
+				}
+				ss << node.getData();
+				first = false;
+			});
+			ss << "}";
+		}
+
+		return ss.str();
 	}
 };
 

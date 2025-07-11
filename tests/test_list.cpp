@@ -381,15 +381,11 @@ TEST_F(TestList, At) {
 }
 
 TEST_F(TestList, ToString) {
-	ds::List<int> list;
+	ds::List<int> list {1, 2, 3};
 	std::string result =
 		"[{\"data\":1,\"color\":\"red\"},{\"data\":2,\"color\":\"red\"},{"
 		"\"data\":3,\"color\":"
 		"\"red\"}]";
-
-	list.insert(1);
-	list.insert(2);
-	list.insert(3);
 
 	EXPECT_EQ(list.size(), 3);
 	EXPECT_EQ(list.str(), result);
