@@ -9,19 +9,20 @@ namespace ds {
 
 /**
  * @class Match
- * @brief A container class to hold the results of a find operation in a data structure
+ * @brief A container class to hold the results of a find operation in a data
+ * structure
  *
- * Match is designed to provide a consistent interface for returning search results.
- * It not only indicates whether an item was found, but also provides additional context
- * such as the value found, the node containing the value, and its position in the
- * data structure.
+ * Match is designed to provide a consistent interface for returning search
+ * results. It not only indicates whether an item was found, but also provides
+ * additional context such as the value found, the node containing the value,
+ * and its position in the data structure.
  *
  * @tparam T The type of data stored within the Match
  */
 template<typename T, template<class> class C>
 class Match {
 	/// @brief The data value found during the search operation
-	PROPERTY_WITH_DEFAULT(data, Data, T, {0});
+	PROPERTY(data, Data, T);
 
 	/// @brief Flag indicating whether the search operation was successful
 	PROPERTY_WITH_DEFAULT(found, Found, bool, {false});
@@ -34,7 +35,7 @@ class Match {
 
 public:
 
-	Match() : _data(0), _found(false), _index(0), _ref(std::weak_ptr<C<T>>()) {}
+	Match() : _found(false), _index(0), _ref(std::weak_ptr<C<T>>()) {}
 
 	/**
 	 * @brief a copy constructor for the Match object

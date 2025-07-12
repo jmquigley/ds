@@ -49,7 +49,8 @@ protected:
 	 * A default comparison object that is available to all classes that are
 	 * part of the collection.
 	 */
-	Comparator<T> comparator;
+	std::shared_ptr<Comparator<T>> comparator =
+		std::make_shared<Comparator<T>>();
 
 public:
 
@@ -64,7 +65,7 @@ public:
 	 * @param comparator (`Comparator<T>`) An object used to compare elements of
 	 * type T.
 	 */
-	Collection(Comparator<T> comparator) : Collection() {
+	Collection(Comparator<T> &comparator) : Collection() {
 		this->comparator = comparator;
 	}
 
@@ -88,7 +89,7 @@ public:
 		std::shared_ptr<C<T>> r2 = col.getRoot();
 
 		while (r1 && r2) {
-			if (this->comparator(r1->getData(), r2->getData()) != 0) {
+			if (this->comparator->compare(r1->getData(), r2->getData()) != 0) {
 				return false;
 			}
 

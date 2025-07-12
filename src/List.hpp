@@ -111,7 +111,7 @@ public:
 	 *
 	 * @param comparator The comparator function to use for element comparison
 	 */
-	List(Comparator<T> comparator) : Collection<T, Node>(comparator) {}
+	List(Comparator<T> &comparator) : Collection<T, Node>(comparator) {}
 
 	/**
 	 * @brief a List copy constructor
@@ -294,7 +294,7 @@ public:
 		std::shared_ptr<Node<T>> next;
 
 		while (lp) {
-			if (this->comparator(lp->getData(), data) == 0) {
+			if (this->comparator->compare(lp->getData(), data) == 0) {
 				match.setData(data);
 				match.setFound(true);
 				match.setIndex(index);

@@ -27,7 +27,7 @@ public:
 	 * @brief Constructor that sets a custom `Comparator` object
 	 * @param comparator (`Comparator`) a reference to a comparison object
 	 */
-	SortedList(Comparator<T> comparator) : List<T>(comparator) {}
+	SortedList(Comparator<T> &comparator) : List<T>(comparator) {}
 
 	/**
 	 * @brief Copy constructor
@@ -60,7 +60,8 @@ public:
 		} else {
 			std::shared_ptr<Node<T>> tnode = this->_root;
 
-			while (tnode && (this->comparator(data, tnode->getData()) > 0)) {
+			while (tnode &&
+				   (this->comparator->compare(data, tnode->getData()) > 0)) {
 				tnode = tnode->getRight();
 			}
 

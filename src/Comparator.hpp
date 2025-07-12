@@ -18,6 +18,10 @@ namespace ds {
  * - 0 the two values are equal
  * - -1 the first value is less than the second value
  *
+ * NOTE: when working with built in types the comparison operators
+ * are defined.  When working with a complex type remember to at
+ * least define operator==(), operator<() and operator>()
+ *
  * @tparam T The type of data stored within the stack.
  */
 template<typename T>
@@ -31,7 +35,7 @@ public:
 	 * @returns 0 if `o1` and `o2` are equal, 1 if `o1` is greater
 	 * than `o2`, or -1 if `o1` is less than `o2`.
 	 */
-	int operator()(const T o1, const T o2) const {
+	inline virtual int operator()(const T &o1, const T &o2) {
 		return this->compare(o1, o2);
 	}
 
@@ -43,7 +47,7 @@ public:
 	 * @returns 0 if `o1` and `o2` are equal, 1 if `o1` is greater
 	 * than `o2`, or -1 if `o1` is less than `o2`.
 	 */
-	virtual int compare(const T o1, const T o2) const {
+	inline virtual int compare(const T &o1, const T &o2) {
 		if (o1 == o2) {
 			return 0;
 		} else if (o1 > o2) {
@@ -53,4 +57,5 @@ public:
 		return -1;
 	}
 };
+
 }  // namespace ds

@@ -13,6 +13,7 @@
 #include <initializer_list>
 #include <limits>
 #include <property.hpp>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -156,9 +157,9 @@ private:
 				tnode = newNode(data, parent);
 				this->_latestNode = tnode;
 
-				if (this->comparator(data, this->minimum()) < 0) {
+				if (this->comparator->compare(data, this->minimum()) < 0) {
 					this->_front = tnode;
-				} else if (this->comparator(data, this->maximum())) {
+				} else if (this->comparator->compare(data, this->maximum())) {
 					this->_back = tnode;
 				}
 
@@ -166,9 +167,9 @@ private:
 			}
 
 			// recursively descend through the tree to find insertion point
-			if (this->comparator(data, node->getData()) < 0) {
+			if (this->comparator->compare(data, node->getData()) < 0) {
 				node->setLeft(insertDelegate(data, node->getLeft(), node));
-			} else if (this->comparator(data, node->getData()) > 0) {
+			} else if (this->comparator->compare(data, node->getData()) > 0) {
 				node->setRight(insertDelegate(data, node->getRight(), node));
 			}
 
@@ -651,7 +652,7 @@ public:
 	 * @brief Constructor for BinaryTree that takes a custom comparator.
 	 * @param comparator An object used to compare elements of type T.
 	 */
-	BinaryTree(Comparator<T> comparator) : BaseTree<T, TreeNode>(comparator) {}
+	BinaryTree(Comparator<T> &comparator) : BaseTree<T, TreeNode>(comparator) {}
 
 	/**
 	 * @brief Constructor that takes an initializer_list to insert values into
@@ -746,7 +747,7 @@ public:
 			return this->_back.lock()->getData();
 		}
 
-		T data {};
+		T data;
 		bool found {false};
 
 		// Choose optimal traversal direction based on which end is closer
@@ -843,7 +844,7 @@ public:
 		while (!q.empty()) {
 			node = q.dequeue();
 
-			if (this->comparator(data, node->data()) == 0) {
+			if (this->comparator->compare(data, node->data()) == 0) {
 				match.setData(data);
 				match.setFound(true);
 				match.setRef(node);
@@ -900,7 +901,7 @@ public:
 		Match<T, TreeNode> match;
 
 		while (tnode != nullptr) {
-			int result = this->comparator(tnode->getData(), data);
+			int result = this->comparator->compare(tnode->getData(), data);
 
 			if (result == 0) {
 				match.setData(data);
@@ -1056,8 +1057,9 @@ public:
 		Match<T, TreeNode> match = find(value);
 
 		if (!match.found()) {
-			throw std::invalid_argument(
-				std::format("data value not found in tree ({})", value));
+			std::stringstream ss;
+			ss << "data value (" << value << ") not found in tree";
+			throw std::invalid_argument(ss.str());
 		}
 
 		znode = match.getRef().lock();
@@ -1129,10 +1131,11 @@ public:
 		this->_size--;
 
 		if (this->_size != 0) {
-			if (this->comparator(znode->getData(), this->minimum()) == 0) {
+			if (this->comparator->compare(znode->getData(), this->minimum()) ==
+				0) {
 				this->_front = minimumTreeNode(this->_root);
-			} else if (this->comparator(znode->getData(), this->maximum()) ==
-					   0) {
+			} else if (this->comparator->compare(znode->getData(),
+												 this->maximum()) == 0) {
 				this->_back = maximumTreeNode(this->_root);
 			}
 		} else {
