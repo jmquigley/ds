@@ -207,6 +207,9 @@ TEST_F(TestList, CopyConstructor) {
 
 	ds::List<int> l2(l1);
 	EXPECT_EQ(l2.size(), 5);
+
+	ds::List<int> l3 = l2;
+	EXPECT_EQ(l3.size(), 5);
 }
 
 TEST_F(TestList, ToVector) {

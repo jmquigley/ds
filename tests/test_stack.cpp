@@ -77,9 +77,15 @@ TEST_F(TestStack, StackCopyConstructor) {
 	ds::Stack<int> s1 = {1, 2, 3, 4, 5};
 
 	EXPECT_EQ(s1.size(), 5);
+
 	ds::Stack<int> s2(s1);
 	EXPECT_EQ(s2.size(), 5);
 	EXPECT_TRUE(s1 == s2);
+
+	ds::Stack<int> s3 = s2;
+
+	EXPECT_EQ(s3.size(), 5);
+	EXPECT_TRUE(s3 == s2);
 }
 
 TEST_F(TestStack, StackClear) {
@@ -108,9 +114,12 @@ TEST_F(TestStack, StackErrors) {
 	ds::Stack<int> stack;
 
 	EXPECT_EQ(stack.size(), 0);
-	EXPECT_THROW(stack.top(), std::out_of_range) << "Can't get top from empty stack";
-	EXPECT_THROW(stack.peek(), std::out_of_range) << "Can't peek from empty stack";
-	EXPECT_THROW(stack.pop(), std::out_of_range) << "Can't pop from empty stack";
+	EXPECT_THROW(stack.top(), std::out_of_range)
+		<< "Can't get top from empty stack";
+	EXPECT_THROW(stack.peek(), std::out_of_range)
+		<< "Can't peek from empty stack";
+	EXPECT_THROW(stack.pop(), std::out_of_range)
+		<< "Can't pop from empty stack";
 };
 
 TEST_F(TestStack, StackInitializerList) {
@@ -133,9 +142,12 @@ TEST_F(TestStack, StackInitializerList) {
 	EXPECT_EQ(stack.pop(), 2);
 
 	EXPECT_EQ(stack.size(), 0);
-	EXPECT_THROW(stack.top(), std::out_of_range) << "Can't get top from empty stack";
-	EXPECT_THROW(stack.peek(), std::out_of_range) << "Can't peek from empty stack";
-	EXPECT_THROW(stack.pop(), std::out_of_range) << "Can't pop from empty stack";
+	EXPECT_THROW(stack.top(), std::out_of_range)
+		<< "Can't get top from empty stack";
+	EXPECT_THROW(stack.peek(), std::out_of_range)
+		<< "Can't peek from empty stack";
+	EXPECT_THROW(stack.pop(), std::out_of_range)
+		<< "Can't pop from empty stack";
 }
 
 TEST_F(TestStack, StackEqualityOperator) {
@@ -189,7 +201,8 @@ TEST_F(TestStack, StackInequalityOperatorEmpty) {
 TEST_F(TestStack, StackToString) {
 	ds::Stack<int> stack = {10, 20};
 	std::string s;
-	std::string result = "[{\"data\":20,\"color\":\"red\"},{\"data\":10,\"color\":\"red\"}]";
+	std::string result =
+		"[{\"data\":20,\"color\":\"red\"},{\"data\":10,\"color\":\"red\"}]";
 
 	EXPECT_EQ(stack.size(), 2);
 	EXPECT_EQ(stack.top(), 20);

@@ -118,9 +118,7 @@ public:
 	 * @param list (`List &`) the list object to copy
 	 */
 	List(List<T> &list) {
-		for (auto it: list) {
-			this->insert(it);
-		}
+		this->operator=(list);
 	}
 
 	/**
@@ -136,8 +134,20 @@ public:
 	/**
 	 * @brief Destructor that cleans up list resources.
 	 */
-	~List() {
+	virtual ~List() {
 		this->clear();
+	}
+
+	/**
+	 * @brief equals operator to set one list object to another
+	 * @param list (`List<T>`) a reference to the list to copy
+	 * @reutnrs a reference to the this pointer for the object
+	 */
+	List<T> &operator=(List<T> &list) {
+		for (auto it: list) {
+			this->insert(it);
+		}
+		return *this;
 	}
 
 	/**

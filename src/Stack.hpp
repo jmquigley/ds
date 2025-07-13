@@ -29,12 +29,7 @@ public:
 	 * @param stack (`Stack<T> &`) the stack that will be copied
 	 */
 	Stack(Stack<T> &stack) : List<T>() {
-		std::vector<T> v = stack.array();
-		std::reverse(v.begin(), v.end());
-
-		for (auto it: v) {
-			this->push(it);
-		}
+		operator=(stack);
 	}
 
 	/**
@@ -52,8 +47,17 @@ public:
 		}
 	}
 
-	~Stack() {
+	virtual ~Stack() {
 		clear();
+	}
+
+	/**
+	 * @brief a List equal operator
+	 * @param stack (`Stack<T> &`) the stack object to copy
+	 */
+	Stack<T> &operator=(Stack<T> &stack) {
+		List<T>::operator=(stack);
+		return *this;
 	}
 
 	/**
