@@ -37,7 +37,7 @@ class Priority {
 
 public:
 
-	Priority() : _value(0), _offset(0) {}
+	Priority() : _data({}), _value(0), _offset(0) {}
 
 	/**
 	 * @brief Constructs a Priority object
@@ -48,6 +48,33 @@ public:
 	 */
 	Priority(T data, size_t value, size_t offset)
 		: _data(data), _value(value), _offset(offset) {}
+
+	/**
+	 * @brief copy constructor for PriorityQueue
+	 * @param priority the `Priority<T>` object to copy
+	 */
+	Priority(const Priority &priority) : Priority<T>() {
+		this->operator=(priority);
+	}
+
+	virtual ~Priority() {}
+
+	/**
+	 * @brief equal operator to assign a Priority to another.
+	 *
+	 * Works like the copy constructor to copy all elements of one Priority
+	 * to another.
+	 * @param priority the `Priority<T>` object to copy
+	 * @returns a reference to the object that is being copied into
+	 */
+	Priority<T> &operator=(const Priority<T> &priority) {
+		if (this != &priority) {
+			this->_data = priority._data;
+			this->_value = priority._value;
+			this->_offset = priority._offset;
+		}
+		return *this;
+	}
 
 	/**
 	 * @brief Equality comparison operator
@@ -161,6 +188,15 @@ public:
 	PriorityQueue() : BinaryTree<Priority<T>>() {}
 
 	/**
+	 * @brief a copy construcgtor for the PriorityQueue
+	 * @param pq (`PriorityQueue<T>`) reference to the priority queue to
+	 * copy.
+	 */
+	PriorityQueue(PriorityQueue<T> &pq) : PriorityQueue<T>() {
+		this->operator=(pq);
+	}
+
+	/**
 	 * @brief Allows for the use of an initializer list to seed the Priority
 	 * queue.
 	 * @param il (`std::initializer_list`) a list of values to seed the
@@ -172,12 +208,27 @@ public:
 	/**
 	 * @brief Destroys the priority queue and frees all resources
 	 */
-	~PriorityQueue() {
+	virtual ~PriorityQueue() {
 		this->clear();
 	}
 
 	/**
+	 * @brief the equal operator for the PriorityQueue class
+	 * @param pq (`PriorityQueue<T>`) reference to the priority queue to
+	 * copy.
+	 * @returns a reference to the this pointer for the class
+	 */
+	PriorityQueue<T> &operator=(PriorityQueue<T> &pq) {
+		this->offsets = pq.offsets;
+		BinaryTree<Priority<T>>::operator=(pq);
+		return *this;
+	}
+
+	/**
 	 * @brief Converts the priority queue to an array
+	 *
+	 * Creates a `std::vector<T>` from the current priority queue, but does
+	 * not remove all of the elements.  To remove the elements use .drain().
 	 *
 	 * @return std::vector<T> Vector containing all elements in priority order
 	 */
@@ -218,8 +269,12 @@ public:
 	 * @return std::vector<T> Vector containing all elements in priority order
 	 */
 	std::vector<Priority<T>> drain() {
-		// TODO: add drain() to the PriorityQueue
 		std::vector<Priority<T>> out;
+
+		while (this->size() > 0) {
+			out.push_back(dequeue());
+		}
+
 		return out;
 	}
 

@@ -646,7 +646,18 @@ private:
 
 public:
 
+	/**
+	 * @brief standard constructor
+	 */
 	BinaryTree() : BaseTree<T, TreeNode>() {}
+
+	/**
+	 * @brief copy constructor for the BinaryTree
+	 * @param bt (`BinaryTree<T>`) the binary tree to copy
+	 */
+	BinaryTree(BinaryTree<T> &bt) : BaseTree<T, TreeNode>() {
+		this->operator=(bt);
+	}
 
 	/**
 	 * @brief Constructor for BinaryTree that takes a custom comparator.
@@ -663,8 +674,26 @@ public:
 		operator=(il);
 	}
 
-	~BinaryTree() {
+	/**
+	 * @brief basic destructor for BinaryTree
+	 */
+	virtual ~BinaryTree() {
 		this->clear();
+	}
+
+	/**
+	 * @brief the assignment operator to copy one binary tree into another
+	 * @param bt (`BinaryTree<T>`) the binary tree to copy
+	 * @returns a reference to this binary tree
+	 */
+	BinaryTree<T> &operator=(BinaryTree<T> &bt) {
+		this->clear();
+		bt.inorder([&](auto &node) {
+			T data = node.getData();
+			this->insert(data);
+		});
+
+		return *this;
 	}
 
 	/**
@@ -676,7 +705,6 @@ public:
 	 */
 	BinaryTree<T> &operator=(std::initializer_list<T> il) {
 		this->clear();
-
 		for (auto it: il) {
 			this->insert(it);
 		}

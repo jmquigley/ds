@@ -28,6 +28,11 @@ TEST_F(TestPriorityQueue, PriorityClass) {
 	EXPECT_EQ(pri2.offset(), 199);
 	EXPECT_EQ(pri2.key(), "000000200:000000199");
 	EXPECT_EQ(pri2.str(), "\"data\":\"p2\", \"key\":\"000000200:000000199\"");
+
+	ds::Priority<std::string> pri3(pri1);
+
+	EXPECT_EQ(pri1.data(), pri3.data());
+	EXPECT_TRUE(pri1 == pri3);
 }
 
 TEST_F(TestPriorityQueue, CreatePriorityQueue) {
@@ -79,6 +84,44 @@ TEST_F(TestPriorityQueue, CreatePriorityQueue) {
 	EXPECT_EQ(pq.size(), 0);
 }
 
+TEST_F(TestPriorityQueue, CopyConstructor) {
+	ds::PriorityQueue<std::string> pq1 {
+		{"a", 100, 1}, {"c", 100, 2}, {"b", 100, 3}, {"d", 100, 4}};
+
+	EXPECT_EQ(pq1.size(), 4);
+	EXPECT_FALSE(pq1.empty());
+
+	ds::PriorityQueue<std::string> pq2(pq1);
+
+	EXPECT_EQ(pq2.size(), 4);
+	EXPECT_FALSE(pq2.empty());
+
+	std::vector<ds::Priority<std::string>> out = pq2.array();
+
+	EXPECT_EQ(out[0].data(), "a");
+	EXPECT_EQ(out[1].data(), "c");
+	EXPECT_EQ(out[2].data(), "b");
+	EXPECT_EQ(out[3].data(), "d");
+
+	ds::PriorityQueue<std::string> pq3;
+
+	EXPECT_EQ(pq3.size(), 0);
+	EXPECT_TRUE(pq3.empty());
+
+	pq3 = pq2;
+
+	EXPECT_EQ(pq3.size(), 4);
+	EXPECT_FALSE(pq3.empty());
+
+	out.clear();
+	out = pq3.array();
+
+	EXPECT_EQ(out[0].data(), "a");
+	EXPECT_EQ(out[1].data(), "c");
+	EXPECT_EQ(out[2].data(), "b");
+	EXPECT_EQ(out[3].data(), "d");
+}
+
 TEST_F(TestPriorityQueue, Initializer) {
 	ds::PriorityQueue<std::string> pq {
 		{"a", 100, 1}, {"c", 100, 2}, {"b", 100, 3}, {"d", 100, 4}};
@@ -121,8 +164,33 @@ TEST_F(TestPriorityQueue, Initializer) {
 	EXPECT_EQ(pq.size(), 0);
 }
 
-// TODO: test PriorityQueue copy constructor and assignment
-// TODO: test PriorityQueue removal and clearing
+TEST_F(TestPriorityQueue, RetrieveFromEmpty) {
+	ds::PriorityQueue<std::string> pq;
+
+	EXPECT_EQ(pq.size(), 0);
+	EXPECT_TRUE(pq.empty());
+	EXPECT_THROW(pq.dequeue(), std::range_error);
+
+	pq.clear();
+}
+
+TEST_F(TestPriorityQueue, Drain) {
+	ds::PriorityQueue<std::string> pq {
+		{"a", 100, 1}, {"c", 100, 2}, {"b", 100, 3}, {"d", 100, 4}};
+
+	EXPECT_EQ(pq.size(), 4);
+	EXPECT_FALSE(pq.empty());
+
+	std::vector<ds::Priority<std::string>> out = pq.drain();
+
+	EXPECT_EQ(pq.size(), 0);
+	EXPECT_EQ(out.size(), 4);
+	EXPECT_EQ(out[0].data(), "a");
+	EXPECT_EQ(out[1].data(), "c");
+	EXPECT_EQ(out[2].data(), "b");
+	EXPECT_EQ(out[3].data(), "d");
+}
+
 // TODO: test PriorityQueue drain
 // TODO: test PriorityQueue toString
 // TODO: test PriorityQueue comparison operators

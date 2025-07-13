@@ -48,6 +48,40 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 	EXPECT_EQ(bt.size(), 7);
 }
 
+TEST_F(TestBinaryTree, CopyConstructor) {
+	ds::BinaryTree<int> bt1 {1, 2, 3, 4, 5, 6, 7};
+
+	EXPECT_EQ(bt1.size(), 7);
+	EXPECT_EQ(bt1.height(), 3);
+	EXPECT_FALSE(bt1.empty());
+
+	ds::BinaryTree<int> bt2(bt1);
+	std::vector<int> out;
+
+	bt2.array(out);
+	EXPECT_EQ(out.size(), 7);
+	EXPECT_EQ(out[0], 1);
+	EXPECT_EQ(out[1], 2);
+	EXPECT_EQ(out[2], 3);
+	EXPECT_EQ(out[3], 4);
+	EXPECT_EQ(out[4], 5);
+	EXPECT_EQ(out[5], 6);
+	EXPECT_EQ(out[6], 7);
+
+	ds::BinaryTree<int> bt3 = bt2;
+
+	out.clear();
+	bt3.array(out);
+	EXPECT_EQ(out.size(), 7);
+	EXPECT_EQ(out[0], 1);
+	EXPECT_EQ(out[1], 2);
+	EXPECT_EQ(out[2], 3);
+	EXPECT_EQ(out[3], 4);
+	EXPECT_EQ(out[4], 5);
+	EXPECT_EQ(out[5], 6);
+	EXPECT_EQ(out[6], 7);
+}
+
 TEST_F(TestBinaryTree, Traversals) {
 	ds::BinaryTree<int> bt {1, 2, 3, 4, 5, 6, 7};
 
