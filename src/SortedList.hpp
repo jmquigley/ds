@@ -61,7 +61,7 @@ public:
 			std::shared_ptr<Node<T>> tnode = this->_root;
 
 			while (tnode &&
-				   (this->comparator->compare(data, tnode->getData()) > 0)) {
+				   (this->_comparator->compare(data, tnode->getData()) > 0)) {
 				tnode = tnode->getRight();
 			}
 

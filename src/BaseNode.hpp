@@ -50,28 +50,6 @@ class BaseNode {
 	/// @brief A shared pointer to the right child node.
 	PROPERTY_SCOPED(right, Right, std::shared_ptr<C<T>>, protected:);
 
-private:
-
-	/**
-	 * @brief Copy assignment helper function.
-	 *
-	 * Creates a deep copy of the source node into this node. The current node
-	 * is initialized with a new ID before copying all properties from the
-	 * source. This ensures that the resulting node is a distinct entity with
-	 * the same content as the source.
-	 *
-	 * @param src The source Node object to copy from
-	 * @return Reference to this node after the copy operation
-	 */
-	C<T> &copy(const C<T> &src) {
-		this->_data = src._data;
-		this->_right = src._right;
-		this->_left = src._left;
-		this->_flags = src._flags;
-
-		return *this;
-	}
-
 public:
 
 	/**
@@ -104,15 +82,6 @@ public:
 		: _data(data), _flags(flags), _left(left), _right(right) {}
 
 	/**
-	 * @brief Destructor for Node.
-	 *
-	 * Currently empty, but can be extended for cleanup if needed.
-	 */
-	~BaseNode() {
-		this->clear();
-	}
-
-	/**
 	 * @brief Move constructor for Node.
 	 *
 	 * Creates a new node by transferring ownership of resources from another
@@ -121,8 +90,8 @@ public:
 	 *
 	 * @param other The source Node object to move resources from
 	 */
-	BaseNode(const C<T> &other) {
-		copy(other);
+	BaseNode(C<T> &other) : BaseNode() {
+		this->operator=(other);
 	}
 
 	/**
@@ -136,8 +105,17 @@ public:
 	 * @param other (`Node<T>`) The Node object to move from (will be left in a
 	 * valid but unspecified state)
 	 */
-	BaseNode(C<T> &&other) {
+	BaseNode(C<T> &&other) : BaseNode() {
 		move(std::move(other));
+	}
+
+	/**
+	 * @brief Destructor for Node.
+	 *
+	 * Currently empty, but can be extended for cleanup if needed.
+	 */
+	virtual ~BaseNode() {
+		this->clear();
 	}
 
 	/**
@@ -161,11 +139,15 @@ public:
 	 * maintaining the unique identity of this node while adopting all data
 	 * and relationships from the source node.
 	 *
-	 * @param rhs The right-hand side Node object to copy from
+	 * @param other The right-hand side Node object to copy from
 	 * @return Reference to this node after the assignment
 	 */
-	C<T> &operator=(const C<T> &rhs) {
-		copy(rhs);
+	C<T> &operator=(C<T> &other) {
+		this->_data = other._data;
+		this->_right = other._right;
+		this->_left = other._left;
+		this->_flags = other._flags;
+
 		return *this;
 	}
 

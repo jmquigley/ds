@@ -11,10 +11,12 @@
 #include <Collection.hpp>
 #include <Comparator.hpp>
 #include <Deque.hpp>
+#include <GeneralTreeNode.hpp>
 #include <Iterable.hpp>
 #include <List.hpp>
 #include <Match.hpp>
 #include <Node.hpp>
+#include <PriorityQueue.hpp>
 #include <Queue.hpp>
 #include <SortedList.hpp>
 #include <Stack.hpp>

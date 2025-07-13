@@ -26,8 +26,8 @@ class TreeNode;
  * @class BaseNodeBuilder
  * @brief A base class for all builder classes such as Node and TreeNode
  *
- * Provides methods to set various properties of a Node before building the final
- * shared_ptr wrapped object, ensuring proper memory management.
+ * Provides methods to set various properties of a Node before building the
+ * final shared_ptr wrapped object, ensuring proper memory management.
  *
  * @tparam T The type of data for the Node being built
  * @tparam C The node class type (Node or TreeNode)
@@ -76,8 +76,10 @@ public:
 	}
 
 	/**
-	 * @brief Finalizes the build process and returns the constructed Node object.
-	 * @return A `std::shared_ptr<C<T>>` to the fully configured BaseNode object.
+	 * @brief Finalizes the build process and returns the constructed Node
+	 * object.
+	 * @return A `std::shared_ptr<C<T>>` to the fully configured BaseNode
+	 * object.
 	 */
 	std::shared_ptr<C<T>> build() {
 		return nodePtr;
@@ -105,7 +107,8 @@ public:
 
 	/**
 	 * @brief Sets the parent Node for the Node being built.
-	 * @param parent (`std::shared_ptr<C<T>>`) A shared pointer to the parent BaseNode.
+	 * @param parent (`std::shared_ptr<C<T>>`) A shared pointer to the parent
+	 * BaseNode.
 	 * @return A `B &` reference to the derived builder class for chaining.
 	 */
 	B &withParent(std::shared_ptr<C<T>> parent) {
@@ -115,7 +118,8 @@ public:
 
 	/**
 	 * @brief Sets the right child Node for the Node being built.
-	 * @param right (`std::shared_potr<C<T>>`) A shared pointer to the right child Node.
+	 * @param right (`std::shared_potr<C<T>>`) A shared pointer to the right
+	 * child Node.
 	 * @return A `B &` reference to the derived builder class for chaining.
 	 */
 	B &withRight(std::shared_ptr<C<T>> right) {
@@ -125,7 +129,8 @@ public:
 
 	/**
 	 * @brief Sets the left child Node for the Node being built.
-	 * @param left (`std::shared_potr<C<T>>`) A shared pointer to the left child Node.
+	 * @param left (`std::shared_potr<C<T>>`) A shared pointer to the left child
+	 * Node.
 	 * @return A `B &` reference to the derived builder class for chaining.
 	 */
 	B &withLeft(std::shared_ptr<C<T>> left) {
@@ -155,23 +160,30 @@ public:
  * @tparam T The type of data for the TreeNode being built
  */
 template<typename T>
-class TreeNodeBuilder : public BaseNodeBuilder<T, TreeNode, TreeNodeBuilder<T>> {
+class TreeNodeBuilder :
+	public BaseNodeBuilder<T, TreeNode, TreeNodeBuilder<T>> {
 public:
 
 	/**
 	 * @brief Default constructor initializing the base builder
 	 */
 	TreeNodeBuilder() : BaseNodeBuilder<T, TreeNode, TreeNodeBuilder<T>>() {}
+};
+
+template<typename T>
+class GeneralTreeNodeBuilder : public TreeNodeBuilder<T> {
+public:
 
 	/**
 	 * @brief Sets the child array to an initial vector of elements
-	 * @param children (`std::vector<T>`) A reference to a vector of child objects
+	 * @param children (`std::vector<T>`) A reference to a vector of child
+	 * objects
 	 * @return A `B &` reference to the TreeNodeBuilder for method chaining
 	 */
-	TreeNodeBuilder &withChildren(std::vector<T> &children) {
-		this->nodePtr->setChildren(children);
-		return *this;
-	}
+	// TreeNodeBuilder &withChildren(std::vector<T> &children) {
+	// 	this->nodePtr->setChildren(children);
+	// 	return *this;
+	// }
 };
 
 }  // namespace ds

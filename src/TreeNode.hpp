@@ -18,9 +18,6 @@ namespace ds {
  */
 template<typename T>
 class TreeNode : public BaseNode<T, TreeNode> {
-	/// @brief A vector to hold child nodes in a general tree
-	PROPERTY_SCOPED(children, Children, std::vector<T>, protected:);
-
 protected:
 
 	/// @brief A shared pointer to the parent node.
@@ -70,6 +67,25 @@ public:
 		  BaseNode<T, TreeNode>::_right(
 			  std::static_pointer_cast<BaseNode<T, TreeNode>>(right)),
 		  _parent(parent) {}
+
+	/**
+	 * @brief copy constructor for the TreeNode class
+	 * @param tn the tree node to copy
+	 */
+	TreeNode(TreeNode<T> &tn) : TreeNode<T>() {
+		this->operator=(tn);
+	}
+
+	/**
+	 * @brief equal operator for the TreeNode class
+	 * @param tn the tree node to copy
+	 * @returns a reference the this pointer for the object
+	 */
+	TreeNode<T> operator=(TreeNode<T> &tn) {
+		this->_parent = tn._parent;
+		// BaseNode<T, TreeNode>::operator=(tn);
+		return *this;
+	}
 
 	/**
 	 * @brief Creates a deep copy of this node

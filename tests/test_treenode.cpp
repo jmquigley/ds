@@ -26,7 +26,7 @@ TEST_F(TestTreeNode, Builder) {
 	ds::TreeNodeBuilder<int> builder;
 	std::vector<int> children = {1, 2, 3, 4, 5};
 
-	builder.withData(42).withChildren(children);
+	builder.withData(42);
 	node = builder.build();
 
 	EXPECT_EQ(node->getData(), 42);
@@ -39,3 +39,5 @@ TEST_F(TestTreeNode, Builder) {
 	EXPECT_FALSE(node->isRed());
 	EXPECT_TRUE(node->isBlack());
 }
+
+// TODO: add tests for copy constructors and operators

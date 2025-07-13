@@ -157,9 +157,9 @@ private:
 				tnode = newNode(data, parent);
 				this->_latestNode = tnode;
 
-				if (this->comparator->compare(data, this->minimum()) < 0) {
+				if (this->_comparator->compare(data, this->minimum()) < 0) {
 					this->_front = tnode;
-				} else if (this->comparator->compare(data, this->maximum())) {
+				} else if (this->_comparator->compare(data, this->maximum())) {
 					this->_back = tnode;
 				}
 
@@ -167,9 +167,9 @@ private:
 			}
 
 			// recursively descend through the tree to find insertion point
-			if (this->comparator->compare(data, node->getData()) < 0) {
+			if (this->_comparator->compare(data, node->getData()) < 0) {
 				node->setLeft(insertDelegate(data, node->getLeft(), node));
-			} else if (this->comparator->compare(data, node->getData()) > 0) {
+			} else if (this->_comparator->compare(data, node->getData()) > 0) {
 				node->setRight(insertDelegate(data, node->getRight(), node));
 			}
 
@@ -872,7 +872,7 @@ public:
 		while (!q.empty()) {
 			node = q.dequeue();
 
-			if (this->comparator->compare(data, node->data()) == 0) {
+			if (this->_comparator->compare(data, node->data()) == 0) {
 				match.setData(data);
 				match.setFound(true);
 				match.setRef(node);
@@ -929,7 +929,7 @@ public:
 		Match<T, TreeNode> match;
 
 		while (tnode != nullptr) {
-			int result = this->comparator->compare(tnode->getData(), data);
+			int result = this->_comparator->compare(tnode->getData(), data);
 
 			if (result == 0) {
 				match.setData(data);
@@ -1159,11 +1159,11 @@ public:
 		this->_size--;
 
 		if (this->_size != 0) {
-			if (this->comparator->compare(znode->getData(), this->minimum()) ==
+			if (this->_comparator->compare(znode->getData(), this->minimum()) ==
 				0) {
 				this->_front = minimumTreeNode(this->_root);
-			} else if (this->comparator->compare(znode->getData(),
-												 this->maximum()) == 0) {
+			} else if (this->_comparator->compare(znode->getData(),
+												  this->maximum()) == 0) {
 				this->_back = maximumTreeNode(this->_root);
 			}
 		} else {

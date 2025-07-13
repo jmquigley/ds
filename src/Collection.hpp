@@ -20,6 +20,16 @@ class Collection {
 protected:
 
 	/**
+	 * @brief A comparator object used for ordering elements within the
+	 * collection.
+	 *
+	 * A default comparison object that is available to all classes that are
+	 * part of the collection.
+	 */
+	PROPERTY_SCOPED(comparator, Comparator, std::shared_ptr<Comparator<T>>,
+					protected:);
+
+	/**
 	 * @brief Pointer to the first/front element in the collection.
 	 * @protected
 	 */
@@ -40,34 +50,30 @@ protected:
 	 */
 	PROPERTY_SCOPED(root, Root, std::shared_ptr<C<T>>, protected:);
 
-protected:
-
-	/**
-	 * @brief A comparator object used for ordering elements within the
-	 * collection.
-	 *
-	 * A default comparison object that is available to all classes that are
-	 * part of the collection.
-	 */
-	std::shared_ptr<Comparator<T>> comparator =
-		std::make_shared<Comparator<T>>();
-
 public:
 
 	/**
 	 * @brief Default constructor for Collection.
 	 * Initializes pointers to nullptr and length to 0.
 	 */
-	Collection() : _front(), _back(), _size(0), _root(nullptr) {}
+	Collection()
+		: _comparator(std::make_shared<Comparator<T>>()),
+		  _front(),
+		  _back(),
+		  _size(0),
+		  _root(nullptr) {}
 
 	/**
 	 * @brief Constructor for Collection that takes a custom comparator.
 	 * @param comparator (`Comparator<T>`) An object used to compare elements of
 	 * type T.
 	 */
-	Collection(Comparator<T> &comparator) : Collection() {
-		this->comparator = comparator;
-	}
+	Collection(Comparator<T> &comparator)
+		: _comparator(comparator),
+		  _front(),
+		  _back(),
+		  _size(0),
+		  _root(nullptr) {}
 
 	/**
 	 * @brief Virtual destructor for Collection.
@@ -89,7 +95,7 @@ public:
 		std::shared_ptr<C<T>> r2 = col.getRoot();
 
 		while (r1 && r2) {
-			if (this->comparator->compare(r1->getData(), r2->getData()) != 0) {
+			if (this->_comparator->compare(r1->getData(), r2->getData()) != 0) {
 				return false;
 			}
 

@@ -304,7 +304,7 @@ public:
 		std::shared_ptr<Node<T>> next;
 
 		while (lp) {
-			if (this->comparator->compare(lp->getData(), data) == 0) {
+			if (this->_comparator->compare(lp->getData(), data) == 0) {
 				match.setData(data);
 				match.setFound(true);
 				match.setIndex(index);
