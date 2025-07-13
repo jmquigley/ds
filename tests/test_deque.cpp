@@ -54,6 +54,41 @@ TEST_F(TestDeque, ConstructorWithMaxSize) {
 	EXPECT_EQ(q.getMaxSize(), 123);
 }
 
+TEST_F(TestDeque, CopyConstructor) {
+	ds::Deque<int> q1 = {1, 2, 3, 4};
+
+	EXPECT_EQ(q1.size(), 4);
+	std::vector<int> out = q1.array();
+	EXPECT_EQ(out.size(), 4);
+
+	EXPECT_EQ(out[0], 1);
+	EXPECT_EQ(out[1], 2);
+	EXPECT_EQ(out[2], 3);
+	EXPECT_EQ(out[3], 4);
+
+	ds::Deque<int> q2(q1);
+
+	EXPECT_EQ(q2.size(), 4);
+
+	out.clear();
+	out = q2.array();
+
+	EXPECT_EQ(out[0], 1);
+	EXPECT_EQ(out[1], 2);
+	EXPECT_EQ(out[2], 3);
+	EXPECT_EQ(out[3], 4);
+
+	ds::Deque<int> q3 = q2;
+
+	out.clear();
+	out = q3.array();
+
+	EXPECT_EQ(out[0], 1);
+	EXPECT_EQ(out[1], 2);
+	EXPECT_EQ(out[2], 3);
+	EXPECT_EQ(out[3], 4);
+}
+
 TEST_F(TestDeque, ConstructorInitializer) {
 	ds::Deque<int> q = {1, 2, 3, 4};
 

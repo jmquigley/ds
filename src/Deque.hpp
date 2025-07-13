@@ -22,7 +22,8 @@ namespace ds {
 template<typename T>
 class Deque : public Queue<T> {
 	/// @brief The maximum size of the Deque
-	PROPERTY_WITH_DEFAULT(maxSize, MaxSize, size_t, = std::numeric_limits<std::size_t>::max());
+	PROPERTY_WITH_DEFAULT(maxSize, MaxSize, size_t,
+						  = std::numeric_limits<std::size_t>::max());
 
 private:
 
@@ -62,10 +63,18 @@ public:
 	Deque(size_t maxSize) : Queue<T>(), _maxSize(maxSize) {}
 
 	/**
+	 * @brief the copy constructor for the Deque class
+	 * @param dq (`Deque<T>`) the deque object to copy
+	 */
+	Deque(Deque<T> &dq) : Deque() {
+		this->operator=(dq);
+	}
+
+	/**
 	 * @brief Constructor that initializes a deque with a custom comparator.
 	 * @param comparator The comparator function to use for element comparison
 	 */
-	Deque(Comparator<T> comparator) : Queue<T>(comparator) {}
+	Deque(Comparator<T> &comparator) : Queue<T>(comparator) {}
 
 	/**
 	 * @brief Constructor that initializes a deque with a custom comparator.
@@ -73,7 +82,8 @@ public:
 	 * @param maxSize (`size_t`) the maximum size of the queue
 	 * @param comparator The comparator function to use for element comparison
 	 */
-	Deque(size_t maxSize, Comparator<T> comparator) : Queue<T>(comparator), _maxSize(maxSize) {}
+	Deque(size_t maxSize, Comparator<T> comparator)
+		: Queue<T>(comparator), _maxSize(maxSize) {}
 
 	/**
 	 * @brief Constructor that takes an initializer_list to insert values into
@@ -90,7 +100,8 @@ public:
 	 * @param maxSize (`size_t`) the maximum size of the queue
 	 * @param il (`std::initializer_list`) a list of values to see the list
 	 */
-	Deque(size_t maxSize, std::initializer_list<T> il) : Queue<T>(), _maxSize(maxSize) {
+	Deque(size_t maxSize, std::initializer_list<T> il)
+		: Queue<T>(), _maxSize(maxSize) {
 		this->initializer(il);
 	}
 
@@ -99,6 +110,17 @@ public:
 	 */
 	~Deque() {
 		Queue<T>::clear();
+	}
+
+	/**
+	 * @brief equality operator for the Deque class
+	 * @param dq (`Deque<T> &`) a reference to teh deque to copy
+	 * @returns a reference to the this pointer for the object
+	 */
+	Deque<T> &operator=(Deque<T> &dq) {
+		this->_maxSize = dq._maxSize;
+		Queue<T>::operator=(dq);
+		return *this;
 	}
 
 	/**

@@ -141,7 +141,7 @@ public:
 	/**
 	 * @brief equals operator to set one list object to another
 	 * @param list (`List<T>`) a reference to the list to copy
-	 * @reutnrs a reference to the this pointer for the object
+	 * @returns a reference to the this pointer for the object
 	 */
 	List<T> &operator=(List<T> &list) {
 		for (auto it: list) {

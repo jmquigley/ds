@@ -59,6 +59,41 @@ TEST_F(TestQueue, OperatorAddElements) {
 	EXPECT_EQ(q.maximum(), 5);
 }
 
+TEST_F(TestQueue, CopyConstructor) {
+	ds::Queue<int> q1 = {1, 2, 3, 4};
+
+	EXPECT_EQ(q1.size(), 4);
+	std::vector<int> out = q1.array();
+	EXPECT_EQ(out.size(), 4);
+
+	EXPECT_EQ(out[0], 1);
+	EXPECT_EQ(out[1], 2);
+	EXPECT_EQ(out[2], 3);
+	EXPECT_EQ(out[3], 4);
+
+	ds::Queue<int> q2(q1);
+
+	EXPECT_EQ(q2.size(), 4);
+
+	out.clear();
+	out = q2.array();
+
+	EXPECT_EQ(out[0], 1);
+	EXPECT_EQ(out[1], 2);
+	EXPECT_EQ(out[2], 3);
+	EXPECT_EQ(out[3], 4);
+
+	ds::Queue<int> q3 = q2;
+
+	out.clear();
+	out = q3.array();
+
+	EXPECT_EQ(out[0], 1);
+	EXPECT_EQ(out[1], 2);
+	EXPECT_EQ(out[2], 3);
+	EXPECT_EQ(out[3], 4);
+}
+
 TEST_F(TestQueue, DequeueFromEmpty) {
 	ds::Queue<int> q;
 

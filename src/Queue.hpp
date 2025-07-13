@@ -25,6 +25,14 @@ public:
 	Queue() : List<T>() {}
 
 	/**
+	 * @brief the copy constructor for the Queue class
+	 * @param q (`Queue<T>`) the queue object to copy
+	 */
+	Queue(Queue<T> &q) : Queue() {
+		this->operator=(q);
+	}
+
+	/**
 	 * @brief Constructor that initializes a queue with a custom comparator.
 	 * @param comparator The comparator function to use for element comparison
 	 */
@@ -42,6 +50,16 @@ public:
 	 */
 	~Queue() {
 		this->clear();
+	}
+
+	/**
+	 * @brief equality operator for the Queue class
+	 * @param q (`Queue<T> &`) a reference to teh queue to copy
+	 * @returns a reference to the this pointer for the object
+	 */
+	Queue<T> &operator=(Queue<T> &q) {
+		List<T>::operator=(q);
+		return *this;
 	}
 
 	/**
