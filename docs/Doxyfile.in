@@ -8,4 +8,5 @@ TAB_SIZE               = 4
 QUIET                  = YES
 
 OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BINARY_DIR@/doxygen/
-INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/src/
+INPUT                  = ../README.md @CMAKE_CURRENT_SOURCE_DIR@/src/
+USE_MDFILE_AS_MAINPAGE = ../README.md
