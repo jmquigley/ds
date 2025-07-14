@@ -81,3 +81,42 @@ TEST_F(TestGeneralTreeNode, Comparisons) {
 	EXPECT_FALSE(gtn1 != gtn1);
 	EXPECT_TRUE(gtn1 != gtn2);
 }
+
+TEST_F(TestGeneralTreeNode, WithBuilder) {
+	std::shared_ptr<ds::GeneralTreeNode<int>> gtn;
+	ds::GeneralTreeNodeBuilder<int> builder;
+
+	gtn = builder.withData(1)
+			  .withKey("a")
+			  .withChild("a1", 1)
+			  .withChild("a2", 3)
+			  .withChild("b1", 2)
+			  .build();
+
+	std::vector<std::shared_ptr<ds::GeneralTreeNode<int>>> out =
+		gtn->getChildren();
+
+	EXPECT_EQ(gtn->totalChildren(), 3);
+
+	std::shared_ptr<ds::GeneralTreeNode<int>> ch1 = gtn->getChild("a1");
+
+	EXPECT_EQ(out[0]->key(), "a1");
+	EXPECT_EQ(out[0]->key(), ch1->key());
+	EXPECT_EQ(out[0]->data(), 1);
+	EXPECT_EQ(out[0]->data(), ch1->data());
+	EXPECT_EQ(out[0]->parent(), gtn.get());
+
+	std::shared_ptr<ds::GeneralTreeNode<int>> ch2 = gtn->getChild("a2");
+	EXPECT_EQ(out[1]->key(), "a2");
+	EXPECT_EQ(out[1]->key(), ch2->key());
+	EXPECT_EQ(out[1]->data(), 3);
+	EXPECT_EQ(out[1]->data(), ch2->data());
+	EXPECT_EQ(out[1]->parent(), gtn.get());
+
+	std::shared_ptr<ds::GeneralTreeNode<int>> ch3 = gtn->getChild("b1");
+	EXPECT_EQ(out[2]->key(), "b1");
+	EXPECT_EQ(out[2]->key(), ch3->key());
+	EXPECT_EQ(out[2]->data(), 2);
+	EXPECT_EQ(out[2]->data(), ch3->data());
+	EXPECT_EQ(out[2]->parent(), gtn.get());
+}

@@ -22,6 +22,9 @@ class Node;
 template<typename T>
 class TreeNode;
 
+template<typename T>
+class GeneralTreeNode;
+
 /**
  * @class BaseNodeBuilder
  * @brief A base class for all builder classes such as Node and TreeNode
@@ -170,20 +173,70 @@ public:
 	TreeNodeBuilder() : BaseNodeBuilder<T, TreeNode, TreeNodeBuilder<T>>() {}
 };
 
+/**
+ * @class GeneralTreeNodeBuilder
+ * @brief Concrete builder implementation for GeneralTreeNode<T>
+ *
+ * Provides methods to construct a GeneralTreeNode with data, key, and children.
+ * Uses the builder pattern for fluent interface construction.
+ *
+ * @tparam T The type of data for the GeneralTreeNode being built
+ */
 template<typename T>
-class GeneralTreeNodeBuilder : public TreeNodeBuilder<T> {
+class GeneralTreeNodeBuilder {
+private:
+
+	/// @brief The shared_ptr to the Node object being built.
+	std::shared_ptr<GeneralTreeNode<T>> nodePtr;
+
 public:
 
 	/**
-	 * @brief Sets the child array to an initial vector of elements
-	 * @param children (`std::vector<T>`) A reference to a vector of child
-	 * objects
-	 * @return A `B &` reference to the TreeNodeBuilder for method chaining
+	 * @brief Default constructor that initializes an empty general tree node.
 	 */
-	// TreeNodeBuilder &withChildren(std::vector<T> &children) {
-	// 	this->nodePtr->setChildren(children);
-	// 	return *this;
-	// }
+	GeneralTreeNodeBuilder()
+		: nodePtr(std::make_shared<GeneralTreeNode<T>>()) {}
+
+	/**
+	 * @brief Finalizes the build process and returns the constructed
+	 * GeneralTreeNode object.
+	 * @return A `std::shared_ptr<GeneralTreeNode<T>>` to the fully configured
+	 * GeneralTreeNode object.
+	 */
+	std::shared_ptr<GeneralTreeNode<T>> &build() {
+		return nodePtr;
+	}
+
+	/**
+	 * @brief Sets the data for the GeneralTreeNode being built.
+	 * @param data (`T`) The data to set.
+	 * @return A reference to this builder for method chaining.
+	 */
+	GeneralTreeNodeBuilder<T> &withData(T data) {
+		nodePtr->setData(data);
+		return *this;
+	}
+
+	/**
+	 * @brief Sets the key for the GeneralTreeNode being built.
+	 * @param key (`std::string`) The key to identify this node.
+	 * @return A reference to this builder for method chaining.
+	 */
+	GeneralTreeNodeBuilder<T> &withKey(std::string key) {
+		nodePtr->setKey(key);
+		return *this;
+	}
+
+	/**
+	 * @brief Adds a child node with the specified key and data.
+	 * @param key (`std::string`) The key to identify the child node.
+	 * @param data (`T`) The data for the child node.
+	 * @return A reference to this builder for method chaining.
+	 */
+	GeneralTreeNodeBuilder<T> &withChild(std::string key, T data) {
+		nodePtr->addChild(key, data);
+		return *this;
+	}
 };
 
 }  // namespace ds

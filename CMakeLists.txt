@@ -58,6 +58,7 @@ set(DS_SOURCES
     src/Deque.hpp
     src/ds.h
     src/entry.cpp
+    src/GeneralTree.hpp
     src/GeneralTreeNode.hpp
     src/helpers.cpp
     src/helpers.hpp
@@ -114,6 +115,7 @@ set(TEST_SOURCES
   tests/test_comparator.cpp
   tests/test_cstr.cpp
   tests/test_deque.cpp
+  tests/test_generaltree.cpp
   tests/test_generaltreenode.cpp
   tests/test_helpers.cpp
   tests/test_iterator.cpp
