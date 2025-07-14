@@ -32,15 +32,7 @@ class GeneralTreeNode :
 private:
 
 	/// @brief A shared pointer to the parent node.
-	std::weak_ptr<GeneralTreeNode<T>> _parent;
-
-	/**
-	 * @brief Obtains a weak pointer to this object
-	 * @return A weak pointer to this node
-	 */
-	inline std::weak_ptr<GeneralTreeNode<T>> getWeakPtrToThis() {
-		return this->shared_from_this();
-	}
+	GeneralTreeNode<T> *_parent;
 
 protected:
 
@@ -53,8 +45,7 @@ public:
 	 * @brief Default constructor
 	 * Creates a node with empty key and default data
 	 */
-	GeneralTreeNode()
-		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), "", {}) {}
+	GeneralTreeNode() : GeneralTreeNode<T>(nullptr, "", {}) {}
 
 	/**
 	 * @brief Constructor with key and data
@@ -62,7 +53,7 @@ public:
 	 * @param data The data to store in this node
 	 */
 	GeneralTreeNode(std::string key, T data)
-		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), key, data) {}
+		: GeneralTreeNode<T>(nullptr, key, data) {}
 
 	/**
 	 * @brief Full constructor with parent, key and data
@@ -70,19 +61,8 @@ public:
 	 * @param key The unique identifier for this node
 	 * @param data The data to store in this node
 	 */
-	GeneralTreeNode(std::weak_ptr<GeneralTreeNode<T>> parent, std::string key,
-					T data)
-		: _data(data),
-		  _key(key),
-		  _parent(std::weak_ptr<GeneralTreeNode<T>>(parent)) {}
-
-	/**
-	 * @brief Destructor
-	 * Clears all children and data
-	 */
-	virtual ~GeneralTreeNode() {
-		clear();
-	}
+	GeneralTreeNode(GeneralTreeNode<T> *parent, std::string key, T data)
+		: _data(data), _key(key), _parent(parent) {}
 
 	/**
 	 * @brief Copy constructor
@@ -90,6 +70,14 @@ public:
 	 */
 	GeneralTreeNode(GeneralTreeNode<T> &gtn) : GeneralTreeNode<T>() {
 		this->operator=(gtn);
+	}
+
+	/**
+	 * @brief Destructor
+	 * Clears all children and data
+	 */
+	virtual ~GeneralTreeNode() {
+		clear();
 	}
 
 	/**
@@ -146,8 +134,7 @@ public:
 	 * @param data The data for the new child
 	 */
 	void addChild(std::string key, T data) {
-		_children[key] =
-			std::make_shared<GeneralTreeNode<T>>(getWeakPtrToThis(), key, data);
+		_children[key] = std::make_shared<GeneralTreeNode<T>>(this, key, data);
 	}
 
 	/**
@@ -160,6 +147,7 @@ public:
 		_children.clear();
 		_key = "";
 		_data = {};
+		_parent = nullptr;
 	}
 
 	/**
@@ -205,15 +193,15 @@ public:
 	 * @brief convenience method to retrieve the parent pointer
 	 * @returns a shared_pointer to to the parent object of this node
 	 */
-	inline std::shared_ptr<GeneralTreeNode<T>> parent() const {
-		return this->_parent.lock();
+	inline GeneralTreeNode<T> *parent() const {
+		return this->_parent;
 	}
 
 	/**
 	 * @brief setting for the parent pointer of a node
 	 * @param value `std::shared_ptr<TreeNode<T>>` to set as the parent
 	 */
-	void setParent(std::shared_ptr<GeneralTreeNode<T>> value) {
+	void setParent(GeneralTreeNode<T> &value) {
 		this->_parent = value;
 	}
 };

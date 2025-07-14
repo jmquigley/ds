@@ -172,7 +172,7 @@ public:
 	 * @brief returns the item at the front of the queue
 	 * @returns a `T` object at the front of the queue
 	 */
-	inline T maximum() {
+	inline T maximum() const {
 		return List<T>::maximum();
 	}
 

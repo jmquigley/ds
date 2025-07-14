@@ -165,7 +165,7 @@ public:
 	 * @return a `T` data element
 	 * @throws std::bad_weak_ptr if the requested back pointer is not available
 	 */
-	inline T maximum() {
+	inline T maximum() const {
 		return this->_back.lock()->getData();
 	}
 

@@ -12,40 +12,72 @@ public:
 };
 
 TEST_F(TestGeneralTreeNode, Create) {
-	auto pgtn = std::make_shared<ds::GeneralTreeNode<int>>("a", 42);
+	ds::GeneralTreeNode<int> gtn("a", 42);
 
-	EXPECT_EQ(pgtn->data(), 42);
-	EXPECT_EQ(pgtn->parent(), nullptr);
+	EXPECT_EQ(gtn.data(), 42);
+	EXPECT_EQ(gtn.parent(), nullptr);
 
-	pgtn->addChild("a1", 1);
-	pgtn->addChild("b1", 2);
-	pgtn->addChild("a2", 3);
+	gtn.addChild("a1", 1);
+	gtn.addChild("b1", 2);
+	gtn.addChild("a2", 3);
 
-	EXPECT_EQ(pgtn->totalChildren(), 3);
+	EXPECT_EQ(gtn.totalChildren(), 3);
 
 	std::vector<std::shared_ptr<ds::GeneralTreeNode<int>>> out =
-		pgtn->getChildren();
+		gtn.getChildren();
 
+	EXPECT_EQ(out.size(), 3);
+
+	std::shared_ptr<ds::GeneralTreeNode<int>> ch1 = gtn.getChild("a1");
 	EXPECT_EQ(out[0]->key(), "a1");
+	EXPECT_EQ(out[0], ch1);
 	EXPECT_EQ(out[0]->data(), 1);
+	EXPECT_EQ(out[0]->parent(), &gtn);
 
+	std::shared_ptr<ds::GeneralTreeNode<int>> ch2 = gtn.getChild("a2");
 	EXPECT_EQ(out[1]->key(), "a2");
+	EXPECT_EQ(out[1], ch2);
 	EXPECT_EQ(out[1]->data(), 3);
+	EXPECT_EQ(out[1]->parent(), &gtn);
 
+	std::shared_ptr<ds::GeneralTreeNode<int>> ch3 = gtn.getChild("b1");
 	EXPECT_EQ(out[2]->key(), "b1");
+	EXPECT_EQ(out[2], ch3);
 	EXPECT_EQ(out[2]->data(), 2);
+	EXPECT_EQ(out[2]->parent(), &gtn);
 
-	pgtn->removeChild("a2");
+	gtn.removeChild("a2");
 
-	EXPECT_EQ(pgtn->totalChildren(), 2);
+	EXPECT_EQ(gtn.totalChildren(), 2);
 
-	out = pgtn->getChildren();
+	out = gtn.getChildren();
 
+	ch1 = gtn.getChild("a1");
 	EXPECT_EQ(out[0]->key(), "a1");
+	EXPECT_EQ(out[0], ch1);
 	EXPECT_EQ(out[0]->data(), 1);
+	EXPECT_EQ(out[0]->parent(), &gtn);
 
+	ch3 = gtn.getChild("b1");
 	EXPECT_EQ(out[1]->key(), "b1");
+	EXPECT_EQ(out[1], ch3);
 	EXPECT_EQ(out[1]->data(), 2);
+	EXPECT_EQ(out[1]->parent(), &gtn);
 
-	pgtn.reset();
+	gtn.clear();
+
+	EXPECT_EQ(gtn.totalChildren(), 0);
+	EXPECT_EQ(gtn.key(), "");
+	EXPECT_EQ(gtn.parent(), nullptr);
 };
+
+TEST_F(TestGeneralTreeNode, Comparisons) {
+	ds::GeneralTreeNode<int> gtn1("a", 1);
+	ds::GeneralTreeNode<int> gtn2("b", 2);
+
+	EXPECT_FALSE(gtn1 == gtn2);
+	EXPECT_TRUE(gtn1 == gtn1);
+
+	EXPECT_FALSE(gtn1 != gtn1);
+	EXPECT_TRUE(gtn1 != gtn2);
+}
