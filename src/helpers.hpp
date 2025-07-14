@@ -62,6 +62,26 @@ auto as_integer(Enumeration const value) ->
 };
 
 /**
+ * @brief Implements the djb2 hash algorithm
+ *
+ * The djb2 algorithm is a simple and efficient hash function created by Daniel
+ * J. Bernstein. It starts with an initial hash value of 5381 and for each
+ * character in the input string:
+ * - Shifts the current hash value left by 5 bits
+ * - Adds the original hash value to this shifted value (hash * 33)
+ * - Adds the ASCII value of the current character
+ *
+ * This can be expressed as: hash = ((hash << 5) + hash) + c
+ * Which is equivalent to: hash = hash * 33 + c
+ *
+ * The algorithm has good distribution and speed on many types of string inputs.
+ *
+ * @param str The input C-string to hash
+ * @return A size_t hash value of the input string, or 0 if the input is NULL
+ */
+size_t djb2(const char *str);
+
+/**
  * @brief Converts a shared pointer to a string representation
  *
  * This function extracts the raw memory address of the object pointed to by

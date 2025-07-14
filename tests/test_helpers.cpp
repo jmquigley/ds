@@ -65,3 +65,22 @@ TEST_F(TestHelpers, CheckForAnyGoodPointers) {
 	EXPECT_TRUE(ds::any(pa1, pa2, pa3));
 	EXPECT_FALSE(ds::any(pa1, pa2));
 }
+
+TEST_F(TestHelpers, TestDJB2Hash) {
+	size_t hash;
+
+	EXPECT_EQ(ds::djb2(nullptr), 0);			 // Bad pointer
+	EXPECT_EQ(ds::djb2(""), 5381);				 // empty string
+	EXPECT_EQ(ds::djb2("hello"), 210714636441);	 // simple string
+	EXPECT_EQ(ds::djb2("Hello"), 210676686969);	 // show's case sensitivity
+
+	// longer string test
+	const char *str1 = "This is a longer string to test the hash function";
+	hash = ds::djb2(str1);
+	EXPECT_EQ(hash, 15351638478594043462ULL);
+
+	// special characters test
+	const char *str2 = "!@#$%^&*()_+";
+	hash = ds::djb2(str2);
+	EXPECT_EQ(hash, 11563447441663042651ULL);
+}
