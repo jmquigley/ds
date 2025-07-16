@@ -8,11 +8,6 @@ project(
 	LANGUAGES CXX
 )
 
-message(STATUS "PROJECT_BINARY_DIR: ${PROJECT_BINARY_DIR}")
-message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
-message(STATUS "PROJECT_NAME: ${PROJECT_NAME}")
-message(STATUS "PROJECT_VERSION: ${PROJECT_VERSION}")
-
 # Setup memory testing parameters
 set(MEMORYCHECK_COMMAND_OPTIONS "")
 string(JOIN " " MEMORYCHECK_COMMAND_OPTIONS
@@ -31,12 +26,17 @@ set(CTEST_MEMORYCHECK_COMMAND valgrind)
 include("CMakeLists.requirements.txt")
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_BUILD_TYPE Debug)
 set(HEADER_FILES /usr/include/c++/14 /usr/include/x86_64-linux-gnu/c++/14)
 set(ROOT_DIR CMAKE_SOURCE_DIR)
 set(TEST_FILTER $ENV{FILTER})
 
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+message(STATUS "PROJECT_BINARY_DIR: ${PROJECT_BINARY_DIR}")
+message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
+message(STATUS "PROJECT_NAME: ${PROJECT_NAME}")
+message(STATUS "PROJECT_VERSION: ${PROJECT_VERSION}")
 message(STATUS "TEST_FILTER: ${TEST_FILTER}")
+message(STATUS "INSTALL_GTEST: ${INSTALL_GTEST}")
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
@@ -108,6 +108,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 # Setup testing environment
 #
 
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+
 set(TEST_SOURCES
   tests/testing_base.h
   tests/test_binarytree.cpp
@@ -163,15 +165,22 @@ gtest_discover_tests(${TEST_EXE}
     TEST_FILTER ${TEST_FILTER}
 )
 
+endif()
+
 #
 # Installation statements
 #
-
-install(FILES ${DS_HEADERS} DESTINATION "include/${PROJECT_NAME}")
+set(DS_INSTALL_SOURCES ${DS_SOURCES})
+list(FILTER DS_INSTALL_SOURCES EXCLUDE REGEX ".*\.cpp$")
+install(FILES ${DS_INSTALL_SOURCES} DESTINATION "include/${PROJECT_NAME}")
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 
 #
 # Extras
 #
+
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+  message(STATUS "debug build encountered (${CMAKE_BUILD_TYPE})")
 
 add_executable(typesizes extras/typesizes.cpp)
 target_link_libraries(typesizes
@@ -190,3 +199,5 @@ target_link_libraries(crtp
     PRIVATE ${PROJECT_NAME}
 )
 target_include_directories(crtp PRIVATE ${PROJECT_NAME})
+
+endif()

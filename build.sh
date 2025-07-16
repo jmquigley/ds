@@ -22,12 +22,13 @@ function banner() {
 
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 CLEAN_OPT=0
-NODOCS_OPT=0
+BUILD_DOCS=0
+RUN_TESTS=0
 NOMEM_OPT=0
-NOTEST_OPT=0
-BUILD_TYPE=Debug
+BUILD_TYPE=Release
+PREFIX=${SCRIPT_DIR}
 export GTEST_SHUFFLE=1
-export FILTER='*'
+export FILTER=''
 export THREADS=10
 
 while :; do
@@ -38,6 +39,19 @@ while :; do
             CLEAN_OPT=1
             shift
             ;;
+
+
+        --debug)
+            BUILD_TYPE=Debug
+            FILTER='*'
+            shift
+            ;;
+
+        -d|--docs)
+            BUILD_DOCS=1
+            shift
+            ;;
+
 
         -f|--filter)
             if [ -n "$2" ]; then
@@ -69,23 +83,28 @@ while :; do
             shift
             ;;
 
-        --nodocs)
-            NODOCS_OPT=1
-            shift
-            ;;
-
         --nomem)
-            NOMEM_OPT=1
+            NOEM_OPT=1
             shift
             ;;
 
-        --notest|--notesting)
-            NOTEST_OPT=1
+        -p|--prefix)
+            if [ -n "$2" ]; then
+                PREFIX="$2"
+                shift 2
+            else
+                printf 'ERROR: "--prefix" requires a non-empty option argument.\n' >&2
+                exit 127
+            fi
+            ;;
+
+        --prefix=?*)
+            PREFIX=${1#*=}
             shift
             ;;
 
-        --release)
-            BUILD_TYPE=Release
+        -t|--testing)
+            RUN_TESTS=1
             shift
             ;;
 
@@ -129,20 +148,20 @@ exitOnError $? "Error building project, terminating"
 # Testing
 #
 
-if [ ${NOTEST_OPT} == 0 ]; then
+if [ ${RUN_TESTS} == 1 ]; then
 
-banner "Testing"
-MEMCHECK='-T memcheck'
-if [ ${NOMEM_OPT} == 1 ]; then
-    MEMCHECK=''
-fi
+    banner "Testing"
+    MEMCHECK='-T memcheck'
+    if [ ${NOMEM_OPT} == 1 ]; then
+        MEMCHECK=''
+    fi
 
-cmake -E env FILTER=${FILTER} ctest ${MEMCHECK} --output-on-failure -j ${THREADS} --output-log ./log/unit-tests.log
-rc=$?
-if [ $rc -ne 0 ]; then
-    cat Testing/Temporary/MemoryChecker.*.log
-fi
-exitOnError $rc "Error executing unit tests, terminating"
+    cmake -E env FILTER=${FILTER} ctest ${MEMCHECK} --output-on-failure -j ${THREADS} --output-log ./log/unit-tests.log
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        cat Testing/Temporary/MemoryChecker.*.log
+    fi
+    exitOnError $rc "Error executing unit tests, terminating"
 
 fi
 
@@ -150,7 +169,7 @@ fi
 # Creating coverage information
 #
 
-if [ ${NODOCS_OPT} == 0 ]; then
+if [ ${BUILD_DOCS} == 1 ]; then
     banner "Coverage"
     lcov --capture --directory . --output-file coverage.info --ignore-errors mismatch,mismatch --ignore-errors gcov,gcov
     lcov --quiet --remove coverage.info '/usr/*' --remove coverage.info '*test*' --output-file coverage.info
@@ -160,19 +179,17 @@ fi
 # Installation
 #
 
+#if [[ "${BUILD_TYPE}" == "Debug" ]]; then
 banner "Installation"
-if [[ ! -v ${DEBG} && ${DEBUG} = true ]]; then
-   cmake --install . --prefix=${SCRIPT_DIR}/build
-else
-   cmake --install . --prefix=/usr/local
-fi
+cmake --install . --prefix=${PREFIX}
 exitOnError $? "Error installing project, terminating"
+#fi
 
 #
 # Building documentation
 #
 
-if [ ${NODOCS_OPT} == 0 ]; then
+if [ ${BUILD_DOCS} == 1 ]; then
     banner "Documentation"
 
     # Build the sphinx documention

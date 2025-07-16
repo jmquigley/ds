@@ -42,6 +42,9 @@ endif (DOXYGEN_FOUND)
 #
 # Googletest library
 #
+set(INSTALL_GTEST OFF)
+
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
 FetchContent_Declare(
     googletest
     GIT_REPOSITORY https://github.com/google/googletest
@@ -49,8 +52,8 @@ FetchContent_Declare(
 )
 include_directories(${googletest_SOURCE_DIR}/include)
 include_directories(${googlemock_SOURCE_DIR}/include)
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-set(INSTALL_GTEST OFF)
 FetchContent_MakeAvailable(googletest)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 include (CTest)
 enable_testing()
+endif()
