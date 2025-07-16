@@ -713,6 +713,19 @@ public:
 	}
 
 	/**
+	 * @brief Adds a data elemment to the BinaryTree
+	 *
+	 * This is a convenience method for the insert function.
+	 *
+	 * @param data (`T`) the data element to insert into the binary tree
+	 * @returns a reference to the BinaryTree
+	 */
+	BinaryTree<T> &operator+=(const T data) override {
+		this->insert(data);
+		return *this;
+	}
+
+	/**
 	 * @brief Iterates through the tree and saves all date elements into an
 	 * array.
 	 *

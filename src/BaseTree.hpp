@@ -31,6 +31,8 @@ public:
 	 */
 	BaseTree(Comparator<T> &comparator) : Collection<T, C>(comparator) {}
 
+	virtual ~BaseTree() = default;
+
 	/**
 	 * @brief Calculates the height of the tree
 	 *

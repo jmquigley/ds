@@ -151,6 +151,19 @@ public:
 	}
 
 	/**
+	 * @brief Adds a data elemment to the List
+	 *
+	 * This is a convenience method for the insert function.
+	 *
+	 * @param data (`T`) the data element to insert into the list
+	 * @returns a reference to the List
+	 */
+	virtual List<T> &operator+=(const T data) override {
+		this->insert(data);
+		return *this;
+	}
+
+	/**
 	 * @brief Overloads the stream insertion operator for List objects.
 	 *
 	 * Allows printing a List object directly to an output stream, using its

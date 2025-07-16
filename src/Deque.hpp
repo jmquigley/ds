@@ -128,7 +128,7 @@ public:
 	 * @param data (`T`) the data element to add to the deque
 	 * @return a reference to the Deque
 	 */
-	Deque<T> &operator+=(const T data) {
+	virtual Deque<T> &operator+=(const T data) override {
 		this->enqueue(data);
 		return *this;
 	}

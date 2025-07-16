@@ -116,6 +116,13 @@ public:
 	}
 
 	/**
+	 * @brief A convenience operator for the insert function
+	 * @param data (`T`) the data to insert into the list
+	 * @returns A reference to the collection object.
+	 */
+	virtual Collection<T, C> &operator+=(const T data) = 0;
+
+	/**
 	 * @brief Operator to clear the buffer.
 	 *
 	 * This is a convenience wrapper for the `clear` function, resetting the

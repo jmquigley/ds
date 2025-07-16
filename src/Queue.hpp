@@ -85,7 +85,7 @@ public:
 	 * @param data (`T`) the data element to add to the queue
 	 * @return a reference to the Queue
 	 */
-	Queue<T> &operator+=(const T data) {
+	virtual Queue<T> &operator+=(const T data) override {
 		this->enqueue(data);
 		return *this;
 	}

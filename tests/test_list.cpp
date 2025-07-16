@@ -22,7 +22,7 @@ TEST_F(TestList, Create) {
 	list.insert(2);
 	EXPECT_EQ(list.size(), 2);	// second insert
 
-	list.insert(3);
+	list += 3;
 	EXPECT_EQ(list.size(), 3);	// third insert
 
 	EXPECT_EQ(list.minimum(), 1);

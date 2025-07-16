@@ -78,7 +78,7 @@ public:
 	 * @param data (`T`) the data element to add to the stack
 	 * @return a reference to the stack
 	 */
-	Stack<T> &operator+=(const T data) {
+	virtual Stack<T> &operator+=(const T data) override {
 		this->push(data);
 		return *this;
 	}

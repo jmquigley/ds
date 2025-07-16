@@ -40,9 +40,9 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 	bt.insert(2);
 	bt.insert(3);
 	bt.insert(4);
-	bt.insert(6);
-	bt.insert(5);
-	bt.insert(7);
+	bt += 6;
+	bt += 5;
+	bt += 7;
 
 	EXPECT_EQ(bt.height(), 3);
 	EXPECT_EQ(bt.size(), 7);
