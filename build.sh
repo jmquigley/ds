@@ -172,6 +172,7 @@ if [ ${BUILD_DOCS} == 1 ]; then
     lcov --quiet --remove coverage.info '/usr/*' --remove coverage.info '*test*' --output-file coverage.info
     genhtml coverage.info -q --demangle-cpp --output-directory docs/html/coverage
 fi
+
 #
 # Installation
 #
