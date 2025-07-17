@@ -43,6 +43,8 @@ while :; do
 
         --debug)
             BUILD_TYPE=Debug
+            RUN_TESTS=1
+            BUILD_DOCS=1
             FILTER='*'
             shift
             ;;
@@ -100,11 +102,6 @@ while :; do
 
         --prefix=?*)
             PREFIX=${1#*=}
-            shift
-            ;;
-
-        -t|--testing)
-            RUN_TESTS=1
             shift
             ;;
 
@@ -179,11 +176,9 @@ fi
 # Installation
 #
 
-#if [[ "${BUILD_TYPE}" == "Debug" ]]; then
 banner "Installation"
 cmake --install . --prefix=${PREFIX}
 exitOnError $? "Error installing project, terminating"
-#fi
 
 #
 # Building documentation
