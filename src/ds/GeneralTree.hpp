@@ -1,8 +1,8 @@
 #pragma once
 
-#include <BaseTree.hpp>
-#include <GeneralTreeNode.hpp>
-#include <Match.hpp>
+#include <ds/BaseTree.hpp>
+#include <ds/GeneralTreeNode.hpp>
+#include <ds/Match.hpp>
 #include <string>
 
 namespace ds {

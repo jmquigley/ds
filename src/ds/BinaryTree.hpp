@@ -1,18 +1,18 @@
 #pragma once
 
-#include <BaseNodeBuilder.hpp>
-#include <BaseTree.hpp>
-#include <Match.hpp>
-#include <Node.hpp>
-#include <Queue.hpp>
-#include <TreeNode.hpp>
 #include <cstddef>
+#include <ds/BaseNodeBuilder.hpp>
+#include <ds/BaseTree.hpp>
+#include <ds/Match.hpp>
+#include <ds/Node.hpp>
+#include <ds/Queue.hpp>
+#include <ds/TreeNode.hpp>
+#include <ds/helpers.hpp>
+#include <ds/property.hpp>
 #include <format>
 #include <functional>
-#include <helpers.hpp>
 #include <initializer_list>
 #include <limits>
-#include <property.hpp>
 #include <sstream>
 #include <string>
 #include <vector>

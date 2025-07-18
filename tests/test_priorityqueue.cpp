@@ -1,6 +1,6 @@
 #include <testing_base.h>
 
-#include <PriorityQueue.hpp>
+#include <ds/PriorityQueue.hpp>
 #include <exception>
 #include <iostream>
 #include <string>

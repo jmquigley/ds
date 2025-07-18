@@ -1,6 +1,6 @@
 #include <testing_base.h>
 
-#include <GeneralTreeNode.hpp>
+#include <ds/GeneralTreeNode.hpp>
 #include <iostream>
 #include <string>
 #include <vector>

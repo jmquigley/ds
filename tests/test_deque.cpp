@@ -1,6 +1,6 @@
 #include <testing_base.h>
 
-#include <Deque.hpp>
+#include <ds/Deque.hpp>
 #include <exception>
 #include <iostream>
 #include <limits>

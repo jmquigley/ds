@@ -1,7 +1,7 @@
 #pragma once
 
+#include <ds/property.hpp>
 #include <memory>
-#include <property.hpp>
 
 namespace ds {
 
@@ -10,8 +10,8 @@ namespace ds {
  * @brief A base iterator class for traversing node-based data structures.
  *
  * This template class provides basic iterator functionality for traversing
- * nodes in a linked structure, supporting operations like increment, comparison,
- * and dereferencing.
+ * nodes in a linked structure, supporting operations like increment,
+ * comparison, and dereferencing.
  *
  * @tparam T The type of data stored in the nodes being iterated
  */
@@ -166,8 +166,8 @@ public:
 	 * @brief Advances the iterator to the previous node.
 	 *
 	 * Moves the iterator in the reverse direction backward by making it point
-	 * to the left child of the current node.  If the current node is nullptr, this
-	 * operation has no effect.
+	 * to the left child of the current node.  If the current node is nullptr,
+	 * this operation has no effect.
 	 *
 	 * @return Reference to this iterator after advancing
 	 */

@@ -1,6 +1,6 @@
 #include <testing_base.h>
 
-#include <BaseBitFlag.hpp>
+#include <ds/BaseBitFlag.hpp>
 #include <iostream>
 #include <string>
 
@@ -81,7 +81,9 @@ TEST_F(TestBitFlag, ToString) {
 	EXPECT_EQ(bf3.str(), "00000000000000000000000001111011");
 
 	ds::WideFlag bf4(123);	// 0111 1011
-	EXPECT_EQ(bf4.str(), "0000000000000000000000000000000000000000000000000000000001111011");
+	EXPECT_EQ(
+		bf4.str(),
+		"0000000000000000000000000000000000000000000000000000000001111011");
 };
 
 TEST_F(TestBitFlag, BitAt) {

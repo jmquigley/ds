@@ -1,13 +1,13 @@
 #pragma once
 
-#include <BaseBitFlag.hpp>
-#include <BaseNodeBuilder.hpp>
 #include <cstddef>
-#include <helpers.hpp>
+#include <ds/BaseBitFlag.hpp>
+#include <ds/BaseNodeBuilder.hpp>
+#include <ds/helpers.hpp>
+#include <ds/property.hpp>
 #include <iomanip>
 #include <iostream>
 #include <memory>
-#include <property.hpp>
 #include <sstream>
 #include <string>
 #include <utility>

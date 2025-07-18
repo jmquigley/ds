@@ -1,8 +1,8 @@
 #include <testing_base.h>
 
-#include <Comparator.hpp>
+#include <ds/Comparator.hpp>
+#include <ds/property.hpp>
 #include <iostream>
-#include <property.hpp>
 #include <string>
 
 class TestComparator : public TestingBase {

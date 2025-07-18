@@ -1,8 +1,8 @@
+#include <ds/cstr.h>
+#include <testing_base.h>
+
 #include <iostream>
 #include <string>
-
-#include "cstr.h"
-#include "testing_base.h"
 
 class TestStr : public TestingBase {
 public:

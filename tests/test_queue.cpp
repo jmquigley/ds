@@ -1,6 +1,6 @@
 #include <testing_base.h>
 
-#include <Queue.hpp>
+#include <ds/Queue.hpp>
 #include <exception>
 #include <iostream>
 #include <string>

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Comparator.hpp>
 #include <cstddef>
 #include <cstdlib>
+#include <ds/Comparator.hpp>
+#include <ds/property.hpp>
 #include <memory>
-#include <property.hpp>
 #include <stdexcept>
 
 namespace ds {

@@ -1,8 +1,8 @@
 #include <testing_base.h>
 
-#include <BinaryTree.hpp>
-#include <List.hpp>
-#include <TreeNode.hpp>
+#include <ds/BinaryTree.hpp>
+#include <ds/List.hpp>
+#include <ds/TreeNode.hpp>
 #include <iostream>
 #include <stdexcept>
 #include <string>

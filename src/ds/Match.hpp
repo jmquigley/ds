@@ -1,9 +1,9 @@
 #pragma once
 
-#include <BaseNode.hpp>
-#include <Node.hpp>
+#include <ds/BaseNode.hpp>
+#include <ds/Node.hpp>
+#include <ds/property.hpp>
 #include <memory>
-#include <property.hpp>
 
 namespace ds {
 

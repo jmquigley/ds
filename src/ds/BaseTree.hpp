@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Collection.hpp>
-#include <Iterable.hpp>
-#include <TreeNode.hpp>
 #include <cstddef>
+#include <ds/Collection.hpp>
+#include <ds/Iterable.hpp>
+#include <ds/TreeNode.hpp>
+#include <ds/property.hpp>
 #include <limits>
-#include <property.hpp>
 #include <vector>
 
 namespace ds {

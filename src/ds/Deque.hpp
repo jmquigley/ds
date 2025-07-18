@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Queue.hpp>
 #include <cstddef>
-#include <helpers.hpp>
+#include <ds/Queue.hpp>
+#include <ds/helpers.hpp>
+#include <ds/property.hpp>
 #include <limits>
-#include <property.hpp>
 #include <vector>
 
 namespace ds {

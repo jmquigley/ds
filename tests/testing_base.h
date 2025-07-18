@@ -3,9 +3,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <ds/constants.hpp>
 #include <string>
-
-#include "constants.hpp"
 
 class TestingBase : public testing::Test {
 protected:

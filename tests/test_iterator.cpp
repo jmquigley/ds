@@ -1,7 +1,7 @@
 #include <testing_base.h>
 
-#include <BaseIterator.hpp>
-#include <Node.hpp>
+#include <ds/BaseIterator.hpp>
+#include <ds/Node.hpp>
 #include <iostream>
 #include <string>
 
@@ -41,7 +41,8 @@ public:
 class LocalIterator : public ds::BaseIterator<int, ds::Node> {
 public:
 
-	LocalIterator(std::weak_ptr<ds::Node<int>> lp) : ds::BaseIterator<int, ds::Node>(lp) {}
+	LocalIterator(std::weak_ptr<ds::Node<int>> lp)
+		: ds::BaseIterator<int, ds::Node>(lp) {}
 
 	LocalIterator() : ds::BaseIterator<int, ds::Node>() {}
 };

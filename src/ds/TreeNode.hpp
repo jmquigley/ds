@@ -1,8 +1,8 @@
 #pragma once
 
-#include <BaseNode.hpp>
+#include <ds/BaseNode.hpp>
+#include <ds/property.hpp>
 #include <memory>
-#include <property.hpp>
 #include <vector>
 
 namespace ds {

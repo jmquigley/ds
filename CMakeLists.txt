@@ -37,53 +37,64 @@ set(ROOT_DIR CMAKE_SOURCE_DIR)
 set(TEST_FILTER $ENV{FILTER})
 
 message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "CMAKE_INSTALL_INCLUDEDIR: ${CMAKE_INSTALL_INCLUDEDIR}")
 message(STATUS "BUILD_TESTING: ${BUILD_TESTING}")
+message(STATUS "ROOT_DIR: ${ROOT_DIR}")
 message(STATUS "DS_BUILD_EXTRAS: ${DS_BUILD_EXTRAS}")
 message(STATUS "DS_BUILD_INSTALL: ${DS_BUILD_INSTALL}")
 message(STATUS "DS_BUILD_TESTING: ${DS_BUILD_TESTING}")
 message(STATUS "PROJECT_BINARY_DIR: ${PROJECT_BINARY_DIR}")
 message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
-message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "PROJECT_NAME: ${PROJECT_NAME}")
 message(STATUS "PROJECT_VERSION: ${PROJECT_VERSION}")
 message(STATUS "TEST_FILTER: ${TEST_FILTER}")
 message(STATUS "INSTALL_GTEST: ${INSTALL_GTEST}")
 
+set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/${PROJECT_NAME}/)
+
 set(DS_INCLUDES
-    src/BaseBitFlag.hpp
-    src/BaseIterator.hpp
-    src/BaseNodeBuilder.hpp
-    src/BaseNode.hpp
-    src/BaseTree.hpp
-    src/BinaryTree.hpp
-    src/Collection.hpp
-    src/Comparator.hpp
-    src/constants.hpp
-    src/cstr.h
-    src/Deque.hpp
-    src/ds.h
-    src/GeneralTree.hpp
-    src/GeneralTreeNode.hpp
-    src/helpers.hpp
-    src/Iterable.hpp
-    src/List.hpp
-    src/Match.hpp
-    src/Node.hpp
-    src/PriorityQueue.hpp
-    src/property.hpp
-    src/Queue.hpp
-    src/SortedList.hpp
-    src/Stack.hpp
-    src/TreeNode.hpp
+    BaseBitFlag.hpp
+    BaseIterator.hpp
+    BaseNodeBuilder.hpp
+    BaseNode.hpp
+    BaseTree.hpp
+    BinaryTree.hpp
+    Collection.hpp
+    Comparator.hpp
+    constants.hpp
+    cstr.h
+    Deque.hpp
+    ds.h
+    GeneralTree.hpp
+    GeneralTreeNode.hpp
+    helpers.hpp
+    Iterable.hpp
+    List.hpp
+    Match.hpp
+    Node.hpp
+    PriorityQueue.hpp
+    property.hpp
+    Queue.hpp
+    SortedList.hpp
+    Stack.hpp
+    TreeNode.hpp
 )
+list(TRANSFORM DS_INCLUDES PREPEND ${SRC_DIR})
 
 set(DS_SOURCES
-    src/cstr.cpp
-    src/entry.cpp
-    src/helpers.cpp
+    cstr.cpp
+    entry.cpp
+    helpers.cpp
 )
+list(TRANSFORM DS_SOURCES PREPEND ${SRC_DIR})
 
 add_library(${PROJECT_NAME} SHARED)
+
+target_sources(${PROJECT_NAME}
+    PUBLIC
+    ${DS_SOURCES}
+)
 
 target_compile_options(${PROJECT_NAME} PRIVATE
   $<$<CONFIG:Debug>:-O0>
@@ -97,16 +108,11 @@ target_link_options(${PROJECT_NAME} PRIVATE
 
 target_include_directories(${PROJECT_NAME}
   PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/
 )
 
 target_link_libraries(${PROJECT_NAME}
     ${LIBUUID_LIB}
-)
-
-target_sources(${PROJECT_NAME}
-    PUBLIC
-    ${DS_SOURCES}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -171,7 +177,7 @@ target_link_libraries(${TEST_EXE}
 
 target_compile_definitions(${TEST_EXE}
     PRIVATE CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
-    PRIVATE ROOT_DIR="${ROOT_DIR}"
+    # PRIVATE ROOT_DIR="${ROOT_DIR}"
 )
 
 include(GoogleTest)

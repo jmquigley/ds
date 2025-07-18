@@ -2,8 +2,8 @@
 
 #include <algorithm>
 #include <bitset>
-#include <constants.hpp>
 #include <cstddef>
+#include <ds/constants.hpp>
 #include <string>
 #include <type_traits>
 
@@ -79,13 +79,15 @@ public:
 	 * @brief Copy constructor
 	 * @param bitFlag BitFlag to copy from
 	 */
-	constexpr BaseBitFlag(const BaseBitFlag &bitFlag) noexcept : flag(bitFlag.flag) {}
+	constexpr BaseBitFlag(const BaseBitFlag &bitFlag) noexcept
+		: flag(bitFlag.flag) {}
 
 	/**
 	 * @brief Move constructor
 	 * @param bitFlag BitFlag to move from
 	 */
-	constexpr BaseBitFlag(BaseBitFlag &&bitFlag) noexcept : flag(std::move(bitFlag.flag)) {}
+	constexpr BaseBitFlag(BaseBitFlag &&bitFlag) noexcept
+		: flag(std::move(bitFlag.flag)) {}
 
 	/**
 	 * @brief Copy assignment operator
@@ -126,7 +128,8 @@ public:
 	 * @param bf (`BaseBitFlag<T> &`) the BaseBitFlag object to print
 	 * @returns a reference to the `std::ostream` object
 	 */
-	friend std::ostream &operator<<(std::ostream &st, const BaseBitFlag<T> &bf) {
+	friend std::ostream &operator<<(std::ostream &st,
+									const BaseBitFlag<T> &bf) {
 		return st << bf.str();
 	}
 
@@ -162,7 +165,8 @@ public:
 	 * @param bf The BitFlag to AND with
 	 * @return A new BitFlag containing the result of the AND operation
 	 */
-	constexpr BaseBitFlag<T> operator&(const BaseBitFlag<T> &bf) const noexcept {
+	constexpr BaseBitFlag<T> operator&(
+		const BaseBitFlag<T> &bf) const noexcept {
 		return BaseBitFlag<T>(this->flag & bf.flag);
 	}
 
@@ -181,7 +185,8 @@ public:
 	 * @param bf The BitFlag to OR with
 	 * @return A new BitFlag containing the result of the OR operation
 	 */
-	constexpr BaseBitFlag<T> operator|(const BaseBitFlag<T> &bf) const noexcept {
+	constexpr BaseBitFlag<T> operator|(
+		const BaseBitFlag<T> &bf) const noexcept {
 		return BaseBitFlag<T>(this->flag | bf.flag);
 	}
 
@@ -200,7 +205,8 @@ public:
 	 * @param bf The BitFlag to XOR with
 	 * @return A new BitFlag containing the result of the XOR operation
 	 */
-	constexpr BaseBitFlag<T> operator^(const BaseBitFlag<T> &bf) const noexcept {
+	constexpr BaseBitFlag<T> operator^(
+		const BaseBitFlag<T> &bf) const noexcept {
 		return BaseBitFlag<T>(this->flag ^ bf.flag);
 	}
 
@@ -266,7 +272,8 @@ public:
 	 * If the index is out of range (greater than the size of T in bits),
 	 * it returns 0.
 	 *
-	 * @param index (`size_t`) the location of the bit within the number (0-based)
+	 * @param index (`size_t`) the location of the bit within the number
+	 * (0-based)
 	 * @returns a 0 or 1 for the index position.
 	 */
 	unsigned short int at(size_t index) const noexcept {

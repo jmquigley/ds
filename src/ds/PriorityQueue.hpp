@@ -1,7 +1,7 @@
 #pragma once
 
-#include <BinaryTree.hpp>
-#include <Comparator.hpp>
+#include <ds/BinaryTree.hpp>
+#include <ds/Comparator.hpp>
 #include <format>
 #include <map>
 #include <sstream>

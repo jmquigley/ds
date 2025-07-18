@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Match.hpp>
 #include <cstddef>
+#include <ds/Match.hpp>
 #include <limits>
 
 namespace ds {
@@ -19,7 +19,10 @@ namespace ds {
  * @var Position::BACK
  * @brief Represents the back/end position (value -1).
  */
-enum class Position : size_t { FRONT = 0, BACK = std::numeric_limits<std::size_t>::max() };
+enum class Position : size_t {
+	FRONT = 0,
+	BACK = std::numeric_limits<std::size_t>::max()
+};
 
 /**
  * @class Iterable
@@ -76,8 +79,9 @@ public:
 	/**
 	 * @brief Removes the given data element by its index location
 	 * @param index (`size_t`) the location within the collection to remove
-	 * @param tnode (`std::shared_ptr<Node<T>>`) a convenience cache node from a search to
-	 * help short circuit a lookup for deletion that has already occurred.
+	 * @param tnode (`std::shared_ptr<Node<T>>`) a convenience cache node from a
+	 * search to help short circuit a lookup for deletion that has already
+	 * occurred.
 	 */
 	virtual T removeAt(size_t index, std::shared_ptr<C<T>> tnode = nullptr) = 0;
 

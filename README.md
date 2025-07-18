@@ -16,10 +16,6 @@ A user implementation of some basic data structures including:
 - SortedList
 - Stack
 
-## API
-
-
-
 ## Building
 
 The library was developed under Ubuntu linux in a Docker container.  It requires the following libraries and tools to be installed:

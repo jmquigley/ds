@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Comparator.hpp>
-#include <List.hpp>
+#include <ds/Comparator.hpp>
+#include <ds/List.hpp>
 #include <iostream>
 #include <typeinfo>
 

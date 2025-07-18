@@ -1,13 +1,13 @@
 #pragma once
 
-#include <BaseIterator.hpp>
-#include <Collection.hpp>
-#include <Iterable.hpp>
 #include <cstddef>
+#include <ds/BaseIterator.hpp>
+#include <ds/Collection.hpp>
+#include <ds/Iterable.hpp>
+#include <ds/helpers.hpp>
+#include <ds/property.hpp>
 #include <exception>
-#include <helpers.hpp>
 #include <limits>
-#include <property.hpp>
 #include <random>
 #include <sstream>
 #include <string>

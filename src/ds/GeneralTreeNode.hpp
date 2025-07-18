@@ -1,10 +1,10 @@
 #pragma once
 
-#include <BinaryTree.hpp>
-#include <Comparator.hpp>
+#include <ds/BinaryTree.hpp>
+#include <ds/Comparator.hpp>
+#include <ds/property.hpp>
 #include <map>
 #include <memory>
-#include <property.hpp>
 #include <sstream>
 #include <string>
 #include <vector>

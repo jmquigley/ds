@@ -1,7 +1,7 @@
 #pragma once
 
-#include <BaseNode.hpp>
-#include <BaseNodeBuilder.hpp>
+#include <ds/BaseNode.hpp>
+#include <ds/BaseNodeBuilder.hpp>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -36,11 +36,14 @@ public:
 	 * @param flags Node flags for additional properties
 	 * @param data The data to store in this node
 	 */
-	Node(std::shared_ptr<Node<T>> left, std::shared_ptr<Node<T>> right, ByteFlag flags, T data)
+	Node(std::shared_ptr<Node<T>> left, std::shared_ptr<Node<T>> right,
+		 ByteFlag flags, T data)
 		: BaseNode<T, Node>::_data(data),
 		  BaseNode<T, Node>::_flags(flags),
-		  BaseNode<T, Node>::_left(std::static_pointer_cast<BaseNode<T, Node>>(left)),
-		  BaseNode<T, Node>::_right(std::static_pointer_cast<BaseNode<T, Node>>(right)) {}
+		  BaseNode<T, Node>::_left(
+			  std::static_pointer_cast<BaseNode<T, Node>>(left)),
+		  BaseNode<T, Node>::_right(
+			  std::static_pointer_cast<BaseNode<T, Node>>(right)) {}
 
 	/**
 	 * @brief Creates a deep copy of this node
@@ -54,7 +57,8 @@ public:
 	 */
 	Node<T> deepcopy() const {
 		NodeBuilder<T> builder;
-		auto newNode = builder.withData(this->_data).withFlags(this->_flags).build();
+		auto newNode =
+			builder.withData(this->_data).withFlags(this->_flags).build();
 		return *newNode;
 	}
 };
