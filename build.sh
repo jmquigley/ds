@@ -22,13 +22,14 @@ function banner() {
 
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 CLEAN_OPT=0
-BUILD_DOCS=0
-RUN_TESTS=0
+NODOCS_OPT=0
+NOINSTALL_OPT=0
 NOMEM_OPT=0
+NOTEST_OPT=0
 BUILD_TYPE=Release
 PREFIX=${SCRIPT_DIR}
 export GTEST_SHUFFLE=1
-export FILTER=''
+export FILTER='*'
 export THREADS=10
 
 while :; do
@@ -43,17 +44,8 @@ while :; do
 
         --debug)
             BUILD_TYPE=Debug
-            RUN_TESTS=1
-            BUILD_DOCS=1
-            FILTER='*'
             shift
             ;;
-
-        -d|--docs)
-            BUILD_DOCS=1
-            shift
-            ;;
-
 
         -f|--filter)
             if [ -n "$2" ]; then
@@ -85,8 +77,23 @@ while :; do
             shift
             ;;
 
+        --nodocs)
+            NODOCS_OPT=1
+            shift
+            ;;
+
+        --noinstall)
+            NOINSTALL_OPT=1;
+            shift
+            ;;
+
         --nomem)
             NOEM_OPT=1
+            shift
+            ;;
+
+        --notest|--notesting)
+            NOTEST_OPT=1
             shift
             ;;
 
@@ -116,15 +123,31 @@ echo "Building dt API library from ${SCRIPT_DIR}"
 
 pushd build
 
+# Make build type decisions
 if [[ "${BUILD_TYPE}" == "Release" ]]; then
     BUILD_TYPE=Release
+    USE_TESTING=OFF
+    USE_EXTRAS=OFF
 else
     BUILD_TYPE=Debug
+
+    if [ ${NOTEST_OPT} == 1 ]; then
+        USE_TESTING=OFF
+    else
+        USE_TESTING=ON
+    fi
+
+    USE_EXTRAS=ON
 fi
+
+USE_INSTALL=ON
+if [ ${NOINSTALL_OPT} == 1 ]; then
+    USE_INSTALL=OFF
+fi
+
 banner ${BUILD_TYPE}
 
-
-if [ ${CLEAN_OPT} == 1 ]; then
+if [ ${CLEAN_OPT} == 1 ] && [ -f "Makefile" ]; then
     banner "Cleaning"
     cmake --build . -v --target clean
 fi
@@ -134,8 +157,7 @@ fi
 #
 
 banner "Building"
-
-cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ..
+cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDS_BUILD_EXTRAS=${USE_EXTRAS} -DDS_BUILD_TESTING=${USE_TESTING} -DDS_BUILD_INSTALL=${USE_INSTALL} -DBUILD_TESTING=${USE_TESTING} ..
 exitOnError $? "Failed to create cmake build files!"
 
 cmake --build . -v -- -j ${THREADS}
@@ -145,7 +167,7 @@ exitOnError $? "Error building project, terminating"
 # Testing
 #
 
-if [ ${RUN_TESTS} == 1 ]; then
+if [ "${USE_TESTING}" == "ON" ]; then
 
     banner "Testing"
     MEMCHECK='-T memcheck'
@@ -166,7 +188,7 @@ fi
 # Creating coverage information
 #
 
-if [ ${BUILD_DOCS} == 1 ]; then
+if [ "${USE_TESTING}" == "ON" ]; then
     banner "Coverage"
     lcov --capture --directory . --output-file coverage.info --ignore-errors mismatch,mismatch --ignore-errors gcov,gcov
     lcov --quiet --remove coverage.info '/usr/*' --remove coverage.info '*test*' --output-file coverage.info
@@ -177,15 +199,17 @@ fi
 # Installation
 #
 
+if [ "${USE_INSTALL}" == "ON" ]; then
 banner "Installation"
 cmake --install . --prefix=${PREFIX}
 exitOnError $? "Error installing project, terminating"
+fi
 
 #
 # Building documentation
 #
 
-if [ ${BUILD_DOCS} == 1 ]; then
+if [ "${USE_EXTRAS}" == "ON" ] && [ ${NODOCS_OPT} == 0 ]; then
     banner "Documentation"
 
     # Build the sphinx documention

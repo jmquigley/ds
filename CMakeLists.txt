@@ -8,6 +8,10 @@ project(
 	LANGUAGES CXX
 )
 
+option(DS_BUILD_EXTRAS "Flag to build extra testing programs" OFF)
+option(DS_BUILD_TESTING "Flag to build and run unit testing" OFF)
+option(DS_BUILD_INSTALL "Flag that performs the install proces" ON)
+
 # Setup memory testing parameters
 set(MEMORYCHECK_COMMAND_OPTIONS "")
 string(JOIN " " MEMORYCHECK_COMMAND_OPTIONS
@@ -26,24 +30,26 @@ set(CTEST_MEMORYCHECK_COMMAND valgrind)
 include("CMakeLists.requirements.txt")
 
 set(CMAKE_CXX_STANDARD 20)
+# set(CMAKE_C_COMPILER "clang")
+# set(CMAKE_CXX_COMPILER "clang++")
 set(HEADER_FILES /usr/include/c++/14 /usr/include/x86_64-linux-gnu/c++/14)
 set(ROOT_DIR CMAKE_SOURCE_DIR)
 set(TEST_FILTER $ENV{FILTER})
 
 message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+message(STATUS "BUILD_TESTING: ${BUILD_TESTING}")
+message(STATUS "DS_BUILD_EXTRAS: ${DS_BUILD_EXTRAS}")
+message(STATUS "DS_BUILD_INSTALL: ${DS_BUILD_INSTALL}")
+message(STATUS "DS_BUILD_TESTING: ${DS_BUILD_TESTING}")
 message(STATUS "PROJECT_BINARY_DIR: ${PROJECT_BINARY_DIR}")
 message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "PROJECT_NAME: ${PROJECT_NAME}")
 message(STATUS "PROJECT_VERSION: ${PROJECT_VERSION}")
 message(STATUS "TEST_FILTER: ${TEST_FILTER}")
 message(STATUS "INSTALL_GTEST: ${INSTALL_GTEST}")
 
-include_directories(
-    ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_SOURCE_DIR}/tests
-)
-
-set(DS_SOURCES
+set(DS_INCLUDES
     src/BaseBitFlag.hpp
     src/BaseIterator.hpp
     src/BaseNodeBuilder.hpp
@@ -53,14 +59,11 @@ set(DS_SOURCES
     src/Collection.hpp
     src/Comparator.hpp
     src/constants.hpp
-    src/cstr.cpp
     src/cstr.h
     src/Deque.hpp
     src/ds.h
-    src/entry.cpp
     src/GeneralTree.hpp
     src/GeneralTreeNode.hpp
-    src/helpers.cpp
     src/helpers.hpp
     src/Iterable.hpp
     src/List.hpp
@@ -74,10 +77,15 @@ set(DS_SOURCES
     src/TreeNode.hpp
 )
 
-add_library(${PROJECT_NAME} SHARED ${DS_SOURCES})
+set(DS_SOURCES
+    src/cstr.cpp
+    src/entry.cpp
+    src/helpers.cpp
+)
+
+add_library(${PROJECT_NAME} SHARED)
 
 target_compile_options(${PROJECT_NAME} PRIVATE
-  $<$<CONFIG:Debug>:-g>
   $<$<CONFIG:Debug>:-O0>
   $<$<CONFIG:Debug>:-Wall>
   $<$<CONFIG:Debug>:--coverage>
@@ -89,8 +97,7 @@ target_link_options(${PROJECT_NAME} PRIVATE
 
 target_include_directories(${PROJECT_NAME}
   PUBLIC
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/include/ds>"
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -98,7 +105,8 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 target_sources(${PROJECT_NAME}
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/ds.h
+    PUBLIC
+    ${DS_SOURCES}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -110,7 +118,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 # Setup testing environment
 #
 
-if (CMAKE_BUILD_TYPE MATCHES "Debug")
+if (DS_BUILD_TESTING)
 
 set(TEST_SOURCES
   tests/testing_base.h
@@ -137,6 +145,11 @@ string(CONCAT TEST_EXE ${PROJECT_NAME} "-unit-tests")
 add_executable(
   ${TEST_EXE}
   ${TEST_SOURCES}
+)
+
+target_include_directories(${TEST_EXE}
+  PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/tests
 )
 
 target_compile_options(${TEST_EXE} PRIVATE
@@ -167,23 +180,24 @@ gtest_discover_tests(${TEST_EXE}
     TEST_FILTER ${TEST_FILTER}
 )
 
-endif()
+endif(DS_BUILD_TESTING)
 
 #
 # Installation statements
 #
-set(DS_INSTALL_SOURCES ${DS_SOURCES})
-list(FILTER DS_INSTALL_SOURCES EXCLUDE REGEX ".*\.cpp$")
-# install(FILES ${DS_INSTALL_SOURCES} DESTINATION "include/${PROJECT_NAME}")
-install(FILES ${DS_INSTALL_SOURCES} TYPE INCLUDE)
+
+if (DS_BUILD_INSTALL)
+
+install(FILES ${DS_INCLUDES} DESTINATION "include/${PROJECT_NAME}")
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+
+endif(DS_BUILD_INSTALL)
 
 #
 # Extras
 #
 
-if (CMAKE_BUILD_TYPE MATCHES "Debug")
-  message(STATUS "debug build encountered (${CMAKE_BUILD_TYPE})")
+if (DS_BUILD_EXTRAS)
 
 add_executable(typesizes extras/typesizes.cpp)
 target_link_libraries(typesizes
@@ -203,4 +217,4 @@ target_link_libraries(crtp
 )
 target_include_directories(crtp PRIVATE ${PROJECT_NAME})
 
-endif()
+endif(DS_BUILD_EXTRAS)
