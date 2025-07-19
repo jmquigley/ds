@@ -91,8 +91,8 @@ list(TRANSFORM DS_SOURCES PREPEND ${SRC_DIR})
 add_library(${PROJECT_NAME} SHARED)
 
 target_sources(${PROJECT_NAME}
-    PUBLIC
-    ${DS_SOURCES}
+    PRIVATE ${DS_SOURCES}
+    PUBLIC ${DS_INCLUDES}
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
@@ -106,8 +106,8 @@ target_link_options(${PROJECT_NAME} PRIVATE
 )
 
 target_include_directories(${PROJECT_NAME}
-  PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/
+   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+   PUBLIC $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -153,7 +153,7 @@ add_executable(
 )
 
 target_include_directories(${TEST_EXE}
-  PUBLIC
+  PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/tests
 )
 
