@@ -9,6 +9,7 @@
 namespace ds {
 
 /**
+ * @class Buffer
  * @brief A custom buffer class that will dynamically resize based on a defined
  * block size from the constructor.
  *
@@ -63,8 +64,8 @@ class Buffer {
 
 private:
 
-	char *buffer =
-		nullptr;  ///< Pointer to the dynamically allocated memory block.
+	/// @brief a pointer to the dynamically allocated memory block
+	char *buffer = nullptr;
 
 	/**
 	 * @brief Allocates the initial internal space for the buffer and optionally
@@ -165,7 +166,7 @@ public:
 	 * Frees the dynamically allocated memory for the internal buffer if it
 	 * exists.
 	 */
-	~Buffer();
+	virtual ~Buffer();
 
 	/**
 	 * @brief Operator to clear the buffer.
