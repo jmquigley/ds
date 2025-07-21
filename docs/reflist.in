@@ -4,6 +4,7 @@ BaseNodeBuilder
 BaseNode
 BaseTree
 BinaryTree
+Buffer
 Collection
 Comparator
 Deque

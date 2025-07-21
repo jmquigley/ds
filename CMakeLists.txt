@@ -57,6 +57,7 @@ set(DS_INCLUDES
     BaseNode.hpp
     BaseTree.hpp
     BinaryTree.hpp
+    Buffer.h
     Collection.hpp
     Comparator.hpp
     constants.hpp
@@ -79,6 +80,7 @@ set(DS_INCLUDES
 )
 
 set(DS_SOURCES
+    Buffer.cpp
     cstr.cpp
     entry.cpp
     helpers.cpp
@@ -96,6 +98,7 @@ target_sources(${PROJECT_NAME}
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
+  $<$<CONFIG:Release>:-O3>
   $<$<CONFIG:Debug>:-O0>
   $<$<CONFIG:Debug>:-Wall>
   $<$<CONFIG:Debug>:--coverage>
@@ -125,10 +128,15 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 if (DS_BUILD_TESTING)
 
+enable_testing()
+include(GoogleTest)
+
+
 set(TEST_SOURCES
   tests/testing_base.h
   tests/test_binarytree.cpp
   tests/test_bitflag.cpp
+  tests/test_buffer.cpp
   tests/test_comparator.cpp
   tests/test_cstr.cpp
   tests/test_deque.cpp
@@ -152,11 +160,6 @@ add_executable(
   ${TEST_SOURCES}
 )
 
-target_include_directories(${TEST_EXE}
-  PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}/tests
-)
-
 target_compile_options(${TEST_EXE} PRIVATE
   $<$<CONFIG:Debug>:-O0>
   $<$<CONFIG:Debug>:-Wall>
@@ -165,6 +168,11 @@ target_compile_options(${TEST_EXE} PRIVATE
 
 target_link_options(${TEST_EXE} PRIVATE
   $<$<CONFIG:Debug>:-coverage>
+)
+
+target_include_directories(${TEST_EXE}
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/tests
 )
 
 target_link_libraries(${TEST_EXE}
@@ -176,9 +184,9 @@ target_link_libraries(${TEST_EXE}
 
 target_compile_definitions(${TEST_EXE}
     PRIVATE CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
+    TEST_SOURCE_DIR="${CMAKE_SOURCE_DIR}/tests"
+    TEST_DATA_DIR="${CMAKE_SOURCE_DIR}/tests/resources"
 )
-
-include(GoogleTest)
 
 gtest_discover_tests(${TEST_EXE}
     TEST_FILTER ${TEST_FILTER}

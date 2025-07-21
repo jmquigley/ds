@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ds/Buffer.h>
 #include <ds/cstr.h>
 
 #include <ds/BaseBitFlag.hpp>
