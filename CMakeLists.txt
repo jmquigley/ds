@@ -229,4 +229,10 @@ target_link_libraries(crtp
 )
 target_include_directories(crtp PRIVATE ${PROJECT_NAME})
 
+add_executable(foo extras/foo.cpp)
+target_link_libraries(foo
+    PRIVATE ${PROJECT_NAME}
+)
+target_include_directories(crtp PRIVATE ${PROJECT_NAME})
+
 endif(DS_BUILD_EXTRAS)

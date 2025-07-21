@@ -208,6 +208,17 @@ public:
 	}
 
 	/**
+	 * @brief Adds a child node with the specified key and data.
+	 * @param key (`std::string`) The key to identify the child node.
+	 * @param data (`T`) The data for the child node.
+	 * @return A reference to this builder for method chaining.
+	 */
+	GeneralTreeNodeBuilder<T> &withChild(std::string key, T data) {
+		nodePtr->addChild(key, data);
+		return *this;
+	}
+
+	/**
 	 * @brief Sets the data for the GeneralTreeNode being built.
 	 * @param data (`T`) The data to set.
 	 * @return A reference to this builder for method chaining.
@@ -228,13 +239,14 @@ public:
 	}
 
 	/**
-	 * @brief Adds a child node with the specified key and data.
-	 * @param key (`std::string`) The key to identify the child node.
-	 * @param data (`T`) The data for the child node.
+	 * @brief Sets the parent for this GeneralTreeNode being built.
+	 * @param parent (`std::shared_ptr<GeneralTreeNode<T>>`) the parent for this
+	 * node.
 	 * @return A reference to this builder for method chaining.
 	 */
-	GeneralTreeNodeBuilder<T> &withChild(std::string key, T data) {
-		nodePtr->addChild(key, data);
+	GeneralTreeNodeBuilder<T> &withParent(
+		std::shared_ptr<GeneralTreeNode<T>> parent) {
+		nodePtr->setParent(parent);
 		return *this;
 	}
 };

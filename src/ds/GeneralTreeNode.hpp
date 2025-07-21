@@ -32,7 +32,8 @@ class GeneralTreeNode :
 private:
 
 	/// @brief A shared pointer to the parent node.
-	GeneralTreeNode<T> *_parent;
+	// GeneralTreeNode<T> *_parent = nullptr;
+	std::weak_ptr<GeneralTreeNode<T>> _parent;
 
 protected:
 
@@ -45,7 +46,8 @@ public:
 	 * @brief Default constructor
 	 * Creates a node with empty key and default data
 	 */
-	GeneralTreeNode() : GeneralTreeNode<T>(nullptr, "", {}) {}
+	GeneralTreeNode()
+		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), "", {}) {}
 
 	/**
 	 * @brief Constructor with key and data
@@ -53,7 +55,7 @@ public:
 	 * @param data The data to store in this node
 	 */
 	GeneralTreeNode(std::string key, T data)
-		: GeneralTreeNode<T>(nullptr, key, data) {}
+		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), key, data) {}
 
 	/**
 	 * @brief Full constructor with parent, key and data
@@ -61,7 +63,8 @@ public:
 	 * @param key The unique identifier for this node
 	 * @param data The data to store in this node
 	 */
-	GeneralTreeNode(GeneralTreeNode<T> *parent, std::string key, T data)
+	GeneralTreeNode(std::weak_ptr<GeneralTreeNode<T>> parent, std::string key,
+					T data)
 		: _data(data), _key(key), _parent(parent) {}
 
 	/**
@@ -89,6 +92,7 @@ public:
 		this->_children = gtn._children;
 		this->_key = gtn._key;
 		this->_data = gtn._data;
+		// this->_parent = gtn._parent;
 		return *this;
 	}
 
@@ -134,7 +138,8 @@ public:
 	 * @param data The data for the new child
 	 */
 	void addChild(std::string key, T data) {
-		_children[key] = std::make_shared<GeneralTreeNode<T>>(this, key, data);
+		_children[key] = std::make_shared<GeneralTreeNode<T>>(
+			this->shared_from_this(), key, data);
 	}
 
 	/**
@@ -147,7 +152,7 @@ public:
 		_children.clear();
 		_key = "";
 		_data = {};
-		_parent = nullptr;
+		_parent.reset();
 	}
 
 	/**
@@ -193,15 +198,15 @@ public:
 	 * @brief convenience method to retrieve the parent pointer
 	 * @returns a shared_pointer to to the parent object of this node
 	 */
-	inline GeneralTreeNode<T> *parent() const {
-		return this->_parent;
+	inline std::shared_ptr<GeneralTreeNode<T>> parent() const {
+		return this->_parent.lock();
 	}
 
 	/**
 	 * @brief setting for the parent pointer of a node
 	 * @param value `std::shared_ptr<TreeNode<T>>` to set as the parent
 	 */
-	void setParent(GeneralTreeNode<T> &value) {
+	void setParent(std::shared_ptr<GeneralTreeNode<T>> &value) {
 		this->_parent = value;
 	}
 };

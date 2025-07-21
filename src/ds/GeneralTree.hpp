@@ -9,6 +9,18 @@ namespace ds {
 
 template<typename T>
 class GeneralTree : public BaseTree<T, GeneralTreeNode> {
+private:
+
+	std::shared_ptr<GeneralTreeNode<T>> newNode(
+		std::string key, T data, std::shared_ptr<GeneralTreeNode<T>> &parent) {
+		std::shared_ptr<GeneralTreeNode<T>> node;
+		GeneralTreeNodeBuilder<T> builder;
+
+		node = builder.withKey(key).withData(data).withParent(parent).build();
+
+		return node;
+	}
+
 public:
 
 	GeneralTree() : BaseTree<T, GeneralTreeNode>() {}

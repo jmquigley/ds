@@ -1,5 +1,34 @@
 #!/usr/bin/env -S bash -l
 
+#
+# A thin wrapper script used to call cmake commands and build the application.
+# The basic build is a single command that will build the release version:
+#
+#     ./build.sh
+#
+# To build a debug version, run the unit tests, and build development
+# documentation use:
+#
+#     ./build.sh --debug
+#
+# To only run a specific unit test case suite use:
+#
+#     ./build.sh --debug --filter='TestBinaryTree*'
+#
+# To build and run unit tests, but skip all documentation and installation
+# processes use:
+#
+#     ./build.sh --debug --nodocs --noinstall
+#
+# To change the number of parallel jobs used to build the project use:
+#
+#     ./build.sh --jobs=15
+#
+# To run a debug build while cleaning up all previous artifacts and forcing
+# a full rebuild use the clean flag:
+#
+#     ./build.sh --debug --clean
+#
 function exitOnError() {
     if [ $1 -ne 0 ]; then
         echo $2
@@ -22,9 +51,9 @@ function banner() {
 
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 CLEAN_OPT=0
+MEMTEST_OPT=0
 NODOCS_OPT=0
 NOINSTALL_OPT=0
-NOMEM_OPT=0
 NOTEST_OPT=0
 BUILD_TYPE=Release
 PREFIX=${SCRIPT_DIR}
@@ -77,6 +106,13 @@ while :; do
             shift
             ;;
 
+        # performs a full valgrind memcheck on all test cases.  This option
+        # is very slow.
+        --memtest|--memcheck)
+            MEMTEST_OPT=1;
+            shift
+            ;;
+
         --nodocs)
             NODOCS_OPT=1
             shift
@@ -84,11 +120,6 @@ while :; do
 
         --noinstall)
             NOINSTALL_OPT=1;
-            shift
-            ;;
-
-        --nomem)
-            NOEM_OPT=1
             shift
             ;;
 
@@ -170,14 +201,14 @@ exitOnError $? "Error building project, terminating"
 if [ "${USE_TESTING}" == "ON" ]; then
 
     banner "Testing"
-    MEMCHECK='-T memcheck'
-    if [ ${NOMEM_OPT} == 1 ]; then
-        MEMCHECK=''
+    MEMCHECK=''
+    if [ ${MEMTEST_OPT} == 1 ]; then
+        MEMCHECK='-T memcheck'
     fi
 
     cmake -E env FILTER=${FILTER} ctest ${MEMCHECK} --output-on-failure -j ${THREADS} --output-log ./log/unit-tests.log
     rc=$?
-    if [ $rc -ne 0 ]; then
+    if [ $rc -ne 0 ] && [ ${MEMTEST_OPT} == 1 ]; then
         cat Testing/Temporary/MemoryChecker.*.log
     fi
     exitOnError $rc "Error executing unit tests, terminating"

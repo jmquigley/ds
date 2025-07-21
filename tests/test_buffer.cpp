@@ -1,6 +1,7 @@
 #include <ds/Buffer.h>
 #include <test_buffer.h>
 
+#include <cstddef>
 #include <ds/constants.hpp>
 #include <string>
 #include <vector>
@@ -202,7 +203,7 @@ TEST_F(TestBuffer, BufferClear) {
 	EXPECT_EQ(buffer.getSize(), 0);
 	EXPECT_EQ(buffer.str(), "");
 
-	for (int i = 0; i < buffer.getCapacity(); i++) {
+	for (size_t i = 0; i < buffer.getCapacity(); i++) {
 		EXPECT_EQ(buffer.data()[0], 0);
 	}
 
@@ -213,7 +214,7 @@ TEST_F(TestBuffer, BufferClear) {
 	EXPECT_EQ(buffer.getSize(), 0);
 	EXPECT_EQ(buffer.str(), "");
 
-	for (int i = 0; i < buffer.getCapacity(); i++) {
+	for (size_t i = 0; i < buffer.getCapacity(); i++) {
 		EXPECT_EQ(buffer.data()[0], 'z');
 	}
 }
@@ -293,13 +294,8 @@ TEST_F(TestBuffer, BufferAtPos) {
 	EXPECT_EQ(buf.getSize(), 6);
 	EXPECT_EQ(buf.str(), "ABCDEF");
 
-	char ch;
-
-	ch = buf.at(0);
-	EXPECT_EQ(ch, 'A');
-
-	ch = buf.at(5);
-	EXPECT_EQ(ch, 'F');
+	EXPECT_EQ(buf.at(0), 'A');
+	EXPECT_EQ(buf.at(5), 'F');
 }
 
 TEST_F(TestBuffer, BufferAtPosBad) {
@@ -310,9 +306,7 @@ TEST_F(TestBuffer, BufferAtPosBad) {
 	EXPECT_EQ(buf.getSize(), 6);
 	EXPECT_EQ(buf.str(), "ABCDEF");
 
-	char ch;
-
-	EXPECT_THROW(ch = buf.at(6), std::out_of_range);
+	EXPECT_THROW(buf.at(6), std::out_of_range);
 }
 
 TEST_F(TestBuffer, BufferIndexPos) {
@@ -323,13 +317,8 @@ TEST_F(TestBuffer, BufferIndexPos) {
 	EXPECT_EQ(buf.getSize(), 6);
 	EXPECT_EQ(buf.str(), "ABCDEF");
 
-	char ch;
-
-	ch = buf[0];
-	EXPECT_EQ(ch, 'A');
-
-	ch = buf[5];
-	EXPECT_EQ(ch, 'F');
+	EXPECT_EQ(buf[0], 'A');
+	EXPECT_EQ(buf[5], 'F');
 }
 
 TEST_F(TestBuffer, BufferIndexPosBad) {
@@ -340,9 +329,7 @@ TEST_F(TestBuffer, BufferIndexPosBad) {
 	EXPECT_EQ(buf.getSize(), 6);
 	EXPECT_EQ(buf.str(), "ABCDEF");
 
-	char ch;
-
-	EXPECT_THROW(ch = buf[6], std::out_of_range);
+	EXPECT_THROW(buf[6], std::out_of_range);
 }
 
 TEST_F(TestBuffer, BufferFrontBackPointers) {
@@ -354,8 +341,6 @@ TEST_F(TestBuffer, BufferFrontBackPointers) {
 	EXPECT_EQ(buf.getCapacity(), 16);
 	EXPECT_EQ(buf.getSize(), len);
 	EXPECT_EQ(buf.str(), s);
-
-	char ch;
 
 	EXPECT_EQ(*buf.front(), 'A');
 	EXPECT_EQ(*buf.back(), 'F');
