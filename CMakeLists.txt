@@ -76,6 +76,7 @@ set(DS_INCLUDES
     Queue.hpp
     SortedList.hpp
     Stack.hpp
+    str.h
     TreeNode.hpp
 )
 
@@ -84,6 +85,7 @@ set(DS_SOURCES
     cstr.cpp
     entry.cpp
     helpers.cpp
+    str.cpp
 )
 
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/${PROJECT_NAME}/)
@@ -150,6 +152,7 @@ set(TEST_SOURCES
   tests/test_queue.cpp
   tests/test_sortedlist.cpp
   tests/test_stack.cpp
+  tests/test_str.cpp
   tests/test_treenode.cpp
 )
 

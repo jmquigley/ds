@@ -10,20 +10,6 @@
 
 namespace ds {
 
-/**
- * @brief Trims leading and trailing spaces from a NULL terminated buffer.
- *
- * Modifies the input string that is passed to the function.
- *
- * @example
- * char temp[30];
- * char* bufptr;
- * strcpy(temp, "     Test String     ");
- * bufptr = dtrim(temp);  // results in string "Test String"
- *
- * @param buf A NULL terminated C string
- * @return A pointer to the modified buffer
- */
 char *dtrim(char *buf) {
 	if (buf == nullptr) {
 		return nullptr;
@@ -158,7 +144,8 @@ bool safecopy(char *dst, ssize_t dstSize, const char *src, ssize_t srcSize) {
 }
 
 int tokenSplit(char *buf, const char *delimit, char **databuf, int maxTokens) {
-	if (buf == nullptr || databuf == nullptr || delimit == nullptr || maxTokens < 1) {
+	if (buf == nullptr || databuf == nullptr || delimit == nullptr ||
+		maxTokens < 1) {
 		return -1;
 	}
 
