@@ -47,6 +47,9 @@ TEST_F(TestGeneralTreeNode, Create) {
 	EXPECT_EQ(out[2]->data(), 2);
 	EXPECT_EQ(out[2]->parent(), gtn);
 
+	EXPECT_TRUE(gtn->hasChild("a1"));
+	EXPECT_FALSE(gtn->hasChild("zz"));
+
 	gtn->removeChild("a2");
 
 	EXPECT_EQ(gtn->totalChildren(), 2);

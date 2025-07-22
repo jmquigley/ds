@@ -65,3 +65,31 @@ TEST_F(TestStr, SplitStringAllEmpty) {
 
 	EXPECT_EQ(out.size(), 0);
 }
+
+TEST_F(TestStr, SplitStringMultipleConsecutiveDelimiters) {
+	std::vector<std::string> delimiters {"/", "\\", "|"};
+	std::string s = "a////b\\\\\\\\c||||d";
+	std::vector<std::string> out;
+
+	out = ds::splitStringOnDelimiters(s, delimiters);
+
+	EXPECT_EQ(out.size(), 4);
+	EXPECT_EQ(out[0], "a");
+	EXPECT_EQ(out[1], "b");
+	EXPECT_EQ(out[2], "c");
+	EXPECT_EQ(out[3], "d");
+}
+
+TEST_F(TestStr, SplitStringDelimitersAtFrontBack) {
+	std::vector<std::string> delimiters {"/", "\\", "|"};
+	std::string s = "//////a////b\\\\\\\\c||||d||/|";
+	std::vector<std::string> out;
+
+	out = ds::splitStringOnDelimiters(s, delimiters);
+
+	EXPECT_EQ(out.size(), 4);
+	EXPECT_EQ(out[0], "a");
+	EXPECT_EQ(out[1], "b");
+	EXPECT_EQ(out[2], "c");
+	EXPECT_EQ(out[3], "d");
+}

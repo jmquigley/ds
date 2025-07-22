@@ -137,9 +137,10 @@ public:
 	 * @param key The unique key for the new child
 	 * @param data The data for the new child
 	 */
-	void addChild(std::string key, T data) {
+	std::shared_ptr<GeneralTreeNode<T>> addChild(std::string key, T data) {
 		_children[key] = std::make_shared<GeneralTreeNode<T>>(
 			this->shared_from_this(), key, data);
+		return _children[key];
 	}
 
 	/**
@@ -174,6 +175,15 @@ public:
 			out.push_back(value);
 		}
 		return out;
+	}
+
+	/**
+	 * @brief checks the child list for the existence of a key
+	 * @param key (`std::string`) the key value for the node in the tree
+	 * @returns true if the key is in the child list, otherwise false
+	 */
+	bool hasChild(std::string key) {
+		return this->_children.contains(key);
 	}
 
 	/**
