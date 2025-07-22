@@ -1,6 +1,29 @@
 #include <ds/str.h>
 
+#include <sstream>
+#include <string>
+
 namespace ds {
+
+std::string join(const std::vector<std::string> &strings,
+				 const std::string &delimiter, bool end) {
+	if (strings.empty()) {
+		return "";
+	}
+
+	std::stringstream ss;
+	ss << strings[0];
+
+	for (size_t i = 1; i < strings.size(); ++i) {
+		ss << delimiter << strings[i];
+	}
+
+	if (end) {
+		ss << delimiter;
+	}
+
+	return ss.str();
+}
 
 std::vector<std::string> splitStringOnDelimiters(
 	const std::string &str, const std::vector<std::string> &delimiters,

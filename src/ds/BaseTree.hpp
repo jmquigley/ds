@@ -19,11 +19,15 @@ namespace ds {
 template<typename T, template<class> class C>
 class BaseTree : public Collection<T, C>, public Iterable<T, C> {
 	/// @brief The current height of the tree
-	PROPERTY_WITH_DEFAULT(_height, Height, size_t, {0});
+	// PROPERTY_WITH_DEFAULT(_height, Height, size_t, {0});
+
+protected:
+
+	size_t _height;
 
 public:
 
-	BaseTree() : Collection<T, TreeNode>() {}
+	BaseTree() : Collection<T, C>(), _height(0) {}
 
 	/**
 	 * @brief Constructor for Tree that passes along a custom comparator.

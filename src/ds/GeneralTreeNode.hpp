@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ds/BaseNode.hpp>
 #include <ds/BinaryTree.hpp>
 #include <ds/Comparator.hpp>
 #include <ds/property.hpp>
@@ -22,6 +23,7 @@ namespace ds {
  */
 template<typename T>
 class GeneralTreeNode :
+	public BaseNode<T, GeneralTreeNode>,
 	public std::enable_shared_from_this<GeneralTreeNode<T>> {
 	/// @brief The data payload of the node.
 	PROPERTY_SCOPED_WITH_DEFAULT(data, Data, T, protected:, {});
@@ -58,7 +60,7 @@ public:
 		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), key, data) {}
 
 	/**
-	 * @brief Full constructor with parent, key and data
+	 * @brief Full constructor with parent, key, path, and data
 	 * @param parent A weak pointer to the parent node
 	 * @param key The unique identifier for this node
 	 * @param data The data to store in this node
@@ -135,6 +137,7 @@ public:
 	/**
 	 * @brief Adds a child node with the given key and data
 	 * @param key The unique key for the new child
+	 * @param path The full path for this key
 	 * @param data The data for the new child
 	 */
 	std::shared_ptr<GeneralTreeNode<T>> addChild(std::string key, T data) {
@@ -178,12 +181,26 @@ public:
 	}
 
 	/**
+	 * @brief Retrieves the reference to the child map structure
+	 * @returns a map structure for all child nodes
+	 */
+	std::map<std::string, std::shared_ptr<GeneralTreeNode<T>>>
+	getChildrenRef() {
+		return this->_children;
+	}
+
+	/**
 	 * @brief checks the child list for the existence of a key
 	 * @param key (`std::string`) the key value for the node in the tree
 	 * @returns true if the key is in the child list, otherwise false
 	 */
 	bool hasChild(std::string key) {
 		return this->_children.contains(key);
+	}
+
+	std::string path() {
+		// TODO: implement path in GeneralTree
+		return "";
 	}
 
 	/**

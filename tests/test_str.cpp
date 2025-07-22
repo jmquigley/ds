@@ -1,6 +1,9 @@
 #include <ds/str.h>
 #include <testing_base.h>
 
+#include <string>
+#include <vector>
+
 class TestStr : public TestingBase {
 public:
 
@@ -92,4 +95,21 @@ TEST_F(TestStr, SplitStringDelimitersAtFrontBack) {
 	EXPECT_EQ(out[1], "b");
 	EXPECT_EQ(out[2], "c");
 	EXPECT_EQ(out[3], "d");
+}
+
+TEST_F(TestStr, JoinStrings) {
+	std::vector<std::string> inp {"a", "b", "c", "d"};
+
+	EXPECT_EQ(inp.size(), 4);
+	EXPECT_EQ(ds::join(inp), "abcd");
+	EXPECT_EQ(ds::join(inp, "/"), "a/b/c/d");
+	EXPECT_EQ(ds::join(inp, "/", true), "a/b/c/d/");
+}
+
+TEST_F(TestStr, JoinStringsEmpty) {
+	std::vector<std::string> inp;
+
+	EXPECT_EQ(inp.size(), 0);
+	EXPECT_EQ(ds::join(inp, "/"), "");
+	EXPECT_EQ(ds::join(inp, "/", true), "");
 }
