@@ -31,6 +31,9 @@ class GeneralTreeNode :
 	/// @brief a unique key used by each general tree node
 	PROPERTY_SCOPED(key, Key, std::string, protected:);
 
+	/// @brief the path from the root to this node
+	PROPERTY_SCOPED(path, Path, std::string, protected:);
+
 private:
 
 	/// @brief A shared pointer to the parent node.
@@ -49,25 +52,28 @@ public:
 	 * Creates a node with empty key and default data
 	 */
 	GeneralTreeNode()
-		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), "", {}) {}
+		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), "", {}, "") {}
 
 	/**
 	 * @brief Constructor with key and data
 	 * @param key The unique identifier for this node
 	 * @param data The data to store in this node
+	 * @param path (`std::string`) the path to root for this child record
 	 */
-	GeneralTreeNode(std::string key, T data)
-		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), key, data) {}
+	GeneralTreeNode(std::string key, T data, std::string path)
+		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), key, data,
+							 path) {}
 
 	/**
 	 * @brief Full constructor with parent, key, path, and data
 	 * @param parent A weak pointer to the parent node
 	 * @param key The unique identifier for this node
 	 * @param data The data to store in this node
+	 * @param path (`std::string`) the path to root for this child record
 	 */
 	GeneralTreeNode(std::weak_ptr<GeneralTreeNode<T>> parent, std::string key,
-					T data)
-		: _data(data), _key(key), _parent(parent) {}
+					T data, std::string path)
+		: _data(data), _key(key), _path(path), _parent(parent) {}
 
 	/**
 	 * @brief Copy constructor
@@ -93,6 +99,7 @@ public:
 	GeneralTreeNode &operator=(GeneralTreeNode<T> &gtn) {
 		this->_children = gtn._children;
 		this->_key = gtn._key;
+		this->_path = gtn._path;
 		this->_data = gtn._data;
 		// this->_parent = gtn._parent;
 		return *this;
@@ -137,12 +144,13 @@ public:
 	/**
 	 * @brief Adds a child node with the given key and data
 	 * @param key The unique key for the new child
-	 * @param path The full path for this key
 	 * @param data The data for the new child
+	 * @param path (`std::string`) the path to root for this child record
 	 */
-	std::shared_ptr<GeneralTreeNode<T>> addChild(std::string key, T data) {
+	std::shared_ptr<GeneralTreeNode<T>> addChild(std::string key, T data,
+												 std::string path) {
 		_children[key] = std::make_shared<GeneralTreeNode<T>>(
-			this->shared_from_this(), key, data);
+			this->shared_from_this(), key, data, path);
 		return _children[key];
 	}
 
@@ -155,6 +163,7 @@ public:
 		}
 		_children.clear();
 		_key = "";
+		_path = "";
 		_data = {};
 		_parent.reset();
 	}
@@ -196,11 +205,6 @@ public:
 	 */
 	bool hasChild(std::string key) {
 		return this->_children.contains(key);
-	}
-
-	std::string path() {
-		// TODO: implement path in GeneralTree
-		return "";
 	}
 
 	/**

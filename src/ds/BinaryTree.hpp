@@ -23,7 +23,7 @@ namespace ds {
  * @class BinaryTree
  * @brief A binary tree class that uses the Red-Black algorithm.
  *
- * @tparam T The type of data stored within the queue.
+ * @tparam T The type of data stored within the binary tree.
  */
 template<typename T>
 class BinaryTree : public BaseTree<T, TreeNode> {

@@ -8,9 +8,9 @@ set cwd /root/workspace/ds
 set debuginfod enabled off
 
 # b /root/workspace/ds/src/ds/GeneralTree.hpp:insert
-b /root/workspace/ds/src/ds/GeneralTree.hpp:breadth
+# b /root/workspace/ds/src/ds/GeneralTree.hpp:breadth
 # b /root/workspace/ds/tests/test_generaltreenode.cpp:15
-# b /root/workspace/ds/src/ds/GeneralTreeNode.hpp:addChild
+b /root/workspace/ds/src/ds/GeneralTreeNode.hpp:addChild
 # b /root/workspace/ds/src/ds/BinaryTree.hpp:removeValue
 # b /root/workspace/ds/tests/test_binarytree.cpp:138
 # b /root/workspace/ds/src/ds/binarytree.hpp:insert

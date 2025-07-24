@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ds/BaseBitFlag.hpp>
+#include <ds/constants.hpp>
 #include <memory>
 #include <vector>
 
@@ -211,10 +212,12 @@ public:
 	 * @brief Adds a child node with the specified key and data.
 	 * @param key (`std::string`) The key to identify the child node.
 	 * @param data (`T`) The data for the child node.
+	 * @param path (`std::string`) the path to root for this child record
 	 * @return A reference to this builder for method chaining.
 	 */
-	GeneralTreeNodeBuilder<T> &withChild(std::string key, T data) {
-		nodePtr->addChild(key, data);
+	GeneralTreeNodeBuilder<T> &withChild(std::string key, T data,
+										 std::string path) {
+		nodePtr->addChild(key, data, path);
 		return *this;
 	}
 
@@ -234,7 +237,21 @@ public:
 	 * @return A reference to this builder for method chaining.
 	 */
 	GeneralTreeNodeBuilder<T> &withKey(std::string key) {
+		return withKey(key, key);
+	}
+
+	/**
+	 * @brief Sets the key for the GeneralTreeNode being built.
+	 * @param key (`std::string`) The key to identify this node.
+	 * @param path (`std::string`) The path associated with this key.
+	 * @return A reference to this builder for method chaining.
+	 */
+	GeneralTreeNodeBuilder<T> &withKey(std::string key, std::string path) {
 		nodePtr->setKey(key);
+
+		if (path != "") {
+			nodePtr->setPath(key + constants::SEPARATOR);
+		}
 		return *this;
 	}
 
@@ -247,6 +264,16 @@ public:
 	GeneralTreeNodeBuilder<T> &withParent(
 		std::shared_ptr<GeneralTreeNode<T>> parent) {
 		nodePtr->setParent(parent);
+		return *this;
+	}
+
+	/**
+	 * @brief Sets the path value for this GeneralTreeNode
+	 * @param path (`std::string`) the path to set for this node
+	 * @return A reference to this builder for method chaining.
+	 */
+	GeneralTreeNodeBuilder<T> &withPath(std::string path) {
+		nodePtr->setPath(path);
 		return *this;
 	}
 };

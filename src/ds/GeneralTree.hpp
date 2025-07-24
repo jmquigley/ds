@@ -7,12 +7,32 @@
 #include <ds/GeneralTreeNode.hpp>
 #include <ds/Match.hpp>
 #include <ds/Queue.hpp>
+#include <ds/constants.hpp>
 #include <initializer_list>
+#include <sstream>
 #include <string>
 #include <tuple>
 
 namespace ds {
 
+/**
+ * @class GeneralTree
+ * @brief A general tree data structure implementation that supports
+ * hierarchical key-based storage
+ *
+ * The GeneralTree class provides a flexible tree structure where nodes can have
+ * any number of children. It supports hierarchical path-based keys (like file
+ * paths) for organizing and accessing data. Each node in the tree can store a
+ * value of type T and is identified by a string key.
+ *
+ * Key features:
+ * - Path-based insertion using delimiters (e.g., "/", "\", "|")
+ * - Breadth-first and depth-first traversal mechanisms
+ * - Key-based and value-based searching
+ * - JSON serialization for data interchange
+ *
+ * @tparam T The type of data stored within each node of the general tree.
+ */
 template<typename T>
 class GeneralTree : public BaseTree<T, GeneralTreeNode> {
 private:
@@ -36,6 +56,14 @@ private:
 		return node;
 	}
 
+	/**
+	 * @brief Creates a new general tree node instance without data.
+	 *
+	 * @param key (`std::string`) the key to insert into the tree
+	 * @param parent (`std::shared_ptr<GeneralTreeNode<T>> &`) the parent
+	 * associated to this node.
+	 * @returns a new shared pointer reference to the created node.
+	 */
 	std::shared_ptr<GeneralTree<T>> newNode(
 		std::string key, std::shared_ptr<GeneralTreeNode<T>> &parent) {
 		return this->newNode(key, {}, parent);
@@ -43,14 +71,31 @@ private:
 
 public:
 
+	/**
+	 * @brief Default constructor for the general tree.
+	 *
+	 * Initializes the tree with an empty root node.
+	 */
 	GeneralTree() : BaseTree<T, GeneralTreeNode>() {
 		std::shared_ptr<ds::GeneralTreeNode<T>> root =
 			std::make_shared<ds::GeneralTreeNode<T>>();
 		this->_root = root;
 	}
 
+	/**
+	 * @brief Constructor with comparator.
+	 *
+	 * @param comparator A comparator function for comparing elements of type T.
+	 */
 	GeneralTree(Comparator<T> &comparator) : GeneralTree<T>() {}
 
+	/**
+	 * @brief Initializer list constructor.
+	 *
+	 * Constructs a tree with initial key-value pairs.
+	 *
+	 * @param il Initializer list of key-value pairs.
+	 */
 	GeneralTree(std::initializer_list<std::tuple<std::string, T>> il)
 		: GeneralTree<T>() {
 		for (auto const &[key, data]: il) {
@@ -58,25 +103,52 @@ public:
 		}
 	}
 
+	/**
+	 * @brief Destructor for GeneralTree.
+	 *
+	 * Cleans up all allocated resources.
+	 */
 	virtual ~GeneralTree() {
 		this->clear();
 	}
 
+	/**
+	 * @brief Adds a data item to the tree.
+	 *
+	 * @param data The data to add to the tree.
+	 * @return Reference to this tree after the operation.
+	 */
 	virtual GeneralTree<T> &operator+=(const T data) override {
 		// TODO: implement operator+= for GeneralTree
 		return *this;
 	}
 
+	/**
+	 * @brief Outputs the tree elements into a vector.
+	 *
+	 * @param out Reference to a vector where the tree elements will be stored.
+	 */
 	void array(std::vector<T> &out) {
 		// TODO: implement the array function in GeneralTree
 	}
 
+	/**
+	 * @brief Returns all tree elements as a vector.
+	 *
+	 * @return A vector containing all tree elements.
+	 */
 	std::vector<T> array() {
 		// TODO: implement the array function in GeneralTree
 		std::vector<T> out;
 		return out;
 	}
 
+	/**
+	 * @brief Retrieves the element at the specified index.
+	 *
+	 * @param index The index of the element to retrieve.
+	 * @return The element at the specified index.
+	 */
 	virtual T at(size_t index) override {
 		// TODO: implement at for GeneralTree
 		T data {};
@@ -125,6 +197,13 @@ public:
 		}
 	}
 
+	/**
+	 * @brief Searches for a node with the specified key using breadth-first
+	 * search.
+	 *
+	 * @param key The key to search for.
+	 * @return A Match object containing the result of the search.
+	 */
 	Match<T, GeneralTreeNode> breadthSearch(std::string key) const {
 		Match<T, GeneralTreeNode> match;
 
@@ -142,20 +221,41 @@ public:
 		return match;
 	}
 
+	/**
+	 * @brief Clears all nodes from the tree.
+	 */
 	void clear() {
 		// TODO: implement clear() for GeneralTree
 	}
 
+	/**
+	 * @brief Checks if the tree contains the specified data.
+	 *
+	 * @param data The data to search for.
+	 * @return true if the data is found, false otherwise.
+	 */
 	bool contains(T data) const {
 		// TODO: implement contains data for GeneralTree
 		return false;
 	}
 
+	/**
+	 * @brief Checks if the tree contains a node with the specified key.
+	 *
+	 * @param key The key to search for.
+	 * @return true if a node with the key is found, false otherwise.
+	 */
 	bool contains(std::string key) const {
 		// TODO: implement contains() for GeneralTree
 		return false;
 	}
 
+	/**
+	 * @brief Finds a node containing the specified data.
+	 *
+	 * @param data The data to search for.
+	 * @return A Match object containing the result of the search.
+	 */
 	virtual Match<T, GeneralTreeNode> find(T data) const override {
 		// TODO: implement find() for GeneralTree
 		// search the whole tree for instances of data
@@ -163,6 +263,12 @@ public:
 		return match;
 	}
 
+	/**
+	 * @brief Finds a node with the specified key.
+	 *
+	 * @param key The key to search for.
+	 * @return A Match object containing the result of the search.
+	 */
 	Match<T, GeneralTreeNode> find(std::string key) const {
 		// TODO: implement find() for GeneralTree
 		Match<T, GeneralTreeNode> match;
@@ -177,11 +283,21 @@ public:
 		return this->_height;
 	}
 
+	/**
+	 * @brief Generates a JSON representation of the tree.
+	 *
+	 * @return A string containing the JSON representation.
+	 */
 	std::string json() const {
 		// TODO: implement json() for GeneralTree
 		return "";
 	}
 
+	/**
+	 * @brief Inserts data directly into the root node.
+	 *
+	 * @param data The data to insert.
+	 */
 	void insert(T data) {
 		// TODO: special case insert into the root node directly
 	}
@@ -220,6 +336,7 @@ public:
 			return;
 		}
 
+		std::stringstream ss;
 		std::vector<std::string> keys =
 			splitStringOnDelimiters(key, delimiters);
 
@@ -227,10 +344,12 @@ public:
 
 		std::shared_ptr<GeneralTreeNode<T>> node = this->_root;
 		for (auto &k: keys) {
+			ss << k << constants::SEPARATOR;
+
 			if (!node->hasChild(k)) {
 				// The key doesn't exist, so insert a new child and save the
 				// child as the new key
-				node = node->addChild(k, {});
+				node = node->addChild(k, {}, ss.str());
 				this->_size++;
 			} else {
 				// Child exists, so get a reference to it and don't insert
@@ -243,12 +362,25 @@ public:
 		node->setData(data);
 	}
 
+	/**
+	 * @brief Removes a node with the specified key from the tree.
+	 *
+	 * @param key The key of the node to remove.
+	 * @return The data that was stored in the removed node.
+	 */
 	T remove(std::string key) {
 		// TODO: implement remove() for GeneralTree
 		T data {};
 		return data;
 	}
 
+	/**
+	 * @brief Removes a node at the specified index.
+	 *
+	 * @param index The index of the node to remove.
+	 * @param tnode Optional starting node for the removal operation.
+	 * @return The data that was stored in the removed node.
+	 */
 	virtual T removeAt(size_t index,
 					   std::shared_ptr<GeneralTreeNode<T>> tnode = nullptr) {
 		// TODO: implement removeAt special case
@@ -256,12 +388,23 @@ public:
 		return data;
 	}
 
+	/**
+	 * @brief Removes a node containing the specified value.
+	 *
+	 * @param value The value to search for and remove.
+	 * @return The data that was stored in the removed node.
+	 */
 	virtual T removeValue(T value) {
 		// TODO: implmenet removeValue special case
 		T data {};
 		return data;
 	}
 
+	/**
+	 * @brief Generates a string representation of the tree.
+	 *
+	 * @return A string representation of the tree.
+	 */
 	std::string str() const {
 		// TODO: implement str() for GeneralTree
 		return "";
