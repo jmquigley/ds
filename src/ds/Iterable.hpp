@@ -91,4 +91,5 @@ public:
 	 */
 	virtual T removeValue(T value) = 0;
 };
+
 }  // namespace ds
