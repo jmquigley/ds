@@ -1,7 +1,7 @@
-#include <ds/Buffer.h>
 #include <test_buffer.h>
 
 #include <cstddef>
+#include <ds/Buffer.hpp>
 #include <ds/constants.hpp>
 #include <string>
 #include <vector>
@@ -196,7 +196,7 @@ TEST_F(TestBuffer, BufferClear) {
 	EXPECT_EQ(buffer.data()[2], 's');
 	EXPECT_EQ(buffer.data()[3], 't');
 
-	buffer.clear(true);
+	buffer.clear();
 
 	EXPECT_EQ(buffer.getBlockSize(), 8);
 	EXPECT_EQ(buffer.getCapacity(), 16);

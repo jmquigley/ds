@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ds/Buffer.h>
 #include <ds/cstr.h>
 
 #include <ds/BaseBitFlag.hpp>
@@ -9,6 +8,7 @@
 #include <ds/BaseNodeBuilder.hpp>
 #include <ds/BaseTree.hpp>
 #include <ds/BinaryTree.hpp>
+#include <ds/Buffer.hpp>
 #include <ds/Collectable.hpp>
 #include <ds/Collection.hpp>
 #include <ds/Comparator.hpp>

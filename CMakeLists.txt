@@ -57,7 +57,7 @@ set(DS_INCLUDES
     BaseNode.hpp
     BaseTree.hpp
     BinaryTree.hpp
-    Buffer.h
+    Buffer.hpp
     Collectable.hpp
     Collection.hpp
     Comparator.hpp
@@ -82,7 +82,6 @@ set(DS_INCLUDES
 )
 
 set(DS_SOURCES
-    Buffer.cpp
     cstr.cpp
     entry.cpp
     helpers.cpp
