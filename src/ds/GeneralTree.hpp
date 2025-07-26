@@ -256,7 +256,7 @@ public:
 	 * @param data The data to search for.
 	 * @return A Match object containing the result of the search.
 	 */
-	virtual Match<T, GeneralTreeNode> find(T data) const override {
+	virtual Match<T, GeneralTreeNode> find(T data) const {
 		// TODO: implement find() for GeneralTree
 		// search the whole tree for instances of data
 		Match<T, GeneralTreeNode> match;
@@ -378,11 +378,21 @@ public:
 	 * @brief Removes a node at the specified index.
 	 *
 	 * @param index The index of the node to remove.
+	 * @return The data that was stored in the removed node.
+	 */
+	virtual T removeAt(size_t index) override {
+		return this->removeAt(index, nullptr);
+	}
+
+	/**
+	 * @brief Removes a node at the specified index.
+	 *
+	 * @param index The index of the node to remove.
 	 * @param tnode Optional starting node for the removal operation.
 	 * @return The data that was stored in the removed node.
 	 */
 	virtual T removeAt(size_t index,
-					   std::shared_ptr<GeneralTreeNode<T>> tnode = nullptr) {
+					   std::shared_ptr<GeneralTreeNode<T>> tnode) {
 		// TODO: implement removeAt special case
 		T data {};
 		return data;

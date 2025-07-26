@@ -164,7 +164,7 @@ public:
 	 * @brief returns the contents of the stack as a JSON string
 	 * @returns a string that holds the stack in a JSON string
 	 */
-	std::string json() const override {
+	std::string json() const {
 		return List<T>::json();
 	}
 

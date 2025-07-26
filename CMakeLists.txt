@@ -58,6 +58,7 @@ set(DS_INCLUDES
     BaseTree.hpp
     BinaryTree.hpp
     Buffer.h
+    Collectable.hpp
     Collection.hpp
     Comparator.hpp
     constants.hpp
@@ -67,7 +68,6 @@ set(DS_INCLUDES
     GeneralTree.hpp
     GeneralTreeNode.hpp
     helpers.hpp
-    Iterable.hpp
     List.hpp
     Match.hpp
     Node.hpp

@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <ds/BaseIterator.hpp>
 #include <ds/Collection.hpp>
-#include <ds/Iterable.hpp>
+#include <ds/Searchable.hpp>
 #include <ds/helpers.hpp>
 #include <ds/property.hpp>
 #include <exception>
@@ -24,7 +24,7 @@ namespace ds {
  * @tparam T The type of data stored within the list.
  */
 template<typename T>
-class List : public Collection<T, Node>, public Iterable<T, Node> {
+class List : public Collection<T, Node>, public Searchable<T, Node> {
 protected:
 
 	/**
@@ -396,14 +396,23 @@ public:
 	/**
 	 * @brief Removes the specified element from the list by its index.
 	 * @param index (`size_t`) the position within the list to remove
+	 * @returns the T value that was removed from the list
+	 * @throws an out_of_range exception if the requested index is invalid
+	 */
+	virtual T removeAt(size_t index) {
+		return this->removeAt(index, nullptr);
+	}
+
+	/**
+	 * @brief Removes the specified element from the list by its index.
+	 * @param index (`size_t`) the position within the list to remove
 	 * @param tnode (`std::shared_ptr<Node<T>>`) a reference to the node that
 	 * will be deleted.  This is a convenience reference to speed up the search
 	 * if it has already been performed.
 	 * @returns the T value that was removed from the list
 	 * @throws an out_of_range exception if the requested index is invalid
 	 */
-	virtual T removeAt(size_t index,
-					   std::shared_ptr<Node<T>> tnode = nullptr) override {
+	virtual T removeAt(size_t index, std::shared_ptr<Node<T>> tnode) {
 		if (this->_size == 0) {
 			throw std::out_of_range("Cannot remove item from an empty list");
 		}

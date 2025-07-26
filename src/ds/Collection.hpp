@@ -1,22 +1,68 @@
 #pragma once
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdlib>
+#include <ds/Collectable.hpp>
 #include <ds/Comparator.hpp>
 #include <ds/property.hpp>
+#include <limits>
 #include <memory>
 #include <stdexcept>
 
 namespace ds {
 
 /**
- * @brief Namespace for data structures.
- * @tparam T the data type that will be stored in the collection
- * @tparam C the BaseNode class type that will be used within the collection
+ * @enum Position
+ * @brief Specifies the position for operations in collections
  *
+ * This enumeration provides constants to indicate specific positions
+ * within a collection. Used in insertion, removal, and other position-based
+ * operations to specify where in the collection the operation should occur.
+ *
+ * @par Example usage:
+ * @code{.cpp}
+ * list.insert(data, Position::BACK); // Insert at the end
+ * list.insert(data, Position::FRONT); // Insert at the beginning
+ * @endcode
+ */
+enum class Position : size_t {
+	FRONT = 0,
+	BACK = std::numeric_limits<std::size_t>::max()
+};
+
+/**
+ * @class Collection
+ * @brief Abstract base class for various collection data structures
+ *
+ * The Collection class serves as a foundation for implementing various
+ * collection data structures such as lists, stacks, queues, etc. It defines
+ * common operations that all collections should support, and maintains
+ * basic collection properties like size and boundaries.
+ *
+ * Derived classes must implement all pure virtual methods and should properly
+ * maintain the protected members (_size, _root, _front, _back) according to
+ * the specific collection semantics.
+ *
+ * @tparam T The type of elements stored in the collection
+ * @tparam N The node type used by the collection (defaults to Node<T>),
+ *           must have the same interface as Node<T>
+ *
+ * @note The default Node type provides a basic linked structure implementation.
+ *       Custom node types can be used by specifying a different template
+ * parameter N.
+ *
+ * @par Example usage:
+ * @code{.cpp}
+ * // Creating a custom list that inherits from Collection
+ * template<typename T>
+ * class MyList : public Collection<T> {
+ *     // Implementation of all required virtual methods
+ * };
+ * @endcode
  */
 template<typename T, template<class> class C>
-class Collection {
+class Collection : public Collectable<T> {
 protected:
 
 	/**
@@ -82,6 +128,25 @@ public:
 	virtual ~Collection() {}
 
 	/**
+	 * @brief Array subscript operator for accessing elements by index.
+	 * @param index The index of the element to access
+	 * @return T The element at the specified index
+	 */
+	T operator[](size_t index) {
+		return this->at(index);
+	}
+
+	/**
+	 * @brief adds a single item to the collection
+	 * @param data (`T`) the data element to add to the collection
+	 * @return a reference to the collection
+	 */
+	virtual Collection<T, C> &operator+=(const T data) {
+		this->insert(data);
+		return *this;
+	}
+
+	/**
 	 * @brief Checks if the contents of two given collections are equal
 	 * @param col (`Collection<T, C>`) the collection to compare against
 	 * @return true if both collections have the same values, otherwise false
@@ -116,13 +181,6 @@ public:
 	}
 
 	/**
-	 * @brief A convenience operator for the insert function
-	 * @param data (`T`) the data to insert into the list
-	 * @returns A reference to the collection object.
-	 */
-	virtual Collection<T, C> &operator+=(const T data) = 0;
-
-	/**
 	 * @brief Operator to clear the buffer.
 	 *
 	 * This is a convenience wrapper for the `clear` function, resetting the
@@ -136,24 +194,10 @@ public:
 	}
 
 	/**
-	 * @brief Clears all elements from the collection, making it empty.
-	 * @pure
-	 */
-	virtual void clear() = 0;
-
-	/**
-	 * @brief Checks a container for the existence of the given T element
-	 * @param data (`T`) the data element to find within the collection
-	 * @return true if found in the container, otherwise false
-	 * @pure
-	 */
-	virtual bool contains(T data) const = 0;
-
-	/**
 	 * @brief Check if the collection is empty
 	 * @return true if the colleciton is empty, otherwise false
 	 */
-	inline bool empty() const {
+	virtual inline bool empty() const {
 		return this->_size == 0;
 	}
 
@@ -172,7 +216,7 @@ public:
 	 * @return a `T` data element
 	 * @throws std::bad_weak_ptr if the requested back pointer is not available
 	 */
-	inline T maximum() const {
+	virtual inline T maximum() const {
 		return this->_back.lock()->getData();
 	}
 
@@ -180,15 +224,8 @@ public:
 	 * @brief retrieves the element at the front of the collection
 	 * @return a `T` data element
 	 */
-	inline T minimum() const {
+	virtual inline T minimum() const {
 		return this->_front.lock()->getData();
 	}
-
-	/**
-	 * @brief Returns a string representation of the collection's contents.
-	 * @return a `std::string` A string describing the collection.
-	 * @pure
-	 */
-	virtual std::string str() const = 0;
 };
 }  // namespace ds

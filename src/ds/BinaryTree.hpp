@@ -937,7 +937,7 @@ public:
 	 * @param data The value to search for
 	 * @return Match object containing the result of the search
 	 */
-	virtual Match<T, TreeNode> find(T data) const override {
+	virtual Match<T, TreeNode> find(T data) const {
 		std::shared_ptr<TreeNode<T>> tnode = this->_root;
 		Match<T, TreeNode> match;
 
@@ -1050,6 +1050,15 @@ public:
 	}
 
 	/**
+	 * @brief Removes an element from the tree at the given position.
+	 * @param index (`size_t`) the location within the tree to remove
+	 * @returns the `T` value that was removed from the tree.
+	 */
+	virtual T removeAt(size_t index) override {
+		return this->removeAt(index, nullptr);
+	}
+
+	/**
 	 * @brief Removes an element from the tree at the given position (based on
 	 * its inorder traversal position).
 	 *
@@ -1059,8 +1068,7 @@ public:
 	 * already occurred.
 	 * @returns the value that was removed from the tree
 	 */
-	virtual T removeAt(size_t index,
-					   std::shared_ptr<TreeNode<T>> tnode = nullptr) override {
+	virtual T removeAt(size_t index, std::shared_ptr<TreeNode<T>> tnode) {
 		T data {};
 
 		if (!tnode) {

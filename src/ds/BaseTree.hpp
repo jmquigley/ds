@@ -2,7 +2,6 @@
 
 #include <cstddef>
 #include <ds/Collection.hpp>
-#include <ds/Iterable.hpp>
 #include <ds/TreeNode.hpp>
 #include <ds/property.hpp>
 #include <limits>
@@ -17,7 +16,7 @@ namespace ds {
  * @tparam T The type of data stored within the queue.
  */
 template<typename T, template<class> class C>
-class BaseTree : public Collection<T, C>, public Iterable<T, C> {
+class BaseTree : public Collection<T, C> {
 	/// @brief The current height of the tree
 	// PROPERTY_WITH_DEFAULT(_height, Height, size_t, {0});
 

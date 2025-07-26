@@ -9,11 +9,11 @@
 #include <ds/BaseNodeBuilder.hpp>
 #include <ds/BaseTree.hpp>
 #include <ds/BinaryTree.hpp>
+#include <ds/Collectable.hpp>
 #include <ds/Collection.hpp>
 #include <ds/Comparator.hpp>
 #include <ds/Deque.hpp>
 #include <ds/GeneralTreeNode.hpp>
-#include <ds/Iterable.hpp>
 #include <ds/List.hpp>
 #include <ds/Match.hpp>
 #include <ds/Node.hpp>
