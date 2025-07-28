@@ -196,7 +196,7 @@ TEST_F(TestBuffer, BufferClear) {
 	EXPECT_EQ(buffer.data()[2], 's');
 	EXPECT_EQ(buffer.data()[3], 't');
 
-	buffer.clear();
+	buffer.clear(true, 0);
 
 	EXPECT_EQ(buffer.getBlockSize(), 8);
 	EXPECT_EQ(buffer.getCapacity(), 16);

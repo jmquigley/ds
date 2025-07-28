@@ -102,8 +102,11 @@ TEST_F(TestStr, JoinStrings) {
 
 	EXPECT_EQ(inp.size(), 4);
 	EXPECT_EQ(ds::join(inp), "abcd");
-	EXPECT_EQ(ds::join(inp, "/"), "a/b/c/d");
-	EXPECT_EQ(ds::join(inp, "/", true), "a/b/c/d/");
+	EXPECT_EQ(ds::join(inp, "/"), "/a/b/c/d");
+	EXPECT_EQ(ds::join(inp, "/", true, true), "/a/b/c/d/");
+	EXPECT_EQ(ds::join(inp, "/", false, true), "a/b/c/d/");
+	EXPECT_EQ(ds::join(inp, "/", false, true), "a/b/c/d/");
+	EXPECT_EQ(ds::join(inp, "/", false, false), "a/b/c/d");
 }
 
 TEST_F(TestStr, JoinStringsEmpty) {
@@ -111,5 +114,29 @@ TEST_F(TestStr, JoinStringsEmpty) {
 
 	EXPECT_EQ(inp.size(), 0);
 	EXPECT_EQ(ds::join(inp, "/"), "");
-	EXPECT_EQ(ds::join(inp, "/", true), "");
+	EXPECT_EQ(ds::join(inp, "/", true, true), "");
+	EXPECT_EQ(ds::join(inp, "/", false, true), "");
+	EXPECT_EQ(ds::join(inp, "/", true, false), "");
+	EXPECT_EQ(ds::join(inp, "/", false, false), "");
+}
+
+TEST_F(TestStr, RemoveStringOccurrences) {
+	std::vector<std::string> v {"a", "b", "c", "d", "e", "c"};
+
+	EXPECT_EQ(v.size(), 6);
+	EXPECT_EQ(v[0], "a");
+	EXPECT_EQ(v[1], "b");
+	EXPECT_EQ(v[2], "c");
+	EXPECT_EQ(v[3], "d");
+	EXPECT_EQ(v[4], "e");
+	EXPECT_EQ(v[5], "c");
+
+	ds::removeFirstOccurrence(v, "c");
+
+	EXPECT_EQ(v.size(), 5);
+	EXPECT_EQ(v[0], "a");
+	EXPECT_EQ(v[1], "b");
+	EXPECT_EQ(v[2], "d");
+	EXPECT_EQ(v[3], "e");
+	EXPECT_EQ(v[4], "c");
 }

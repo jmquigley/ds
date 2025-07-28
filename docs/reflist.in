@@ -12,6 +12,7 @@ Deque
 List
 Match
 Node
+Path
 Queue
 RingBuffer
 SortedList

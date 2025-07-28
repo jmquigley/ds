@@ -21,17 +21,59 @@ namespace ds {
 
 /**
  * @class BinaryTree
- * @brief A binary tree class that uses the Red-Black algorithm.
+ * @brief A self-balancing binary tree implementation using the Red-Black
+ * algorithm.
  *
- * @tparam T The type of data stored within the binary tree.
+ * The BinaryTree class provides a binary search tree with guaranteed O(log n)
+ * height through Red-Black tree balancing. This ensures operations like
+ * insertion, deletion, and search maintain logarithmic time complexity in the
+ * worst case.
+ *
+ * Red-Black trees maintain balance by ensuring the following properties:
+ * 1. Every node is either red or black
+ * 2. The root is black
+ * 3. Every leaf (nullptr) is black
+ * 4. If a node is red, then both its children are black
+ * 5. For each node, all simple paths from the node to descendant leaves contain
+ *    the same number of black nodes
+ *
+ * @tparam T The type of data stored within the binary tree. Must support
+ * comparison operations either through the provided comparator or by
+ * implementing appropriate operators.
+ *
+ * @note This implementation provides various traversal methods (inorder,
+ * preorder, postorder, reverseorder, and breadth-first) to access tree elements
+ * in different orders.
+ *
+ * @par Example usage:
+ * @code{.cpp}
+ * BinaryTree<int> tree;
+ * tree.insert(10);
+ * tree.insert(5);
+ * tree.insert(15);
+ *
+ * // Check if element exists
+ * if (tree.contains(5)) {
+ *     std::cout << "Found 5!" << std::endl;
+ * }
+ *
+ * // Traverse in-order
+ * tree.inorder([](auto& node) {
+ *     std::cout << node.getData() << " ";
+ * });
+ * @endcode
  */
 template<typename T>
 class BinaryTree : public BaseTree<T, TreeNode> {
 private:
 
 	/**
-	 * @brief a temporary node pointer value used to store the latest
+	 * @brief A temporary node pointer value used to store the latest
 	 * value inserted into the tree.
+	 *
+	 * This pointer is used to track the most recently inserted node for
+	 * operations that need to reference it, particularly for rebalancing
+	 * after insertion.
 	 */
 	std::weak_ptr<TreeNode<T>> _latestNode;
 
@@ -39,10 +81,13 @@ private:
 	 * @brief A recursive function to clear all nodes from a tree
 	 *
 	 * Performs a postorder traversal of the tree to remove all nodes.
-	 * The anchor is reached when a leaf is null.  This is called by
+	 * The anchor is reached when a leaf is null. This is called by
 	 * the clear() to start from the root node of the tree.
 	 *
-	 * @param node a reference to the next node to search
+	 * @param node A reference to the next node to process in the recursion
+	 *
+	 * @note Using postorder traversal ensures that all children are deleted
+	 *       before their parent, which is essential for proper memory cleanup.
 	 */
 	void clearDelegate(std::shared_ptr<TreeNode<T>> node) {
 		if (node == nullptr) {
@@ -95,11 +140,22 @@ private:
 	 * @brief Helper function to perform in-order traversal of the tree
 	 *
 	 * Recursively visits left subtree, the node itself, and then the right
-	 * subtree
+	 * subtree. This traversal produces nodes in sorted order for binary
+	 * search trees.
 	 *
 	 * @param node The current node in the traversal
-	 * @param callback a callback function that will be executed using each
-	 * node as it is encountered (if defined).
+	 * @param callback A callback function that will be executed on each
+	 *        node as it is encountered. The callback receives a reference
+	 *        to the current node.
+	 * @return bool Returns true if traversal was terminated early by a callback
+	 *         that returned true, otherwise returns false.
+	 *
+	 * @note The callback can optionally return a boolean value. If it returns
+	 *       true, the traversal will stop early (short-circuit).
+	 *
+	 * @par Complexity:
+	 *      Time: O(n) where n is the number of nodes in the subtree
+	 *      Space: O(h) where h is the height of the tree (for recursion stack)
 	 */
 	template<typename Callback>
 	bool inorderDelegate(std::shared_ptr<TreeNode<T>> node, Callback callback) {
@@ -129,13 +185,23 @@ private:
 	 * @brief Helper function to insert a node into the binary tree
 	 *
 	 * Recursively traverses the tree to find the appropriate position for the
-	 * new node based on the comparator, then inserts it.
+	 * new node based on the comparator, then inserts it. This function
+	 * maintains the binary search tree property where all values in the left
+	 * subtree are less than the node's value, and all values in the right
+	 * subtree are greater.
 	 *
 	 * @param data The data to be inserted
 	 * @param node The current node in the recursion
 	 * @param parent The parent of the current node
 	 * @return Shared pointer to the inserted node or the current node in
-	 * recursion
+	 *         recursion
+	 *
+	 * @note This function performs the standard BST insertion but does not
+	 *       handle rebalancing. The rebalancing is done by insertFixUp().
+	 *
+	 * @par Complexity:
+	 *      Time: O(log n) for balanced trees, O(n) for worst case
+	 *      Space: O(log n) for recursion stack
 	 */
 	std::shared_ptr<TreeNode<T>> insertDelegate(
 		T data, std::shared_ptr<TreeNode<T>> node,
@@ -181,10 +247,22 @@ private:
 	 * @brief Fixes violations of Red-Black tree properties after insertion
 	 *
 	 * Rebalances the tree and recolors nodes as necessary to maintain
-	 * Red-Black tree invariants after a node is inserted.
+	 * Red-Black tree invariants after a node is inserted. This ensures
+	 * the tree remains balanced with O(log n) height.
 	 *
-	 * @param xnode (`std::shared_ptr<Node<T>>`) The newly inserted node that
-	 * might cause violations
+	 * The algorithm handles several cases of Red-Black tree violations:
+	 * 1. Uncle is red: Recolor parent, uncle, and grandparent
+	 * 2. Uncle is black, node is a right child: Left rotation
+	 * 3. Uncle is black, node is a left child: Right rotation
+	 *
+	 * @param xnode The newly inserted node that might cause violations
+	 *
+	 * @note This function is called after insertDelegate() to ensure the
+	 *       Red-Black tree properties are maintained.
+	 *
+	 * @par Complexity:
+	 *      Time: O(log n) - at most O(log n) rotations and color changes
+	 *      Space: O(1) - uses constant extra space
 	 */
 	void insertFixUp(std::shared_ptr<TreeNode<T>> xnode) {
 		std::shared_ptr<TreeNode<T>> ynode;
@@ -233,12 +311,24 @@ private:
 	}
 
 	/**
+	 * @brief Finds the node with maximum value in a subtree
+	 *
 	 * Searches a tree from a given node for the maximum value in that
-	 * (sub)tree.  This is really used to recompute the maximum value when it
-	 * is removed from the tree.
-	 * @param node `(Node<T>)` the node location to start the search.  By
-	 * default this is the root node if no node is given.
-	 * @return `(Node<T>`) the largest node in the (sub)tree.
+	 * (sub)tree. This is primarily used to recompute the maximum value when it
+	 * is removed from the tree, or to find the successor in deletion
+	 * operations.
+	 *
+	 * @param node The node location to start the search. By default this is the
+	 *        root node if no node is given.
+	 * @return The node with the largest value in the (sub)tree, or nullptr if
+	 *         the subtree is empty.
+	 *
+	 * @note The maximum value in a binary search tree is always the rightmost
+	 * node.
+	 *
+	 * @par Complexity:
+	 *      Time: O(h) where h is the height of the tree
+	 *      Space: O(1) - iterative implementation uses constant space
 	 */
 	std::shared_ptr<TreeNode<T>> maximumTreeNode(
 		std::shared_ptr<TreeNode<T>> node) {
@@ -254,12 +344,24 @@ private:
 	}
 
 	/**
+	 * @brief Finds the node with minimum value in a subtree
+	 *
 	 * From a node, searches a tree or subtree for the minimum value in that
-	 * (sub)tree. This is really used to recompute the minimum value when it is
-	 * removed from the tree.
-	 * @param node (`Node<T>`) the node location to start the search.  By
-	 * default this is the root node if no node is given.
-	 * @return (`Node<T>`) the smallest node in the (sub)tree.
+	 * (sub)tree. This is primarily used to recompute the minimum value when it
+	 * is removed from the tree, or to find the predecessor in deletion
+	 * operations.
+	 *
+	 * @param node The node location to start the search. By default this is the
+	 *        root node if no node is given.
+	 * @return The node with the smallest value in the (sub)tree, or nullptr if
+	 *         the subtree is empty.
+	 *
+	 * @note The minimum value in a binary search tree is always the leftmost
+	 * node.
+	 *
+	 * @par Complexity:
+	 *      Time: O(h) where h is the height of the tree
+	 *      Space: O(1) - iterative implementation uses constant space
 	 */
 	std::shared_ptr<TreeNode<T>> minimumTreeNode(
 		std::shared_ptr<TreeNode<T>> node) {
@@ -275,10 +377,18 @@ private:
 	}
 
 	/**
-	 * @brief Creates a new node with the specified data and parent
+	 * @brief Creates a new tree node with the specified data and parent
+	 *
+	 * Factory method that creates and initializes a new tree node with the
+	 * provided data and parent reference. The node is initially colored red
+	 * as per Red-Black tree insertion rules.
+	 *
 	 * @param data Data to store in the new node
 	 * @param parent Parent node for the new node
-	 * @return std::shared_ptr<Node<T>> Shared pointer to the newly created node
+	 * @return Shared pointer to the newly created node
+	 *
+	 * @note New nodes are always created as red in Red-Black trees, and may
+	 *       later be recolored by the balancing algorithm.
 	 */
 	std::shared_ptr<TreeNode<T>> newNode(T data,
 										 std::shared_ptr<TreeNode<T>> &parent) {
@@ -293,10 +403,22 @@ private:
 	 * @brief Helper function to perform post-order traversal of the tree
 	 *
 	 * Recursively visits left subtree, right subtree, then the node itself.
+	 * This traversal is often used when deleting nodes or performing operations
+	 * where children must be processed before their parent.
 	 *
 	 * @param node The current node in the traversal
-	 * @param callback a callback function that will be executed using each
-	 * node as it is encountered (if defined).
+	 * @param callback A callback function that will be executed on each node as
+	 *        it is encountered. The callback receives a reference to the
+	 * current node.
+	 * @return bool Returns true if traversal was terminated early by a callback
+	 *         that returned true, otherwise returns false.
+	 *
+	 * @note The callback can optionally return a boolean value. If it returns
+	 *       true, the traversal will stop early (short-circuit).
+	 *
+	 * @par Complexity:
+	 *      Time: O(n) where n is the number of nodes in the subtree
+	 *      Space: O(h) where h is the height of the tree (for recursion stack)
 	 */
 	template<typename Callback>
 	bool postorderDelegate(std::shared_ptr<TreeNode<T>> node,
@@ -326,11 +448,22 @@ private:
 	 * @brief Helper function to perform pre-order traversal of the tree
 	 *
 	 * Recursively visits the node itself, then left subtree, then right
-	 * subtree.
+	 * subtree. This traversal is useful for creating a copy of the tree
+	 * or for exploring a tree from the root downward.
 	 *
 	 * @param node The current node in the traversal
-	 * @param callback a callback function that will be executed using each
-	 * node as it is encountered (if defined).
+	 * @param callback A callback function that will be executed on each node as
+	 *        it is encountered. The callback receives a reference to the
+	 * current node.
+	 * @return bool Returns true if traversal was terminated early by a callback
+	 *         that returned true, otherwise returns false.
+	 *
+	 * @note The callback can optionally return a boolean value. If it returns
+	 *       true, the traversal will stop early (short-circuit).
+	 *
+	 * @par Complexity:
+	 *      Time: O(n) where n is the number of nodes in the subtree
+	 *      Space: O(h) where h is the height of the tree (for recursion stack)
 	 */
 	template<typename Callback>
 	bool preorderDelegate(std::shared_ptr<TreeNode<T>> node,
@@ -359,10 +492,21 @@ private:
 	 * @brief Fixes violations of Red-Black tree properties after deletion
 	 *
 	 * Rebalances the tree and recolors nodes as necessary to maintain
-	 * Red-Black tree invariants after a node is inserted.
+	 * Red-Black tree invariants after a node is deleted. This ensures
+	 * the tree remains balanced with O(log n) height.
 	 *
-	 * @param xnode (`std::shared_ptr<Node<T>>`) The newly removed node that
-	 * might cause violations
+	 * This function handles various cases of Red-Black tree violations that
+	 * can occur after deleting a node, particularly when a black node is
+	 * removed which affects the black-height property of the tree.
+	 *
+	 * @param xnode The node to fix up after deletion (often a replacement node)
+	 *
+	 * @note This function is called after a node removal to ensure the
+	 *       Red-Black tree properties are maintained.
+	 *
+	 * @par Complexity:
+	 *      Time: O(log n) - at most O(log n) rotations and color changes
+	 *      Space: O(1) - uses constant extra space
 	 */
 	void removeFixUp(std::shared_ptr<TreeNode<T>> xnode) {
 		if (!xnode) {
@@ -462,11 +606,22 @@ private:
 	 * @brief Helper function to perform reverse-order traversal of the tree
 	 *
 	 * Recursively visits right subtree, the node itself, and then the left
-	 * subtree
+	 * subtree. This traversal is effectively the opposite of in-order
+	 * traversal, producing nodes in descending order for binary search trees.
 	 *
 	 * @param node The current node in the traversal
-	 * @param callback a callback function that will be executed using each
-	 * node as it is encountered (if defined).
+	 * @param callback A callback function that will be executed on each node as
+	 *        it is encountered. The callback receives a reference to the
+	 * current node.
+	 * @return bool Returns true if traversal was terminated early by a callback
+	 *         that returned true, otherwise returns false.
+	 *
+	 * @note The callback can optionally return a boolean value. If it returns
+	 *       true, the traversal will stop early (short-circuit).
+	 *
+	 * @par Complexity:
+	 *      Time: O(n) where n is the number of nodes in the subtree
+	 *      Space: O(h) where h is the height of the tree (for recursion stack)
 	 */
 	template<typename Callback>
 	bool reverseorderDelegate(std::shared_ptr<TreeNode<T>> node,
@@ -504,7 +659,13 @@ private:
 	 * left child of ynode (if any) becomes the right child of xnode.
 	 *
 	 * @param xnode The node to rotate around, which will become the left child
-	 * after rotation
+	 *        after rotation
+	 *
+	 * @par Complexity:
+	 *      Time: O(1) - constant time operation
+	 *      Space: O(1) - uses constant extra space
+	 *
+	 * @see rotateRight for the complementary operation
 	 */
 	void rotateLeft(std::shared_ptr<TreeNode<T>> xnode) {
 		std::shared_ptr<TreeNode<T>> ynode = xnode->getRight();
@@ -557,7 +718,13 @@ private:
 	 * right child of ynode (if any) becomes the left child of xnode.
 	 *
 	 * @param xnode The node to rotate around, which will become the right child
-	 * after rotation
+	 *        after rotation
+	 *
+	 * @par Complexity:
+	 *      Time: O(1) - constant time operation
+	 *      Space: O(1) - uses constant extra space
+	 *
+	 * @see rotateLeft for the complementary operation
 	 */
 	void rotateRight(std::shared_ptr<TreeNode<T>> xnode) {
 		std::shared_ptr<TreeNode<T>> ynode = xnode->getLeft();
@@ -598,11 +765,23 @@ private:
 	}
 
 	/**
+	 * @brief Finds the successor node of a given node
+	 *
 	 * The successor of a node is the node with the smallest key greater than
-	 * node.
-	 * @param node (`Node<T>`) the node location to start the search for a
-	 * successor.
-	 * @return (`Node<T>`) a reference to the successor node.
+	 * the given node's key. This is used in various tree operations,
+	 * particularly in deletion when a node with two children is removed.
+	 *
+	 * If the node has a right subtree, the successor is the minimum value in
+	 * that subtree. Otherwise, the successor is the nearest ancestor for which
+	 * the given node is in the left subtree.
+	 *
+	 * @param node The node for which to find the successor
+	 * @return A shared pointer to the successor node, or nullptr if no
+	 * successor exists
+	 *
+	 * @par Complexity:
+	 *      Time: O(h) where h is the height of the tree
+	 *      Space: O(1) - iterative implementation uses constant space
 	 */
 	std::shared_ptr<TreeNode<T>> successorNode(
 		std::shared_ptr<TreeNode<T>> node) {
@@ -624,9 +803,21 @@ private:
 	}
 
 	/**
-	 * Replaces one subtree as a child of its parent with another subtree
-	 * @param u `(TreeNode<T>)` parent subtree
-	 * @param v `(Node<T>)` child subtree to use in replacement
+	 * @brief Replaces one subtree as a child of its parent with another subtree
+	 *
+	 * This helper method is used during node deletion to replace a node with
+	 * its successor or child. It updates the parent pointers to maintain the
+	 * tree structure.
+	 *
+	 * @param u The subtree to be replaced
+	 * @param v The subtree that will replace u
+	 *
+	 * @note This operation is a key part of the deletion algorithm for binary
+	 * search trees.
+	 *
+	 * @par Complexity:
+	 *      Time: O(1) - constant time operation
+	 *      Space: O(1) - uses constant extra space
 	 */
 	void transplant(std::shared_ptr<TreeNode<T>> u,
 					std::shared_ptr<TreeNode<T>> v) {

@@ -11,6 +11,7 @@ project(
 option(DS_BUILD_EXTRAS "Flag to build extra testing programs" OFF)
 option(DS_BUILD_TESTING "Flag to build and run unit testing" OFF)
 option(DS_BUILD_INSTALL "Flag that performs the install proces" ON)
+option(DS_BUILD_CLANG "Flag to turn on clang build process" OFF)
 
 # Setup memory testing parameters
 set(MEMORYCHECK_COMMAND_OPTIONS "")
@@ -30,8 +31,10 @@ set(CTEST_MEMORYCHECK_COMMAND valgrind)
 include("CMakeLists.requirements.txt")
 
 set(CMAKE_CXX_STANDARD 20)
-# set(CMAKE_C_COMPILER "clang")
-# set(CMAKE_CXX_COMPILER "clang++")
+if (DS_BUILD_CLANG)
+  set(CMAKE_C_COMPILER "/usr/bin/clang")
+  set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+endif(DS_BUILD_CLANG)
 set(HEADER_FILES /usr/include/c++/14 /usr/include/x86_64-linux-gnu/c++/14)
 set(ROOT_DIR CMAKE_SOURCE_DIR)
 set(TEST_FILTER $ENV{FILTER})
@@ -71,6 +74,7 @@ set(DS_INCLUDES
     List.hpp
     Match.hpp
     Node.hpp
+    Path.hpp
     PriorityQueue.hpp
     property.hpp
     Queue.hpp
@@ -148,6 +152,7 @@ set(TEST_SOURCES
   tests/test_iterator.cpp
   tests/test_list.cpp
   tests/test_node.cpp
+  tests/test_path.cpp
   tests/test_priorityqueue.cpp
   tests/test_queue.cpp
   tests/test_ringbuffer.cpp

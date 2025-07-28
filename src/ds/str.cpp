@@ -2,16 +2,22 @@
 
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace ds {
 
 std::string join(const std::vector<std::string> &strings,
-				 const std::string &delimiter, bool end) {
+				 const std::string &delimiter, bool start, bool end) {
 	if (strings.empty()) {
 		return "";
 	}
 
 	std::stringstream ss;
+
+	if (start) {
+		ss << delimiter;
+	}
+
 	ss << strings[0];
 
 	for (size_t i = 1; i < strings.size(); ++i) {
@@ -23,6 +29,24 @@ std::string join(const std::vector<std::string> &strings,
 	}
 
 	return ss.str();
+}
+
+std::string join(const std::vector<std::string> &strings, const char delimiter,
+				 bool start, bool end) {
+	std::string s {delimiter};
+	return join(strings, s, start, end);
+}
+
+void removeFirstOccurrence(std::vector<std::string> &v,
+						   const std::string &target) {
+	// Find the first occurrence of target in the vector
+	auto it = std::find(v.begin(), v.end(), target);
+
+	// If found, remove it and return
+	if (it != v.end()) {
+		v.erase(it);
+		return;
+	}
 }
 
 std::vector<std::string> splitStringOnDelimiters(

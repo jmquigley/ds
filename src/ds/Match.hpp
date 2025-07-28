@@ -33,9 +33,17 @@ class Match {
 	/// @brief Weak pointer to the node containing the found value
 	PROPERTY(ref, Ref, std::weak_ptr<C<T>>);
 
+	/// @brief The search string value used in the search operation
+	PROPERTY(search, Search, std::string);
+
 public:
 
-	Match() : _found(false), _index(0), _ref(std::weak_ptr<C<T>>()) {}
+	Match()
+		: _data {},
+		  _found(false),
+		  _index(0),
+		  _ref(std::weak_ptr<C<T>>()),
+		  _search("") {}
 
 	/**
 	 * @brief a copy constructor for the Match object
@@ -45,9 +53,20 @@ public:
 		this->_data = match._data;
 		this->_found = match._found;
 		this->_index = match._index;
+		this->_search = match._search;
 		this->_ref = match._ref;
 	}
 
 	virtual ~Match() {}
+
+	/**
+	 * @brief retrieves the current shared pointer value stored within the
+	 * the match.
+	 * @returns a `std::shared_ptr<C<T>>` that refereces the node that this
+	 * match has found.  A nullptr will be returned i
+	 */
+	std::shared_ptr<C<T>> reference() {
+		return this->_ref.lock();
+	}
 };
 }  // namespace ds

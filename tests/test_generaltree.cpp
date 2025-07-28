@@ -1,6 +1,8 @@
+#include <ds/str.h>
 #include <testing_base.h>
 
 #include <ds/GeneralTree.hpp>
+#include <ds/constants.hpp>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -48,3 +50,26 @@ TEST_F(TestGeneralTree, BreadthSearch) {
 	EXPECT_EQ(out[5], "f");
 	EXPECT_EQ(out[6], "g");
 }
+
+/*
+TEST_F(TestGeneralTree, FindKey) {
+	ds::GeneralTree<std::string> gt {{"a/b/c", "a"},   {"a/b/d", "d"},
+									 {"a/b/z", "b"},   {"d/e/f/g", "e"},
+									 {"d/e/f/h", "c"}, {"d/e/f/i", "f"}};
+	std::vector<std::string> out;
+
+	EXPECT_EQ(gt.size(), 11);
+	EXPECT_EQ(gt.height(), 4);
+
+	gt.breadth([&](auto &node) {
+		out.push_back(node.getPath());
+		std::cout << node.getPath() << std::endl;
+	});
+
+	std::vector<std::string> v {"a", "b", "d"};
+	std::string path = ds::join(v, constants::SEPARATOR, true);
+
+	auto match = gt.findByPath(path);
+	EXPECT_TRUE(match.found());
+}
+*/

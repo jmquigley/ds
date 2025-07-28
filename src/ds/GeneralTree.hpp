@@ -6,6 +6,7 @@
 #include <ds/BaseTree.hpp>
 #include <ds/GeneralTreeNode.hpp>
 #include <ds/Match.hpp>
+#include <ds/Path.hpp>
 #include <ds/Queue.hpp>
 #include <ds/constants.hpp>
 #include <initializer_list>
@@ -199,22 +200,123 @@ public:
 
 	/**
 	 * @brief Searches for a node with the specified key using breadth-first
-	 * search.
+	 * search
 	 *
-	 * @param key The key to search for.
-	 * @return A Match object containing the result of the search.
+	 * This method performs a breadth-first traversal of the tree to find a node
+	 * that matches the given key exactly. Breadth-first search explores nodes
+	 * level by level, starting from the root and moving outward.
+	 *
+	 * @param key The key to search for in the tree
+	 * @return A Match object containing the result of the search, including:
+	 *         - Whether the node was found (via found() method)
+	 *         - The data associated with the node if found
+	 *         - A reference to the node if found
+	 *
+	 * @note This method checks for exact key matches only and is
+	 * case-sensitive. It does not interpret the key as a path (unlike the
+	 * path-based find method).
+	 *
+	 * @par Example usage:
+	 * @code{.cpp}
+	 * GeneralTree<int> tree;
+	 * tree.insert("root/folder/file", 42);
+	 *
+	 * Match<int, GeneralTreeNode> result = tree.breadthSearch("folder");
+	 * if (result.found()) {
+	 *     std::cout << "Found folder with data: " << result.getData() <<
+	 * std::endl;
+	 * }
+	 * @endcode
+	 *
+	 * @par Complexity:
+	 *      Time: O(n) where n is the number of nodes in the tree
+	 *      Space: O(w) where w is the maximum width of the tree (for queue
+	 * storage)
+	 *
+	 * @see find() For a more flexible search that can handle path-based keys
 	 */
-	Match<T, GeneralTreeNode> breadthSearch(std::string key) const {
+	Match<T, GeneralTreeNode> breadthSearchByKey(std::string key) const {
 		Match<T, GeneralTreeNode> match;
+		size_t pos = 0;
+
+		// If key is empty or tree is empty, return not found
+		if (key.empty() || this->_size == 0) {
+			return match;
+		}
 
 		this->breadth([&](auto &node) {
-			if (node->key() == key) {
-				match.setData(node->getData());
+			if (node.key() == key) {
+				match.setData(node.getData());
 				match.setFound(true);
-				match.setRef(node);
+				match.setIndex(pos);
+				match.setSearch(key);
+				match.setRef(std::static_pointer_cast<GeneralTreeNode<T>>(
+					node.shared_from_this()));
 				return false;
 			}
 
+			pos++;
+			return true;
+		});
+
+		return match;
+	}
+
+	/**
+	 * @brief Searches for a node with the specified path using breadth-first
+	 * search
+	 *
+	 * This method performs a breadth-first traversal of the tree to find a node
+	 * that matches the given path exactly. Breadth-first search explores nodes
+	 * level by level, starting from the root and moving outward.
+	 *
+	 * @param path The path to search for in the tree
+	 * @return A Match object containing the result of the search, including:
+	 *         - Whether the node was found (via found() method)
+	 *         - The data associated with the node if found
+	 *         - A reference to the node if found
+	 *
+	 * @note This method checks for exact path matches only and is
+	 * case-sensitive.
+	 *
+	 * @par Example usage:
+	 * @code{.cpp}
+	 * GeneralTree<int> tree;
+	 * tree.insert("root/folder/file", 42);
+	 *
+	 * Match<int, GeneralTreeNode> result = tree.breadthSearchByPath("folder");
+	 * if (result.found()) {
+	 *     std::cout << "Found folder with data: " << result.getData() <<
+	 * std::endl;
+	 * }
+	 * @endcode
+	 *
+	 * @par Complexity:
+	 *      Time: O(n) where n is the number of nodes in the tree
+	 *      Space: O(w) where w is the maximum width of the tree (for queue
+	 * storage)
+	 */
+	Match<T, GeneralTreeNode> breadthSearchByPath(std::string path) const {
+		Match<T, GeneralTreeNode> match;
+		size_t pos = 0;
+
+		// If key is empty or tree is empty, return not found
+		if (path.empty() || this->_size == 0) {
+			return match;
+		}
+
+		this->breadth([&](auto &node) {
+			if (node.path() == path) {
+				match.setData(node.getData());
+				match.setFound(true);
+				match.setIndex(pos);
+				match.setSearch(path);
+				match.setRef(std::static_pointer_cast<GeneralTreeNode<T>>(
+					node.shared_from_this()));
+				return false;
+			}
+
+			pos++;
 			return true;
 		});
 
@@ -235,44 +337,123 @@ public:
 	 * @return true if the data is found, false otherwise.
 	 */
 	bool contains(T data) const {
-		// TODO: implement contains data for GeneralTree
-		return false;
+		Match<T, GeneralTreeNode> match;
+		match = this->find(data);
+		return match.found();
 	}
 
 	/**
 	 * @brief Checks if the tree contains a node with the specified key.
 	 *
-	 * @param key The key to search for.
+	 * @param key The key to check if it is in the tree
 	 * @return true if a node with the key is found, false otherwise.
 	 */
-	bool contains(std::string key) const {
-		// TODO: implement contains() for GeneralTree
-		return false;
+	bool containsByKey(std::string key) const {
+		Match<T, GeneralTreeNode> match;
+		match = this->findByKey(key);
+		return match.found();
 	}
 
 	/**
-	 * @brief Finds a node containing the specified data.
+	 * @brief Checks if the tree contains a node with the specified path.
 	 *
-	 * @param data The data to search for.
-	 * @return A Match object containing the result of the search.
+	 * @param path The path to check if it is in the tree
+	 * @return true if a node with the path is found, false otherwise.
 	 */
-	virtual Match<T, GeneralTreeNode> find(T data) const {
-		// TODO: implement find() for GeneralTree
-		// search the whole tree for instances of data
+	bool containsByPath(std::string path) const {
 		Match<T, GeneralTreeNode> match;
+		match = this->findByPath(path);
+		return match.found();
+	}
+
+	/**
+	 * @brief Finds a node containing the specified data value.
+	 *
+	 * Searches the entire tree for any node that contains the specified data
+	 * value. This performs a complete tree traversal to find matching data.
+	 *
+	 * @param data The data value to search for
+	 * @return A Match object containing the result of the search
+	 *
+	 * @note If multiple nodes contain the same data value, only the first
+	 *       encountered during breadth-first traversal will be returned.
+	 *
+	 * @par Example usage:
+	 * @code{.cpp}
+	 * GeneralTree<int> tree;
+	 * tree.insert("folder1/file", 42);
+	 * tree.insert("folder2/document", 42);
+	 *
+	 * Match<int, GeneralTreeNode> result = tree.find(42);
+	 * if (result.found()) {
+	 *     // Will find the value, likely in "folder1/file" since breadth-first
+	 *     // traversal typically encounters it first
+	 *     std::cout << "Found 42 at path: " << result.getRef().lock()->path()
+	 * << std::endl;
+	 * }
+	 * @endcode
+	 *
+	 * @par Complexity:
+	 *      Time: O(n) where n is the number of nodes in the tree
+	 *      Space: O(w) where w is the maximum width of the tree (for
+	 * breadth-first traversal)
+	 */
+	virtual Match<T, GeneralTreeNode> find(T data) const override {
+		Match<T, GeneralTreeNode> match;
+		size_t pos = 0;
+
+		if (this->_size == 0) {
+			return match;
+		}
+
+		// Use breadth-first traversal to find the data
+		this->breadth([&](auto &node) {
+			// Use the comparator if available, otherwise use direct comparison
+			bool isEqual =
+				this->_comparator
+					? (this->_comparator->compare(node.getData(), data) == 0)
+					: (node.getData() == data);
+
+			if (isEqual) {
+				match.setData(data);
+				match.setFound(true);
+				match.setIndex(pos);
+				match.setRef(std::static_pointer_cast<GeneralTreeNode<T>>(
+					node.shared_from_this()));
+				return false;  // Stop traversal
+			}
+
+			pos++;
+			return true;  // Continue traversal
+		});
+
 		return match;
 	}
 
 	/**
 	 * @brief Finds a node with the specified key.
 	 *
-	 * @param key The key to search for.
-	 * @return A Match object containing the result of the search.
+	 * This function is a convenience wrapper for the breadthSearchByKey.
+	 *
+	 * @param key The key to search for
+	 * @return A Match object containing the result of the search
+	 * @see breadthSearchByKey
 	 */
-	Match<T, GeneralTreeNode> find(std::string key) const {
-		// TODO: implement find() for GeneralTree
-		Match<T, GeneralTreeNode> match;
-		return match;
+	Match<T, GeneralTreeNode> findByKey(std::string key) const {
+		return this->breadthSearchByKey(key);
+	}
+
+	/**
+	 * @brief Finds a node with the specified path.
+	 *
+	 * This function is a convenience wrapper for the breadthSearchByPath.
+	 *
+	 * @param path The path to search for
+	 * @return A Match object containing the result of the search
+	 * @see breadthSearchByPath
+	 */
+	Match<T, GeneralTreeNode> findByPath(std::string path) const {
+		return this->breadthSearchByPath(path);
 	}
 
 	/**
@@ -331,7 +512,7 @@ public:
 	 * to {"\\", "/", "|"})
 	 */
 	void insert(std::string key, T data,
-				std::vector<std::string> delimiters = {"\\", "/", "|"}) {
+				std::vector<std::string> delimiters = Path::delimiters) {
 		if (key == "") {
 			return;
 		}

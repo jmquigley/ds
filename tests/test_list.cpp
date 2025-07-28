@@ -403,12 +403,9 @@ TEST_F(TestList, ToStringEmpty) {
 }
 
 TEST_F(TestList, Search) {
-	ds::List<int> list;
+	ds::List<int> list = {1, 2, 3};
 	ds::Match<int, ds::Node> match;
 
-	list.insert(1);
-	list.insert(2);
-	list.insert(3);
 	EXPECT_EQ(list.size(), 3);
 
 	match = list.find(3);
