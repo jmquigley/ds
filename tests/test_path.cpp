@@ -1,7 +1,9 @@
 #include <testing_base.h>
 
 #include <ds/Path.hpp>
+#include <exception>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -62,12 +64,32 @@ TEST_F(TestPath, Create) {
 	EXPECT_EQ(path.at(0), "a");
 	EXPECT_EQ(path.at(1), "b");
 	EXPECT_EQ(path.at(2), "c");
+
+	ds::Path path3("/x/y/z");
+
+	EXPECT_EQ(path3.size(), 3);
+	EXPECT_EQ(path3.str(), "/x/y/z/");
+	EXPECT_EQ(path3[0], "x");
+	EXPECT_EQ(path3[1], "y");
+	EXPECT_EQ(path3[2], "z");
+
+	path3.newPath("/a/b/c/");
+
+	EXPECT_EQ(path3.size(), 3);
+	EXPECT_EQ(path3.str(), "/a/b/c/");
+	EXPECT_EQ(path3.at(0), "a");
+	EXPECT_EQ(path3.at(1), "b");
+	EXPECT_EQ(path3.at(2), "c");
 };
 
 TEST_F(TestPath, InitializerList) {
 	ds::Path path {"a", "b", "c"};
 	EXPECT_EQ(path.size(), 3);
 	EXPECT_EQ(path.str(), "/a/b/c/");
+
+	ds::Path path2 {"x/y/z"};
+	EXPECT_EQ(path2.size(), 3);
+	EXPECT_EQ(path2.str(), "/x/y/z/");
 }
 
 TEST_F(TestPath, CopyConstructor) {
@@ -126,9 +148,26 @@ TEST_F(TestPath, Parsing) {
 	EXPECT_EQ(path.at(0), "a");
 	EXPECT_EQ(path.at(1), "b");
 	EXPECT_EQ(path.at(2), "c");
+
+	path = "x|y|z";
+
+	EXPECT_EQ(path.size(), 3);
+	EXPECT_EQ(path.str(), "/x/y/z/");
+	EXPECT_EQ(path[0], "x");
+	EXPECT_EQ(path[1], "y");
+	EXPECT_EQ(path[2], "z");
 }
 
-TEST_F(TestPath, Append) {
+TEST_F(TestPath, BadIndexLocation) {
+	ds::Path path;
+	path = std::string("/a/b/c/");
+
+	EXPECT_THROW(path.at(999), std::out_of_range);
+	EXPECT_THROW(path[999], std::out_of_range);
+	EXPECT_THROW(path.removeAt(999), std::out_of_range);
+}
+
+TEST_F(TestPath, AppendAndRemove) {
 	ds::Path path;
 
 	EXPECT_EQ(path.size(), 0);
@@ -146,6 +185,15 @@ TEST_F(TestPath, Append) {
 	EXPECT_EQ(path.at(2), "c");
 	EXPECT_EQ(path.at(3), "d");
 	EXPECT_EQ(path.at(4), "e");
+
+	path -= "a";
+	path -= "e";
+
+	EXPECT_EQ(path.size(), 3);
+	EXPECT_EQ(path.str(), "/b/c/d/");
+	EXPECT_EQ(path.at(0), "b");
+	EXPECT_EQ(path.at(1), "c");
+	EXPECT_EQ(path.at(2), "d");
 }
 
 TEST_F(TestPath, Remove) {
@@ -159,7 +207,7 @@ TEST_F(TestPath, Remove) {
 	EXPECT_EQ(path.at(3), "d");
 	EXPECT_EQ(path.at(4), "e");
 
-	path.removeIndex(0);
+	path.removeAt(0);
 
 	EXPECT_EQ(path.size(), 4);
 	EXPECT_EQ(path.str(), "/b/c/d/e/");

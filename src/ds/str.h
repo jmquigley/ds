@@ -9,6 +9,22 @@
 namespace ds {
 
 /**
+ * @brief Checks if a string contains any substring from a list
+ *
+ * Given a single string, use a vector of substrings to see if any string
+ * within the vector is found within the input string.  Returns true any
+ * time one of the substrings is found.
+ *
+ * @param input (`std::string`) The string to check
+ * @param substrings (`std::vector<std::stirng>`) a vector of substrings to
+ * search for
+ * @return true If any substring from the list is found in the input string
+ * @return false If none of the substrings are found in the input string
+ */
+bool containsAnySubstring(const std::string &input,
+						  const std::vector<std::string> &substrings);
+
+/**
  * @brief Joins a vector of strings with a specified delimiter
  *
  * @code

@@ -6,6 +6,22 @@
 
 namespace ds {
 
+bool containsAnySubstring(const std::string &input,
+						  const std::vector<std::string> &substrings) {
+	if (input == "" || substrings.size() == 0) {
+		// special case where input or vector is empty
+		return false;
+	}
+
+	for (const auto &substring: substrings) {
+		if (input.find(substring) != std::string::npos) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 std::string join(const std::vector<std::string> &strings,
 				 const std::string &delimiter, bool start, bool end) {
 	if (strings.empty()) {

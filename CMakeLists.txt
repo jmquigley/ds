@@ -137,7 +137,6 @@ if (DS_BUILD_TESTING)
 enable_testing()
 include(GoogleTest)
 
-
 set(TEST_SOURCES
   tests/testing_base.h
   tests/test_binarytree.cpp

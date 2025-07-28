@@ -28,7 +28,7 @@ namespace ds {
  * Paths are stored internally as a sequence of elements (path components) which
  * can be accessed and manipulated individually.
  *
- * @par Example usage:
+ * Example usage:
  * @code{.cpp}
  * // Create a path from components
  * ds::Path path("home", "user", "documents");  // results in
@@ -46,6 +46,11 @@ class Path final {
 	 * @brief Property for the current full path string
 	 */
 	PROPERTY(currentPath, CurrentPath, std::string);
+
+	/**
+	 * @brief Property for the list of delimiters used in paths
+	 */
+	PROPERTY(delimiters, Delimiters, std::vector<std::string>);
 
 	/**
 	 * @brief Property for the vector of path elements
@@ -71,19 +76,11 @@ private:
 public:
 
 	/**
-	 * @brief Vector of delimiter strings used to split path components
-	 *
-	 * Default delimiters include backslash, forward slash, and pipe characters.
-	 * This vector can be modified to support different path conventions.
-	 */
-	inline static std::vector<std::string> delimiters {"\\", "/", "|"};
-
-	/**
 	 * @brief Default constructor
 	 *
 	 * Creates an empty path with no elements.
 	 */
-	Path() : _currentPath("") {}
+	Path() : _currentPath(""), _delimiters {"\\", "/", "|"} {}
 
 	/**
 	 * @brief Variadic constructor to create a path from multiple components
@@ -108,7 +105,9 @@ public:
 	 * @param path The Path object to copy
 	 */
 	Path(const Path &path)
-		: _currentPath(path._currentPath), _elements(path._elements) {}
+		: _currentPath(path._currentPath),
+		  _delimiters(path._delimiters),
+		  _elements(path._elements) {}
 
 	/**
 	 * @brief an initializer list to build a path
@@ -116,7 +115,7 @@ public:
 	 */
 	explicit Path(std::initializer_list<std::string> il) : Path() {
 		for (auto &it: il) {
-			_elements.push_back(it);
+			this->append(it);
 		}
 		this->buildPath();
 	}
@@ -170,6 +169,17 @@ public:
 	 */
 	Path &operator+=(const std::string val) {
 		this->append(val);
+		return *this;
+	}
+
+	/**
+	 * @brief Subtraction assignment operator to remove a path element
+	 *
+	 * @param val The path element to append
+	 * @return Reference to this Path object after removing
+	 */
+	Path &operator-=(const std::string val) {
+		this->removeValue(val);
 		return *this;
 	}
 
@@ -261,7 +271,12 @@ public:
 	 * @return The new path string after appending
 	 */
 	std::string append(const std::string &val) {
-		this->_elements.push_back(val);
+		if (containsAnySubstring(val, _delimiters)) {
+			this->parse(val, false);
+		} else {
+			this->_elements.push_back(val);
+		}
+
 		return this->buildPath();
 	}
 
@@ -312,12 +327,10 @@ public:
 
 		this->_elements.clear();
 		for (const auto &val: {args...}) {
-			this->_elements.push_back(val);
+			this->append(val);
 		}
 
-		this->_currentPath =
-			join(this->_elements, constants::SEPARATOR, true, true);
-		return this->_currentPath;
+		return this->buildPath();
 	}
 
 	/**
@@ -326,12 +339,16 @@ public:
 	 * Splits the provided path string on any of the delimiters defined in
 	 * the delimiters vector, and stores the resulting elements.
 	 *
-	 * @param path The path string to parse
+	 * @param path (`std::string`) The path string to parse
+	 * @param build (`bool`) a flag to suppress rebuilding the path when needed
 	 * @return The parsed and rebuilt path string
 	 */
-	std::string parse(std::string path) {
-		this->_elements = splitStringOnDelimiters(path, Path::delimiters);
-		return buildPath();
+	std::string parse(const std::string &path, bool build = true) {
+		this->_elements = splitStringOnDelimiters(path, _delimiters);
+		if (build) {
+			return buildPath();
+		}
+		return this->_currentPath;
 	}
 
 	/**
@@ -347,7 +364,7 @@ public:
 	 * @param index The index of the element to remove
 	 * @throws std::out_of_range if the index is invalid
 	 */
-	void removeIndex(size_t index) {
+	void removeAt(size_t index) {
 		if (index >= this->_elements.size()) {
 			throw std::out_of_range(
 				"Invalid path element position index requested");

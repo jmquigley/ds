@@ -140,3 +140,53 @@ TEST_F(TestStr, RemoveStringOccurrences) {
 	EXPECT_EQ(v[3], "e");
 	EXPECT_EQ(v[4], "c");
 }
+
+TEST_F(TestStr, RemoveStringOccurrencesEmpty) {
+	std::vector<std::string> v {"a", "b", "c", "d", "e", "c"};
+
+	EXPECT_EQ(v.size(), 6);
+	EXPECT_EQ(v[0], "a");
+	EXPECT_EQ(v[1], "b");
+	EXPECT_EQ(v[2], "c");
+	EXPECT_EQ(v[3], "d");
+	EXPECT_EQ(v[4], "e");
+	EXPECT_EQ(v[5], "c");
+
+	ds::removeFirstOccurrence(v, "");
+
+	EXPECT_EQ(v.size(), 6);
+	EXPECT_EQ(v[0], "a");
+	EXPECT_EQ(v[1], "b");
+	EXPECT_EQ(v[2], "c");
+	EXPECT_EQ(v[3], "d");
+	EXPECT_EQ(v[4], "e");
+	EXPECT_EQ(v[5], "c");
+
+	v.clear();
+
+	EXPECT_EQ(v.size(), 0);
+
+	ds::removeFirstOccurrence(v, "42");
+	ds::removeFirstOccurrence(v, "");
+
+	EXPECT_EQ(v.size(), 0);
+}
+
+TEST_F(TestStr, ContainsSubstring) {
+	std::string s = "a/b/c/d";
+	std::vector<std::string> sub1 {"/", "%", "5"};
+	std::vector<std::string> sub2 {"|", "%", "5"};
+
+	EXPECT_TRUE(ds::containsAnySubstring(s, sub1));
+	EXPECT_FALSE(ds::containsAnySubstring(s, sub2));
+}
+
+TEST_F(TestStr, ContainsSubstringEmpty) {
+	std::string s = "";
+	std::vector<std::string> sub1 {"", "1"};
+	std::vector<std::string> sub2 {};
+
+	EXPECT_FALSE(ds::containsAnySubstring(s, sub1));
+	EXPECT_FALSE(ds::containsAnySubstring(s, sub2));
+	EXPECT_FALSE(ds::containsAnySubstring("abc", sub2));
+}

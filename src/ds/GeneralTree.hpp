@@ -508,18 +508,16 @@ public:
 	 *
 	 * @param key The key to insert, which will be split using delimiters
 	 * @param data The data value to associate with the final node
-	 * @param delimiters Vector of delimiter strings to split the key (defaults
-	 * to {"\\", "/", "|"})
 	 */
-	void insert(std::string key, T data,
-				std::vector<std::string> delimiters = Path::delimiters) {
+	void insert(std::string key, T data) {
 		if (key == "") {
 			return;
 		}
 
+		Path path;
+		path.parse(key);
 		std::stringstream ss;
-		std::vector<std::string> keys =
-			splitStringOnDelimiters(key, delimiters);
+		std::vector<std::string> keys = path.elements();
 
 		this->_height = std::max(this->_height, keys.size());
 
