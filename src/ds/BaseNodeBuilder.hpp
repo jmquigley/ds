@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ds/BaseBitFlag.hpp>
+#include <ds/Path.hpp>
 #include <ds/constants.hpp>
 #include <memory>
 #include <vector>
@@ -248,10 +249,7 @@ public:
 	 */
 	GeneralTreeNodeBuilder<T> &withKey(std::string key, std::string path) {
 		nodePtr->setKey(key);
-
-		if (path != "") {
-			nodePtr->setPath(key + constants::SEPARATOR);
-		}
+		nodePtr->setPath(Path(key));
 		return *this;
 	}
 
@@ -273,7 +271,7 @@ public:
 	 * @return A reference to this builder for method chaining.
 	 */
 	GeneralTreeNodeBuilder<T> &withPath(std::string path) {
-		nodePtr->setPath(path);
+		nodePtr->setPath(Path(path));
 		return *this;
 	}
 };

@@ -16,9 +16,11 @@ public:
 TEST_F(TestPath, Create) {
 	ds::Path path;
 	EXPECT_EQ(path.str(), "");
+	EXPECT_TRUE(path.empty());
 
 	// create with const char *
 	path.newPath("a", "b", "c");
+	EXPECT_FALSE(path.empty());
 	EXPECT_EQ(path.size(), 3);
 	EXPECT_EQ(path.str(), "/a/b/c/");
 	EXPECT_EQ(path.currentPath(), "/a/b/c/");

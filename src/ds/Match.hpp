@@ -2,6 +2,7 @@
 
 #include <ds/BaseNode.hpp>
 #include <ds/Node.hpp>
+#include <ds/Path.hpp>
 #include <ds/property.hpp>
 #include <memory>
 
@@ -34,7 +35,7 @@ class Match {
 	PROPERTY(ref, Ref, std::weak_ptr<C<T>>);
 
 	/// @brief The search string value used in the search operation
-	PROPERTY(search, Search, std::string);
+	PROPERTY(search, Search, Path);
 
 public:
 

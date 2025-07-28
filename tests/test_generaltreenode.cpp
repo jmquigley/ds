@@ -18,9 +18,9 @@ TEST_F(TestGeneralTreeNode, Create) {
 	EXPECT_EQ(gtn->data(), 42);
 	EXPECT_EQ(gtn->parent().use_count(), 0);
 
-	gtn->addChild("a1", 1, "a\\a1");
-	gtn->addChild("b1", 2, "a\\b1");
-	gtn->addChild("a2", 3, "a\\a2");
+	gtn->addChild("a1", 1, "/a/a1/");
+	gtn->addChild("b1", 2, "/a/b1/");
+	gtn->addChild("a2", 3, "/a/a2/");
 
 	EXPECT_EQ(gtn->totalChildren(), 3);
 
@@ -33,21 +33,21 @@ TEST_F(TestGeneralTreeNode, Create) {
 	EXPECT_EQ(out[0]->key(), "a1");
 	EXPECT_EQ(out[0], ch1);
 	EXPECT_EQ(out[0]->data(), 1);
-	EXPECT_EQ(out[0]->path(), "a\\a1");
+	EXPECT_EQ(out[0]->path().str(), "/a/a1/");
 	EXPECT_EQ(out[0]->parent(), gtn);
 
 	std::shared_ptr<ds::GeneralTreeNode<int>> ch2 = gtn->getChild("a2");
 	EXPECT_EQ(out[1]->key(), "a2");
 	EXPECT_EQ(out[1], ch2);
 	EXPECT_EQ(out[1]->data(), 3);
-	EXPECT_EQ(out[1]->path(), "a\\a2");
+	EXPECT_EQ(out[1]->path().str(), "/a/a2/");
 	EXPECT_EQ(out[1]->parent(), gtn);
 
 	std::shared_ptr<ds::GeneralTreeNode<int>> ch3 = gtn->getChild("b1");
 	EXPECT_EQ(out[2]->key(), "b1");
 	EXPECT_EQ(out[2], ch3);
 	EXPECT_EQ(out[2]->data(), 2);
-	EXPECT_EQ(out[2]->path(), "a\\b1");
+	EXPECT_EQ(out[2]->path().str(), "/a/b1/");
 	EXPECT_EQ(out[2]->parent(), gtn);
 
 	EXPECT_TRUE(gtn->hasChild("a1"));
@@ -63,14 +63,14 @@ TEST_F(TestGeneralTreeNode, Create) {
 	EXPECT_EQ(out[0]->key(), "a1");
 	EXPECT_EQ(out[0], ch1);
 	EXPECT_EQ(out[0]->data(), 1);
-	EXPECT_EQ(out[0]->path(), "a\\a1");
+	EXPECT_EQ(out[0]->path().str(), "/a/a1/");
 	EXPECT_EQ(out[0]->parent(), gtn);
 
 	ch3 = gtn->getChild("b1");
 	EXPECT_EQ(out[1]->key(), "b1");
 	EXPECT_EQ(out[1], ch3);
 	EXPECT_EQ(out[1]->data(), 2);
-	EXPECT_EQ(out[1]->path(), "a\\b1");
+	EXPECT_EQ(out[1]->path().str(), "/a/b1/");
 	EXPECT_EQ(out[1]->parent(), gtn);
 
 	gtn->clear();
@@ -113,7 +113,7 @@ TEST_F(TestGeneralTreeNode, WithBuilder) {
 	EXPECT_EQ(gtn->key(), "a");
 	EXPECT_EQ(gtn->parent()->key(), "p");
 	EXPECT_EQ(gtn->parent()->data(), 42);
-	EXPECT_EQ(gtn->path(), "a\\");
+	EXPECT_EQ(gtn->path().str(), "/a/");
 	EXPECT_EQ(gtn->parent()->parent(), nullptr);
 
 	std::shared_ptr<ds::GeneralTreeNode<int>> ch1 = gtn->getChild("a1");
@@ -122,7 +122,7 @@ TEST_F(TestGeneralTreeNode, WithBuilder) {
 	EXPECT_EQ(out[0]->key(), ch1->key());
 	EXPECT_EQ(out[0]->data(), 1);
 	EXPECT_EQ(out[0]->data(), ch1->data());
-	EXPECT_EQ(out[0]->path(), "a\\a1");
+	EXPECT_EQ(out[0]->path().str(), "/a/a1/");
 	EXPECT_EQ(out[0]->parent(), gtn);
 
 	std::shared_ptr<ds::GeneralTreeNode<int>> ch2 = gtn->getChild("a2");
@@ -130,7 +130,7 @@ TEST_F(TestGeneralTreeNode, WithBuilder) {
 	EXPECT_EQ(out[1]->key(), ch2->key());
 	EXPECT_EQ(out[1]->data(), 3);
 	EXPECT_EQ(out[1]->data(), ch2->data());
-	EXPECT_EQ(out[1]->path(), "a\\a2");
+	EXPECT_EQ(out[1]->path().str(), "/a/a2/");
 	EXPECT_EQ(out[1]->parent(), gtn);
 
 	std::shared_ptr<ds::GeneralTreeNode<int>> ch3 = gtn->getChild("b1");
@@ -138,6 +138,6 @@ TEST_F(TestGeneralTreeNode, WithBuilder) {
 	EXPECT_EQ(out[2]->key(), ch3->key());
 	EXPECT_EQ(out[2]->data(), 2);
 	EXPECT_EQ(out[2]->data(), ch3->data());
-	EXPECT_EQ(out[2]->path(), "a\\b1");
+	EXPECT_EQ(out[2]->path().str(), "/a/b1/");
 	EXPECT_EQ(out[2]->parent(), gtn);
 }

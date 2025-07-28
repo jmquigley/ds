@@ -307,6 +307,15 @@ public:
 	}
 
 	/**
+	 * @brief checks if the current path is empty
+	 * @returns true if the path is empty
+	 * @returns false if the path has a value
+	 */
+	inline bool empty() const {
+		return this->_currentPath == "";
+	}
+
+	/**
 	 * @brief Creates a new path from the provided components
 	 *
 	 * Clears any existing path elements and creates a new path from

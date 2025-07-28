@@ -3,6 +3,7 @@
 #include <ds/BaseNode.hpp>
 #include <ds/BinaryTree.hpp>
 #include <ds/Comparator.hpp>
+#include <ds/Path.hpp>
 #include <ds/property.hpp>
 #include <map>
 #include <memory>
@@ -32,7 +33,7 @@ class GeneralTreeNode :
 	PROPERTY_SCOPED(key, Key, std::string, protected:);
 
 	/// @brief the path from the root to this node
-	PROPERTY_SCOPED(path, Path, std::string, protected:);
+	PROPERTY_SCOPED(path, Path, Path, protected:);
 
 private:
 
