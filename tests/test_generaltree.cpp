@@ -52,7 +52,7 @@ TEST_F(TestGeneralTree, BreadthSearch) {
 	EXPECT_EQ(out[6], "g");
 }
 
-TEST_F(TestGeneralTree, FindKey) {
+TEST_F(TestGeneralTree, FindByPath) {
 	ds::GeneralTree<std::string> gt {{"a/b/c", "a"},   {"a/b/d", "d"},
 									 {"a/b/z", "b"},   {"d/e/f/g", "e"},
 									 {"d/e/f/h", "c"}, {"d/e/f/i", "f"}};
@@ -68,5 +68,13 @@ TEST_F(TestGeneralTree, FindKey) {
 
 	ds::Path path("a", "b", "d");
 	auto match = gt.findByPath(path);
+	EXPECT_TRUE(match.found());
+
+	path.clear();
+
+	match = gt.findByPath(path);
+	EXPECT_FALSE(match.found());
+
+	match = gt.findByPath("a/b/c");
 	EXPECT_TRUE(match.found());
 }

@@ -1,4 +1,4 @@
-#include <test_buffer.h>
+#include <testing_base.h>
 
 #include <cstddef>
 #include <ds/Buffer.hpp>
@@ -6,7 +6,15 @@
 #include <string>
 #include <vector>
 
-TestBuffer::TestBuffer() {};
+class TestBuffer : public TestingBase {
+protected:
+
+	std::string infile;
+
+public:
+
+	TestBuffer() : TestingBase() {}
+};
 
 TEST_F(TestBuffer, BufferCreation) {
 	ds::Buffer buffer;

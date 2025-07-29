@@ -72,6 +72,7 @@ set(DS_INCLUDES
     GeneralTreeNode.hpp
     helpers.hpp
     List.hpp
+    LRUCache.hpp
     Match.hpp
     Node.hpp
     Path.hpp
@@ -150,6 +151,7 @@ set(TEST_SOURCES
   tests/test_helpers.cpp
   tests/test_iterator.cpp
   tests/test_list.cpp
+  tests/test_lrucache.cpp
   tests/test_node.cpp
   tests/test_path.cpp
   tests/test_priorityqueue.cpp

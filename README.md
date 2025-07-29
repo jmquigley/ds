@@ -12,10 +12,14 @@ A user implementation of some basic data structures including:
 - Deque
 - GeneralTree
 - List
+- LRUCache
+- Path
 - PriorityQueue
+- RingBuffer
 - Queue
 - SortedList
 - Stack
+- ThreadPool
 
 ## Building
 
