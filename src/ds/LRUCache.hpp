@@ -1,8 +1,12 @@
 #pragma once
 
+#include <algorithm>
 #include <cstddef>
 #include <ds/property.hpp>
+#include <iomanip>
+#include <limits>
 #include <list>
+#include <sstream>
 #include <unordered_map>
 
 namespace ds {
@@ -123,63 +127,131 @@ namespace ds {
  */
 template<typename K, typename V = K>
 class LRUCache final {
-	/// @brief The maximum number of items the cache can hold
-	PROPERTY(capacity, Capacity, size_t);
+	/// @brief The maximum number of items the cache can currently hold
+	PROPERTY_WITH_DEFAULT(capacity, Capacity, size_t, {LRUCache::MIN_CAPACITY});
 
-	/// @brief The number of cache access requests
-	PROPERTY(hits, Hits, size_t);
+	/// @brief The size of the collection that the LRUCache is using, updated
+	/// by the object.
+	PROPERTY_WITH_DEFAULT(collectionSize, CollectionSize, size_t, {});
+
+	/// @brief The rate to decrease capacity when the hit rate is too high
+	PROPERTY_WITH_DEFAULT(decreaseFactor, DecreaseFactor, double, {0.9});
+
+	/// @brief The number of cache access requests history
+	PROPERTY_READONLY_WITH_DEFAULT(hits, Hits, size_t, {});
+
+	/// @brief The rate to increase capacity when hit ratio is too low
+	PROPERTY_WITH_DEFAULT(increaseFactor, IncreaseFactor, double, {1.2});
 
 	/// @brief List maintaining the order of keys from most to least recently
 	/// used
 	PROPERTY(items, Items, std::list<K>);
 
+	/// @brief The cache must have at least N values available
+	PROPERTY_WITH_DEFAULT(minCapacity, MinCapacity, size_t,
+						  {LRUCache::MIN_CAPACITY});
+
+	/// @brief The lowest allowable percentage of total capacity
+	PROPERTY_WITH_DEFAULT(minPercentage, MinPercentage, double, {0.05});
+
+	/// @brief The upper limit on how large the capacity can grow
+	PROPERTY_WITH_DEFAULT(maxCapacity, MaxCapacity, size_t,
+						  {LRUCache::MAX_CAPACITY});
+
+	/// @brief The higest allowable percentage of total capacity
+	PROPERTY_WITH_DEFAULT(maxPercentage, MaxPercentage, double, {0.40});
+
 	/// @brief The number of cache requests that miss
-	PROPERTY(misses, Misses, size_t);
+	PROPERTY_READONLY_WITH_DEFAULT(misses, Misses, size_t, {});
+
+	/// @brief A percentage +/- of the hit ratio to facilitate movement
+	PROPERTY_WITH_DEFAULT(noise, Noise, double, {0.05});
+
+	/// @brief the percetage level for cache hits we are trying to achieve
+	PROPERTY_WITH_DEFAULT(targetHitRatio, TargetHitRatio, double, {0.8});
+
+	/// @brief The number of cache access requests before the capacity size is
+	/// re-evaluated
+	PROPERTY_WITH_DEFAULT(threshold, Threshold, size_t, {1000});
 
 	/// @brief The total number of access requests
-	PROPERTY(totalAccess, TotalAccess, size_t);
+	PROPERTY_READONLY_WITH_DEFAULT(totalAccess, TotalAccess, size_t, {});
 
 private:
 
 	/** Map from keys to their values and positions in the items list */
 	std::unordered_map<K, std::pair<V, typename std::list<K>::iterator>> kvm;
 
+	/**
+	 * @brief after N cache lookups uses cache statistics to resize the
+	 * LRU cache.
+	 */
 	void updateCapacity() {
-		if (_totalAccess % LRUCache::THRESHOLD != 0) {
+		if (_totalAccess % _threshold != 0) {
 			return;
 		}
 
-		// TODO: add logic to recompute capacity
+		size_t newCapacity {};
+		double currentHitRatio = this->hitRatio();
+
+		if (currentHitRatio < _targetHitRatio - _noise) {
+			newCapacity = static_cast<size_t>(_capacity * _increaseFactor);
+		} else if (currentHitRatio > _targetHitRatio + _noise) {
+			newCapacity = static_cast<size_t>(_capacity * _decreaseFactor);
+		} else {
+			return;
+		}
+
+		size_t minSize = static_cast<size_t>(_collectionSize * _minPercentage);
+		size_t maxSize = static_cast<size_t>(_collectionSize * _maxPercentage);
+
+		newCapacity = std::clamp(newCapacity, std::max(minSize, _minCapacity),
+								 std::min(maxSize, _maxCapacity));
+
+		resizeCache(newCapacity);
+	}
+
+	/**
+	 * @brief Changes the size of the current map/list for the cache
+	 *
+	 * If the cache grows in size, then the capacity is just changed to
+	 * that new size.  If the capacity shrinks, then the oldest items are
+	 * ejected from the cache until it hits the new capacity size.
+	 *
+	 * @param newCapacity (`size_t`) the computed new size for the capacity
+	 */
+	void resizeCache(size_t newCapacity) {
+		if (newCapacity == _capacity) {
+			return;
+		}
+
+		// TODO: add code to resize the list/map
 	}
 
 public:
 
-	/** If the capacity given is 0, then set it to this value to ensure that
-	the cache has space to store values */
-	inline static size_t MIN_CAPACITY {100};
+	/// @brief If the capacity given is 0, then set it to this value to ensure
+	/// that the cache has space to store values
+	inline static const size_t MIN_CAPACITY {100};
 
-	/** The number of cache access requests before the capacity size is
-	re-evaluated */
-	inline static size_t THRESHOLD {1000};
+	/// @brief the maximum entries that can be added to the LRU cache
+	inline static const size_t MAX_CAPACITY {
+		std::numeric_limits<std::size_t>::max()};
 
-	LRUCache()
-		: _capacity(LRUCache::MIN_CAPACITY),
-		  _hits(0),
-		  _misses(0),
-		  _totalAccess(0) {}
+	LRUCache() {
+		this->clear();
+	}
 
 	/**
 	 * @brief Constructs an LRUCache with the specified capacity
 	 *
-	 * @param capacity Maximum number of items the cache can hold
+	 * @param initialCapacity Maximum number of items the cache can hold
 	 * @note If capacity is less than 1, it will default to 10
 	 */
-	explicit LRUCache(size_t capacity)
-		: _capacity(capacity), _hits(0), _misses(0), _totalAccess(0) {
+	explicit LRUCache(size_t initialCapacity) : LRUCache() {
+		this->_capacity = initialCapacity;
 		if (this->_capacity == 0) {
 			this->_capacity = LRUCache::MIN_CAPACITY;
-		} else {
-			MIN_CAPACITY = capacity;
 		}
 	}
 
@@ -191,16 +263,27 @@ public:
 	 * @brief Removes all items from the cache
 	 */
 	void clear() {
-		this->_capacity = LRUCache::MIN_CAPACITY;
+		this->_capacity = this->_minCapacity = LRUCache::MIN_CAPACITY;
+		this->_collectionSize = 0;
+		this->_decreaseFactor = 0.9;
 		this->_hits = 0;
+		this->_increaseFactor = 1.2;
+		this->_minPercentage = 0.05;
+		this->_maxCapacity = LRUCache::MAX_CAPACITY;
+		this->_maxPercentage = 0.40;
 		this->_misses = 0;
+		this->_noise = 0.05;
+		this->_targetHitRatio = 0.8;
+		this->_threshold = 1000;
 		this->_totalAccess = 0;
+
 		_items.clear();
 		kvm.clear();
 	}
 
 	/**
-	 * @brief Checks if a key exists in the cache without affecting its position
+	 * @brief Checks if a key exists in the cache without affecting its
+	 * position
 	 *
 	 * Unlike get(), this method doesn't change the order of items.
 	 *
@@ -209,6 +292,15 @@ public:
 	 */
 	inline bool contains(const K &key) const {
 		return kvm.find(key) != kvm.end();
+	}
+
+	/**
+	 * @brief Checks if the cache is empty
+	 *
+	 * @return true if the cache contains no items, false otherwise
+	 */
+	inline bool empty() const {
+		return kvm.empty();
 	}
 
 	/**
@@ -227,7 +319,7 @@ public:
 		auto pos = kvm.find(key);
 		if (pos == kvm.end()) {
 			this->_misses++;
-			updateCapacity();
+			// updateCapacity();
 			return false;
 		}
 
@@ -239,17 +331,8 @@ public:
 		// Set the output value
 		value = pos->second.first;
 		this->_hits++;
-		updateCapacity();
+		// updateCapacity();
 		return true;
-	}
-
-	/**
-	 * @brief Checks if the cache is empty
-	 *
-	 * @return true if the cache contains no items, false otherwise
-	 */
-	inline bool empty() const {
-		return kvm.empty();
 	}
 
 	/**
@@ -278,14 +361,6 @@ public:
 		} else {
 			return 0.0;
 		}
-	}
-
-	/**
-	 * @brief gets the minimum capacity value for the LRU cache
-	 * @returns a size_t value that represents the minimum size of a cache
-	 */
-	inline size_t minCapacity() const {
-		return LRUCache::MIN_CAPACITY;
 	}
 
 	/**
@@ -325,6 +400,26 @@ public:
 	 */
 	inline size_t size() const {
 		return kvm.size();
+	}
+
+	/**
+	 * @brief create a string that holds all relevant informaiton for the
+	 * cache.
+	 *
+	 * The purpose of this function is to provide debugging information
+	 * for the caller programs.
+	 * @returns a `std::string` that contains debugging information about the
+	 * current state of the cache.
+	 */
+	std::string stats() {
+		std::stringstream ss;
+		ss << std::setprecision(5) << "hitRatio: " << hitRatio() << ","
+		   << "hits: " << this->_hits << "," << "missRatio: " << missRatio()
+		   << "," << "misses: " << this->_misses << ","
+		   << "totalAccess: " << this->_totalAccess << ","
+		   << "capacity: " << this->_capacity;
+
+		return ss.str();
 	}
 };
 

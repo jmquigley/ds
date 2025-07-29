@@ -656,6 +656,8 @@ TEST_F(TestLRUCache, BehaviorAfterClear) {
 	cache.clear();
 	EXPECT_EQ(0, cache.size());
 	EXPECT_TRUE(cache.empty());
+	cache.setMinCapacity(3);
+	cache.setCapacity(3);
 
 	// Add items again
 	cache.set(3, "three");
@@ -672,6 +674,7 @@ TEST_F(TestLRUCache, BehaviorAfterClear) {
 	cache.set(5, "five");
 	cache.set(6, "six");  // Should evict 3
 
+	EXPECT_EQ(cache.size(), 3);
 	EXPECT_FALSE(cache.get(3, value));
 	EXPECT_TRUE(cache.get(4, value));
 	EXPECT_TRUE(cache.get(5, value));
@@ -705,3 +708,37 @@ TEST_F(TestLRUCache, NullptrValues) {
 	EXPECT_TRUE(cache.get(2, result));
 	EXPECT_TRUE(cache.get(3, result));
 }
+
+/*
+TEST_F(TestLRUCache, HitMissRate) {
+	size_t maxValues = 50;
+	size_t threshold = 25;
+	std::vector<size_t> v {
+		63, 12, 30, 43, 53, 2,	 5,	 67, 39, 15, 50, 1,	 23, 48, 93,  41, 45,
+		76, 8,	71, 57, 24, 42,	 73, 47, 79, 26, 62, 40, 89, 60, 16,  86, 88,
+		97, 25, 58, 3,	80, 36,	 6,	 28, 98, 87, 17, 44, 70, 77, 29,  11, 54,
+		82, 72, 27, 74, 14, 52,	 75, 31, 84, 99, 95, 18, 91, 9,	 100, 49, 66,
+		34, 56, 19, 64, 69, 46,	 22, 78, 81, 96, 55, 7,	 20, 13, 4,	  10, 38,
+		83, 68, 33, 35, 59, 94,	 61, 85, 51, 65, 32, 92, 21, 90, 37,  99, 16,
+		16, 10, 21, 7,	25, 24,	 9,	 24, 25, 6,	 17, 14, 9,	 20, 20,  7,  4,
+		5,	8,	21, 16, 10, 24,	 23, 10, 6,	 10, 11, 25, 9,	 18, 19,  17, 1,
+		8,	7,	23, 2,	19, 101, 9,	 5,	 12, 1,	 1,	 19, 18, 18, 1,	  18, 42};
+
+	ds::LRUCache<size_t, size_t> cache(maxValues);
+	cache.setThreshold(threshold);
+	cache.setCollectionSize(100);
+
+	for (size_t i = 0; i < maxValues; i++) {
+		cache.set(i, i);
+	}
+
+	size_t val;
+	for (auto &it: v) {
+		cache.get(it, val);
+	}
+
+	std::cout << cache.stats() << std::endl;
+
+	EXPECT_TRUE(false);
+}
+*/
