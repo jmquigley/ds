@@ -126,14 +126,31 @@ class LRUCache final {
 	/// @brief The maximum number of items the cache can hold
 	PROPERTY(capacity, Capacity, size_t);
 
+	/// @brief The number of cache access requests
+	PROPERTY(hits, Hits, size_t);
+
 	/// @brief List maintaining the order of keys from most to least recently
 	/// used
 	PROPERTY(items, Items, std::list<K>);
+
+	/// @brief The number of cache requests that miss
+	PROPERTY(misses, Misses, size_t);
+
+	/// @brief The total number of access requests
+	PROPERTY(totalAccess, TotalAccess, size_t);
 
 private:
 
 	/** Map from keys to their values and positions in the items list */
 	std::unordered_map<K, std::pair<V, typename std::list<K>::iterator>> kvm;
+
+	void updateCapacity() {
+		if (_totalAccess % LRUCache::THRESHOLD != 0) {
+			return;
+		}
+
+		// TODO: add logic to recompute capacity
+	}
 
 public:
 
@@ -141,7 +158,15 @@ public:
 	the cache has space to store values */
 	inline static size_t MIN_CAPACITY {100};
 
-	LRUCache() : _capacity(LRUCache::MIN_CAPACITY) {}
+	/** The number of cache access requests before the capacity size is
+	re-evaluated */
+	inline static size_t THRESHOLD {1000};
+
+	LRUCache()
+		: _capacity(LRUCache::MIN_CAPACITY),
+		  _hits(0),
+		  _misses(0),
+		  _totalAccess(0) {}
 
 	/**
 	 * @brief Constructs an LRUCache with the specified capacity
@@ -149,9 +174,12 @@ public:
 	 * @param capacity Maximum number of items the cache can hold
 	 * @note If capacity is less than 1, it will default to 10
 	 */
-	explicit LRUCache(size_t capacity) : _capacity(capacity) {
+	explicit LRUCache(size_t capacity)
+		: _capacity(capacity), _hits(0), _misses(0), _totalAccess(0) {
 		if (this->_capacity == 0) {
 			this->_capacity = LRUCache::MIN_CAPACITY;
+		} else {
+			MIN_CAPACITY = capacity;
 		}
 	}
 
@@ -163,6 +191,10 @@ public:
 	 * @brief Removes all items from the cache
 	 */
 	void clear() {
+		this->_capacity = LRUCache::MIN_CAPACITY;
+		this->_hits = 0;
+		this->_misses = 0;
+		this->_totalAccess = 0;
 		_items.clear();
 		kvm.clear();
 	}
@@ -190,8 +222,12 @@ public:
 	 * @return true if the key was found, false otherwise
 	 */
 	bool get(const K &key, V &value) {
+		this->_totalAccess++;
+
 		auto pos = kvm.find(key);
 		if (pos == kvm.end()) {
+			this->_misses++;
+			updateCapacity();
 			return false;
 		}
 
@@ -202,6 +238,8 @@ public:
 
 		// Set the output value
 		value = pos->second.first;
+		this->_hits++;
+		updateCapacity();
 		return true;
 	}
 
@@ -212,6 +250,34 @@ public:
 	 */
 	inline bool empty() const {
 		return kvm.empty();
+	}
+
+	/**
+	 * @brief computes the percentage on how often the cache is accessed
+	 * @returns a percentage that represents how often a value is accessed
+	 * in the cache.
+	 */
+	double hitRatio() const {
+		if (this->_totalAccess > 0) {
+			return static_cast<double>(this->_hits) /
+				   static_cast<double>(this->_totalAccess);
+		} else {
+			return 0.0;
+		}
+	}
+
+	/**
+	 * @brief computes the percentage on how often the cache is missed
+	 * @returns a percentage that represents how often a value is missed
+	 * in the cache.
+	 */
+	double missRatio() const {
+		if (this->_totalAccess > 0) {
+			return static_cast<double>(this->_misses) /
+				   static_cast<double>(this->_totalAccess);
+		} else {
+			return 0.0;
+		}
 	}
 
 	/**
