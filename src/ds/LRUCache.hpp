@@ -124,6 +124,9 @@ namespace ds {
  * std::cout << "After clear, size: " << cache.size() << std::endl;  // Outputs:
  * 0
  * @endcode
+ *
+ * TODO: Add callback mechanisms for significant operations (evictions, capacity
+ * changes)
  */
 template<typename K, typename V = K>
 class LRUCache final {
@@ -136,6 +139,9 @@ class LRUCache final {
 
 	/// @brief The rate to decrease capacity when the hit rate is too high
 	PROPERTY_WITH_DEFAULT(decreaseFactor, DecreaseFactor, double, {0.9});
+
+	/// @brief The number of keys that are ejected from the cache
+	PROPERTY_WITH_DEFAULT(ejects, Ejects, size_t, {});
 
 	/// @brief The number of cache access requests history
 	PROPERTY_READONLY_WITH_DEFAULT(hits, Hits, size_t, {});
@@ -177,14 +183,17 @@ class LRUCache final {
 	/// @brief The total number of access requests
 	PROPERTY_READONLY_WITH_DEFAULT(totalAccess, TotalAccess, size_t, {});
 
+	/// @brief the total number of set operations
+	PROPERTY_READONLY_WITH_DEFAULT(totalSets, TotalSets, size_t, {});
+
 private:
 
 	/** Map from keys to their values and positions in the items list */
 	std::unordered_map<K, std::pair<V, typename std::list<K>::iterator>> kvm;
 
 	/**
-	 * @brief after N cache lookups uses cache statistics to resize the
-	 * LRU cache.
+	 * @brief after N cache lookups uses cache statistics to dynamically resize
+	 * the LRU cache.
 	 */
 	void updateCapacity() {
 		if (_totalAccess % _threshold != 0) {
@@ -225,7 +234,13 @@ private:
 			return;
 		}
 
-		// TODO: add code to resize the list/map
+		_capacity = newCapacity;
+
+		while (kvm.size() > _capacity) {
+			auto last = _items.end();
+			--last;
+			this->eject(*last);
+		}
 	}
 
 public:
@@ -260,12 +275,14 @@ public:
 	}
 
 	/**
-	 * @brief Removes all items from the cache
+	 * @brief Removes all items from the cache and resets all of the base
+	 * statistics to their built in defaults.
 	 */
 	void clear() {
 		this->_capacity = this->_minCapacity = LRUCache::MIN_CAPACITY;
 		this->_collectionSize = 0;
 		this->_decreaseFactor = 0.9;
+		this->_ejects = 0;
 		this->_hits = 0;
 		this->_increaseFactor = 1.2;
 		this->_minPercentage = 0.05;
@@ -276,6 +293,7 @@ public:
 		this->_targetHitRatio = 0.8;
 		this->_threshold = 1000;
 		this->_totalAccess = 0;
+		this->_totalSets = 0;
 
 		_items.clear();
 		kvm.clear();
@@ -285,13 +303,69 @@ public:
 	 * @brief Checks if a key exists in the cache without affecting its
 	 * position
 	 *
-	 * Unlike get(), this method doesn't change the order of items.
+	 * Unlike get(), this method doesn't change the order of items or impact
+	 * the dynamic capacity sizing.
 	 *
 	 * @param key The key to check
 	 * @return true if the key exists in the cache, false otherwise
 	 */
 	inline bool contains(const K &key) const {
 		return kvm.find(key) != kvm.end();
+	}
+
+	/**
+	 * @brief Removes a specific key from the cache
+	 *
+	 * This method allows for manual removal of an item from the cache
+	 * regardless of its LRU position.
+	 *
+	 * @param key The key to remove from the cache
+	 * @return true if the key was found and removed, false if the key wasn't in
+	 * the cache
+	 *
+	 * @par Example:
+	 * @code{.cpp}
+	 * ds::LRUCache<int, std::string> cache(10);
+	 * cache.set(1, "one");
+	 * cache.set(2, "two");
+	 *
+	 * // Remove a specific key
+	 * bool removed = cache.eject(1);  // Returns true
+	 *
+	 * // Key 1 is no longer in the cache
+	 * std::string value;
+	 * cache.get(1, value);  // Returns false
+	 *
+	 * // Try to remove a non-existent key
+	 * removed = cache.eject(3);  // Returns false
+	 * @endcode
+	 */
+	bool eject(const K &key) {
+		auto pos = kvm.find(key);
+		if (pos == kvm.end()) {
+			// Key doesn't exist in cache
+			return false;
+		}
+
+		// Remove from the LRU list and map
+		_items.erase(pos->second.second);
+		kvm.erase(pos);
+
+		return true;
+	}
+
+	/**
+	 * @brief computes the percentage on how often the cache entry is removed
+	 * @returns a percentage that represents how often a value is removed
+	 * from the cache.
+	 */
+	double ejectRatio() {
+		if (this->_totalSets > 0) {
+			return static_cast<double>(this->_ejects) /
+				   static_cast<double>(this->_totalSets);
+		} else {
+			return 0.0;
+		}
 	}
 
 	/**
@@ -319,7 +393,7 @@ public:
 		auto pos = kvm.find(key);
 		if (pos == kvm.end()) {
 			this->_misses++;
-			// updateCapacity();
+			updateCapacity();
 			return false;
 		}
 
@@ -331,7 +405,7 @@ public:
 		// Set the output value
 		value = pos->second.first;
 		this->_hits++;
-		// updateCapacity();
+		updateCapacity();
 		return true;
 	}
 
@@ -376,6 +450,7 @@ public:
 	void set(const K &key, const V &value) {
 		auto pos = kvm.find(key);
 		if (pos == kvm.end()) {
+			_totalSets++;
 			// Key doesn't exist - add new item
 			_items.push_front(key);
 			kvm[key] = {value, _items.begin()};
@@ -384,6 +459,7 @@ public:
 			if (size() > _capacity) {
 				kvm.erase(_items.back());
 				_items.pop_back();
+				_ejects++;
 			}
 		} else {
 			// Key exists - update and move to front
@@ -407,16 +483,22 @@ public:
 	 * cache.
 	 *
 	 * The purpose of this function is to provide debugging information
-	 * for the caller programs.
+	 * for the caller programs.  It uses a csv format.
+	 *
 	 * @returns a `std::string` that contains debugging information about the
 	 * current state of the cache.
 	 */
 	std::string stats() {
+		std::string sep = ", ";
 		std::stringstream ss;
-		ss << std::setprecision(5) << "hitRatio: " << hitRatio() << ","
-		   << "hits: " << this->_hits << "," << "missRatio: " << missRatio()
-		   << "," << "misses: " << this->_misses << ","
-		   << "totalAccess: " << this->_totalAccess << ","
+
+		ss << std::setprecision(5) << "targetHitRaio: " << _targetHitRatio
+		   << sep << "hitRatio: " << hitRatio() << sep
+		   << "hits: " << this->_hits << sep << "missRatio: " << missRatio()
+		   << sep << "misses: " << this->_misses << sep
+		   << "totalAccess: " << this->_totalAccess << sep
+		   << "ejectRatio: " << this->ejectRatio() << sep
+		   << "ejects: " << this->_ejects << sep
 		   << "capacity: " << this->_capacity;
 
 		return ss.str();

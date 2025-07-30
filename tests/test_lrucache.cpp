@@ -709,36 +709,66 @@ TEST_F(TestLRUCache, NullptrValues) {
 	EXPECT_TRUE(cache.get(3, result));
 }
 
-/*
 TEST_F(TestLRUCache, HitMissRate) {
-	size_t maxValues = 50;
+	size_t cacheSize = 20;
+	size_t maxValues = 100;
 	size_t threshold = 25;
 	std::vector<size_t> v {
-		63, 12, 30, 43, 53, 2,	 5,	 67, 39, 15, 50, 1,	 23, 48, 93,  41, 45,
-		76, 8,	71, 57, 24, 42,	 73, 47, 79, 26, 62, 40, 89, 60, 16,  86, 88,
-		97, 25, 58, 3,	80, 36,	 6,	 28, 98, 87, 17, 44, 70, 77, 29,  11, 54,
-		82, 72, 27, 74, 14, 52,	 75, 31, 84, 99, 95, 18, 91, 9,	 100, 49, 66,
-		34, 56, 19, 64, 69, 46,	 22, 78, 81, 96, 55, 7,	 20, 13, 4,	  10, 38,
-		83, 68, 33, 35, 59, 94,	 61, 85, 51, 65, 32, 92, 21, 90, 37,  99, 16,
-		16, 10, 21, 7,	25, 24,	 9,	 24, 25, 6,	 17, 14, 9,	 20, 20,  7,  4,
-		5,	8,	21, 16, 10, 24,	 23, 10, 6,	 10, 11, 25, 9,	 18, 19,  17, 1,
-		8,	7,	23, 2,	19, 101, 9,	 5,	 12, 1,	 1,	 19, 18, 18, 1,	  18, 42};
+		63, 12, 30, 43, 53, 2,	5,	67, 39, 15, 50, 1,	23, 48, 93,	 41, 45,
+		76, 8,	71, 57, 24, 42, 73, 47, 79, 26, 62, 40, 89, 60, 16,	 86, 88,
+		82, 72, 27, 74, 14, 52, 75, 31, 84, 99, 95, 18, 91, 9,	100, 49, 66,
+		5,	8,	21, 16, 10, 24, 23, 10, 6,	10, 11, 25, 9,	18, 19,	 17, 1,
+		97, 25, 58, 3,	80, 36, 6,	28, 98, 87, 17, 44, 70, 77, 29,	 11, 54,
+		82, 72, 27, 74, 14, 52, 75, 31, 84, 99, 95, 18, 91, 9,	100, 49, 66,
+		34, 56, 19, 64, 69, 46, 22, 78, 81, 96, 55, 7,	20, 13, 4,	 10, 38,
+		63, 12, 30, 43, 53, 2,	5,	67, 39, 15, 50, 1,	23, 48, 93,	 41, 45,
+		83, 68, 33, 35, 59, 94, 61, 85, 51, 65, 32, 92, 21, 90, 37,	 99, 16,
+		16, 10, 21, 7,	25, 24, 9,	24, 25, 6,	17, 14, 9,	20, 20,	 7,	 4,
+		82, 72, 27, 74, 14, 52, 75, 31, 84, 99, 95, 18, 91, 9,	100, 49, 66,
+		5,	8,	21, 16, 10, 24, 23, 10, 6,	10, 11, 25, 9,	18, 19,	 17, 1,
+		76, 8,	71, 57, 24, 42, 73, 47, 79, 26, 62, 40, 89, 60, 16,	 86, 88,
+		97, 25, 58, 3,	80, 36, 6,	28, 98, 87, 17, 44, 70, 77, 29,	 11, 54,
+		8,	7,	23, 2,	19, 99, 9,	5,	12, 1,	1,	19, 18, 18, 1,	 18, 42};
 
-	ds::LRUCache<size_t, size_t> cache(maxValues);
+	EXPECT_EQ(v.size(), 255);
+
+	ds::LRUCache<size_t, size_t> cache(cacheSize);
 	cache.setThreshold(threshold);
-	cache.setCollectionSize(100);
+	cache.setCollectionSize(maxValues);
 
-	for (size_t i = 0; i < maxValues; i++) {
+	// This test uses the number 1-100 for the data collection.
+	// The cache is seeded 5,10,...100, with 20 initial values
+	for (size_t i = 5; i <= maxValues; i += 5) {
 		cache.set(i, i);
 	}
 
+	// A set of 255 values are then checked against the cache one at a time.
+	// When the values are not there, then they are set in the cache.  Every
+	// 25 get operations (threshold) causes a check against the cache for
+	// adjustment.
 	size_t val;
 	for (auto &it: v) {
-		cache.get(it, val);
+		if (!cache.get(it, val)) {
+			cache.set(it, it);
+		}
 	}
 
+	// The following stats are a snapshot of the cache operation
 	std::cout << cache.stats() << std::endl;
+	// targetHitRaio: 0.8, hitRatio: 0.20784, hits: 53, missRatio: 0.79216,
+	// misses: 202, totalAccess: 255, ejectRatio: 0.81982, ejects: 182,
+	// capacity: 40
 
-	EXPECT_TRUE(false);
+	const double epsilon = 0.001;
+
+	ASSERT_NEAR(0.8d, cache.getTargetHitRatio(), epsilon);
+	ASSERT_NEAR(0.20784d, cache.hitRatio(), epsilon);
+	ASSERT_NEAR(0.79216d, cache.missRatio(), epsilon);
+	ASSERT_NEAR(0.81982d, cache.ejectRatio(), epsilon);
+
+	EXPECT_EQ(cache.hits(), 53);
+	EXPECT_EQ(cache.misses(), 202);
+	EXPECT_EQ(cache.totalAccess(), 255);
+	EXPECT_EQ(cache.ejects(), 182);
+	EXPECT_EQ(cache.capacity(), 40);
 }
-*/

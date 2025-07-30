@@ -23,7 +23,7 @@ A user implementation of some basic data structures including:
 
 ## Building
 
-The library was developed under Ubuntu linux in a Docker container.  It requires the following libraries and tools to be installed:
+The library was developed under Ubuntu linux in a Docker container.  It requires the following libraries and tools to be installed to build:
 
 - build-essential
 - g++-14
@@ -52,3 +52,11 @@ This will create the release version of the library.  To build unit tests and cr
 ```bash
 ./build.sh --debug
 ```
+
+To build all unit tests and also perform a memory test (valgrind) use:
+
+```bash
+./build.sh --debug --memtest
+```
+
+This build process will take a few minutes to run with leak detection on.
