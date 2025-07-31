@@ -27,6 +27,20 @@ enum class NodeFlag : BYTE {
 	Color = 1 << 0,	 // 0 = RED, 1 = BLACK
 };
 
+/**
+ * @enum NodeColor
+ * @brief Represents colors used in Red-Black tree nodes.
+ *
+ * In a Red-Black tree:
+ * - Red nodes provide flexibility during insertions and deletions
+ * - Black nodes maintain the critical "black height" property
+ * - The color of nodes helps enforce the tree's balance constraints:
+ *   1. Every node is either red or black
+ *   2. The root is black
+ *   3. All leaves (NIL nodes) are black
+ *   4. If a node is red, both its children are black
+ *   5. Every path from root to leaf contains the same number of black nodes
+ */
 enum class NodeColor { Red = 0, Black = 1 };
 
 /**
@@ -43,10 +57,13 @@ template<typename T, template<class> class C>
 class BaseNode {
 	/// @brief The data payload of the node.
 	PROPERTY_SCOPED_WITH_DEFAULT(data, Data, T, protected:, {});
+
 	/// @brief flags used to determine bit properties in a node
 	PROPERTY_SCOPED_WITH_DEFAULT(flags, Flags, ByteFlag, protected:, {0});
+
 	/// @brief A shared pointer to the left child node.
 	PROPERTY_SCOPED(left, Left, std::shared_ptr<C<T>>, protected:);
+
 	/// @brief A shared pointer to the right child node.
 	PROPERTY_SCOPED(right, Right, std::shared_ptr<C<T>>, protected:);
 
@@ -57,7 +74,7 @@ public:
 	 *
 	 * Initializes the flags, and left, and right to nullptr,
 	 */
-	BaseNode() : _flags(0), _left(nullptr), _right(nullptr) {}
+	BaseNode() : _data {}, _flags(0), _left(nullptr), _right(nullptr) {}
 
 	/**
 	 * @brief Constructor for Node with initial data.
@@ -77,8 +94,8 @@ public:
 	 * @param flags initial internal flag settings for the new node
 	 * @param data The data to be stored in the node.
 	 */
-	BaseNode(std::shared_ptr<C<T>> left, std::shared_ptr<C<T>> right,
-			 ByteFlag flags, T data)
+	BaseNode(const std::shared_ptr<C<T>> &left,
+			 const std::shared_ptr<C<T>> &right, ByteFlag flags, T data)
 		: _data(data), _flags(flags), _left(left), _right(right) {}
 
 	/**
@@ -90,7 +107,7 @@ public:
 	 *
 	 * @param other The source Node object to move resources from
 	 */
-	BaseNode(C<T> &other) : BaseNode() {
+	BaseNode(const C<T> &other) : BaseNode() {
 		this->operator=(other);
 	}
 
@@ -142,13 +159,15 @@ public:
 	 * @param other The right-hand side Node object to copy from
 	 * @return Reference to this node after the assignment
 	 */
-	C<T> &operator=(C<T> &other) {
-		this->_data = other._data;
-		this->_right = other._right;
-		this->_left = other._left;
-		this->_flags = other._flags;
+	C<T> &operator=(const C<T> &other) {
+		if (this != &other) {
+			this->_data = other._data;
+			this->_right = other._right;
+			this->_left = other._left;
+			this->_flags = other._flags;
+		}
 
-		return *this;
+		return *static_cast<C<T> *>(this);
 	}
 
 	/**
@@ -164,7 +183,7 @@ public:
 	 */
 	C<T> &operator=(C<T> &&rhs) {
 		move(std::move(rhs));
-		return *this;
+		return *static_cast<C<T> *>(this);
 	}
 
 	/**

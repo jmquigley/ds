@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <ds/BaseNodeBuilder.hpp>
 #include <ds/BaseTree.hpp>
+#include <ds/LRUCache.hpp>
 #include <ds/Match.hpp>
 #include <ds/Node.hpp>
 #include <ds/Queue.hpp>
@@ -66,6 +67,11 @@ namespace ds {
 template<typename T>
 class BinaryTree : public BaseTree<T, TreeNode> {
 private:
+
+	/**
+	 * @brief an internal recently used cache object for search
+	 */
+	// LRUCache<T, BaseNode<T, Node>> _cache;
 
 	/**
 	 * @brief A temporary node pointer value used to store the latest

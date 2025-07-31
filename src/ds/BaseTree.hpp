@@ -18,11 +18,9 @@ namespace ds {
  */
 template<typename T, template<class> class C>
 class BaseTree : public Collection<T, C>, Searchable<T, C> {
-	/// @brief The current height of the tree
-	// PROPERTY_WITH_DEFAULT(_height, Height, size_t, {0});
-
 protected:
 
+	/// @brief the computed height for this tree
 	size_t _height;
 
 public:

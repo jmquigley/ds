@@ -15,6 +15,7 @@ int main(int argc, char **argv) {
 			  << std::format("GeneralTreeNode: {}",
 							 sizeof(ds::GeneralTreeNode<int>))
 			  << std::endl
+			  << std::format("Path: {}", sizeof(ds::Path)) << std::endl
 			  << std::format("unsigned int size: {}", sizeof(int)) << std::endl
 			  << std::format("size_t size: {}", sizeof(int)) << std::endl
 			  << std::format("shared ptr size: {}", sizeof(p)) << std::endl

@@ -48,16 +48,13 @@ class Path final {
 	PROPERTY(currentPath, CurrentPath, std::string);
 
 	/**
-	 * @brief Property for the list of delimiters used in paths
-	 */
-	PROPERTY(delimiters, Delimiters, std::vector<std::string>);
-
-	/**
 	 * @brief Property for the vector of path elements
 	 */
 	PROPERTY(elements, Elements, std::vector<std::string>);
 
 private:
+
+	const static inline std::vector<std::string> _delimiters {"\\", "/", "|"};
 
 	/**
 	 * @brief Builds a path string from the current elements
@@ -80,7 +77,7 @@ public:
 	 *
 	 * Creates an empty path with no elements.
 	 */
-	Path() : _currentPath(""), _delimiters {"\\", "/", "|"} {}
+	Path() : _currentPath("") {}
 
 	/**
 	 * @brief Variadic constructor to create a path from multiple components
@@ -105,9 +102,7 @@ public:
 	 * @param path The Path object to copy
 	 */
 	Path(const Path &path)
-		: _currentPath(path._currentPath),
-		  _delimiters(path._delimiters),
-		  _elements(path._elements) {}
+		: _currentPath(path._currentPath), _elements(path._elements) {}
 
 	/**
 	 * @brief an initializer list to build a path
@@ -271,7 +266,7 @@ public:
 	 * @return The new path string after appending
 	 */
 	std::string append(const std::string &val) {
-		if (containsAnySubstring(val, _delimiters)) {
+		if (containsAnySubstring(val, Path::_delimiters)) {
 			this->parse(val, false);
 		} else {
 			this->_elements.push_back(val);
@@ -353,7 +348,7 @@ public:
 	 * @return The parsed and rebuilt path string
 	 */
 	std::string parse(const std::string &path, bool build = true) {
-		this->_elements = splitStringOnDelimiters(path, _delimiters);
+		this->_elements = splitStringOnDelimiters(path, Path::_delimiters);
 		if (build) {
 			return buildPath();
 		}

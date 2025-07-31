@@ -36,14 +36,24 @@ public:
 	 * @param flags Node flags for additional properties
 	 * @param data The data to store in this node
 	 */
-	Node(std::shared_ptr<Node<T>> left, std::shared_ptr<Node<T>> right,
-		 ByteFlag flags, T data)
-		: BaseNode<T, Node>::_data(data),
-		  BaseNode<T, Node>::_flags(flags),
-		  BaseNode<T, Node>::_left(
-			  std::static_pointer_cast<BaseNode<T, Node>>(left)),
-		  BaseNode<T, Node>::_right(
-			  std::static_pointer_cast<BaseNode<T, Node>>(right)) {}
+	Node(const std::shared_ptr<Node<T>> &left,
+		 const std::shared_ptr<Node<T>> &right, ByteFlag flags, T data)
+		: BaseNode<T, Node>(left, right, flags, data) {}
+
+	/**
+	 * @brief Copy constructor for the Node class
+	 */
+	Node(const Node<T> &other) : BaseNode<T, Node>(other) {}
+
+	/**
+	 * @brief Move constructor for the Node class
+	 */
+	Node(Node<T> &&other) : BaseNode<T, Node>(other) {}
+
+	/**
+	 * @brief Node destructor
+	 */
+	virtual ~Node() {}
 
 	/**
 	 * @brief Creates a deep copy of this node

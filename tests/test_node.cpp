@@ -19,6 +19,23 @@ TEST_F(TestNode, Create) {
 	std::cout << "Node = " << node << std::endl;
 };
 
+TEST_F(TestNode, Constructors) {
+	// Copy Constructor
+	ds::Node<int> node(42);
+	ds::Node<int> node2(node);
+
+	EXPECT_EQ(node.getData(), 42);
+	EXPECT_EQ(node2.getData(), 42);
+
+	// std::shared_ptr<ds::Node<int>> p1 =
+	// std::make_shared<ds::Node<int>>(node);
+	std::shared_ptr<ds::Node<int>> left = std::make_shared<ds::Node<int>>(1);
+	std::shared_ptr<ds::Node<int>> right = std::make_shared<ds::Node<int>>(2);
+
+	ds::Node<int> node3(left, right, (ds::ByteFlag)0, 42);
+	EXPECT_EQ(node2.getData(), 42);
+}
+
 TEST_F(TestNode, Builder) {
 	std::shared_ptr<ds::Node<int>> node;
 	ds::NodeBuilder<int> builder;

@@ -43,10 +43,8 @@ public:
 	 * @param parent Weak pointer to parent node
 	 * @param data The data to store in this node
 	 */
-	TreeNode(std::weak_ptr<TreeNode<T>> parent, T data)
-		: BaseNode<T, TreeNode>::_data(data),
-		  BaseNode<T, TreeNode>::_left(nullptr),
-		  BaseNode<T, TreeNode>::_right(nullptr),
+	TreeNode(const std::weak_ptr<TreeNode<T>> &parent, T data)
+		: BaseNode<T, TreeNode>(nullptr, nullptr, (ByteFlag)0, data),
 		  _parent(parent) {}
 
 	/**
@@ -57,24 +55,28 @@ public:
 	 * @param flags Node flags for additional properties
 	 * @param data The data to store in this node
 	 */
-	TreeNode(std::weak_ptr<TreeNode<T>> parent,
-			 std::shared_ptr<TreeNode<T>> left,
-			 std::shared_ptr<TreeNode<T>> right, ByteFlag flags, T data)
-		: BaseNode<T, TreeNode>::_data(data),
-		  BaseNode<T, TreeNode>::_flags(flags),
-		  BaseNode<T, TreeNode>::_left(
-			  std::static_pointer_cast<BaseNode<T, TreeNode>>(left)),
-		  BaseNode<T, TreeNode>::_right(
-			  std::static_pointer_cast<BaseNode<T, TreeNode>>(right)),
-		  _parent(parent) {}
+	TreeNode(const std::weak_ptr<TreeNode<T>> &parent,
+			 std::shared_ptr<TreeNode<T>> &left,
+			 std::shared_ptr<TreeNode<T>> &right, ByteFlag flags, T data)
+		: BaseNode<T, TreeNode>(left, right, flags, data), _parent(parent) {}
 
 	/**
 	 * @brief copy constructor for the TreeNode class
-	 * @param tn the tree node to copy
+	 * @param other the tree node to copy
 	 */
-	TreeNode(TreeNode<T> &tn) : TreeNode<T>() {
-		this->operator=(tn);
+	TreeNode(const TreeNode<T> &other) : BaseNode<T, TreeNode>(other) {
+		this->operator=(other);
 	}
+
+	/**
+	 * @brief Move constructor for the TreeNode class
+	 */
+	TreeNode(const TreeNode<T> &&other) : BaseNode<T, TreeNode>(other) {}
+
+	/**
+	 * @brief TreeNode desstrutor
+	 */
+	virtual ~TreeNode() {}
 
 	/**
 	 * @brief equal operator for the TreeNode class
@@ -84,7 +86,7 @@ public:
 	TreeNode<T> operator=(TreeNode<T> &tn) {
 		this->_parent = tn._parent;
 		// BaseNode<T, TreeNode>::operator=(tn);
-		return *this;
+		return *static_cast<TreeNode<T> *>(this);
 	}
 
 	/**
