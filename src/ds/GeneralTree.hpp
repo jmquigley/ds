@@ -355,7 +355,7 @@ public:
 	 * @param data The data to search for.
 	 * @return true if the data is found, false otherwise.
 	 */
-	bool contains(T data) const {
+	bool contains(T data) {
 		Match<T, GeneralTreeNode> match;
 		match = this->find(data);
 		return match.found();
@@ -367,7 +367,7 @@ public:
 	 * @param key The key to check if it is in the tree
 	 * @return true if a node with the key is found, false otherwise.
 	 */
-	bool containsByKey(std::string key) const {
+	bool containsByKey(std::string key) {
 		Match<T, GeneralTreeNode> match;
 		match = this->findByKey(key);
 		return match.found();
@@ -379,7 +379,7 @@ public:
 	 * @param path (`Path &`) The path to check if it is in the tree
 	 * @return true if a node with the path is found, false otherwise.
 	 */
-	bool containsByPath(const Path &path) const {
+	bool containsByPath(const Path &path) {
 		Match<T, GeneralTreeNode> match;
 		match = this->findByPath(path);
 		return match.found();
@@ -417,7 +417,7 @@ public:
 	 *      Space: O(w) where w is the maximum width of the tree (for
 	 * breadth-first traversal)
 	 */
-	virtual Match<T, GeneralTreeNode> find(T data) const override {
+	virtual Match<T, GeneralTreeNode> find(T data) override {
 		Match<T, GeneralTreeNode> match;
 		size_t pos = 0;
 

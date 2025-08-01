@@ -71,7 +71,7 @@ private:
 	/**
 	 * @brief an internal recently used cache object for search
 	 */
-	// LRUCache<T, BaseNode<T, Node>> _cache;
+	LRUCache<T, std::shared_ptr<TreeNode<T>>> _cache;
 
 	/**
 	 * @brief A temporary node pointer value used to store the latest
@@ -164,7 +164,8 @@ private:
 	 *      Space: O(h) where h is the height of the tree (for recursion stack)
 	 */
 	template<typename Callback>
-	bool inorderDelegate(std::shared_ptr<TreeNode<T>> node, Callback callback) {
+	bool inorderDelegate(std::shared_ptr<TreeNode<T>> node,
+						 Callback callback) const {
 		if (!node) {
 			return false;
 		}
@@ -221,11 +222,13 @@ private:
 			this->_root = tnode;
 			this->_front = this->_back = this->_latestNode;
 			this->_size++;
+			this->_cache.setCollectionSize(this->_size);
 			return this->_root;
 		} else {
 			if (node == nullptr) {
 				// found a leaf, so insert in this location
 				this->_size++;
+				this->_cache.setCollectionSize(this->_size);
 				tnode = newNode(data, parent);
 				this->_latestNode = tnode;
 
@@ -428,7 +431,7 @@ private:
 	 */
 	template<typename Callback>
 	bool postorderDelegate(std::shared_ptr<TreeNode<T>> node,
-						   Callback callback) {
+						   Callback callback) const {
 		if (node == nullptr) {
 			return false;
 		}
@@ -473,7 +476,7 @@ private:
 	 */
 	template<typename Callback>
 	bool preorderDelegate(std::shared_ptr<TreeNode<T>> node,
-						  Callback callback) {
+						  Callback callback) const {
 		if (node == nullptr) {
 			return false;
 		}
@@ -631,7 +634,7 @@ private:
 	 */
 	template<typename Callback>
 	bool reverseorderDelegate(std::shared_ptr<TreeNode<T>> node,
-							  Callback callback) {
+							  Callback callback) const {
 		if (node == nullptr) {
 			return false;
 		}
@@ -883,7 +886,7 @@ public:
 	 * @param bt (`BinaryTree<T>`) the binary tree to copy
 	 * @returns a reference to this binary tree
 	 */
-	BinaryTree<T> &operator=(BinaryTree<T> &bt) {
+	BinaryTree<T> &operator=(const BinaryTree<T> &bt) {
 		this->clear();
 		bt.inorder([&](auto &node) {
 			T data = node.getData();
@@ -1112,13 +1115,14 @@ public:
 		this->_front.reset();
 		this->_back.reset();
 		this->_size = 0;
+		this->_cache.clear();
 	}
 
 	/**
 	 * @brief Checks if a `T` data element exists within the binary tree
 	 * @returns true if the data element exists in the list, otherwise false.
 	 */
-	inline bool contains(T data) const override {
+	inline bool contains(T data) {
 		Match<T, TreeNode> match = find(data);
 		return match.found();
 	}
@@ -1134,15 +1138,24 @@ public:
 	 * @param data The value to search for
 	 * @return Match object containing the result of the search
 	 */
-	virtual Match<T, TreeNode> find(T data) const {
+	virtual Match<T, TreeNode> find(T data) {
 		std::shared_ptr<TreeNode<T>> tnode = this->_root;
 		Match<T, TreeNode> match;
+
+		match.setData(data);
+
+		if (this->_cache.get(data, tnode)) {
+			match.setFound(true);
+			match.setIndex(0);
+			match.setRef(tnode);
+			return match;
+		}
 
 		while (tnode != nullptr) {
 			int result = this->_comparator->compare(tnode->getData(), data);
 
 			if (result == 0) {
-				match.setData(data);
+				this->_cache.set(data, tnode);
 				match.setFound(true);
 				match.setIndex(0);
 				match.setRef(tnode);
@@ -1194,7 +1207,7 @@ public:
 	 * it is encountered.
 	 */
 	template<typename Callback>
-	bool inorder(Callback callback) {
+	bool inorder(Callback callback) const {
 		return this->inorderDelegate(this->_root, callback);
 	}
 
@@ -1226,7 +1239,7 @@ public:
 	 * it is encountered.
 	 */
 	template<typename Callback>
-	bool postorder(Callback callback) {
+	bool postorder(Callback callback) const {
 		return this->postorderDelegate(this->_root, callback);
 	}
 
@@ -1242,7 +1255,7 @@ public:
 	 * it is encountered.
 	 */
 	template<typename Callback>
-	bool preorder(Callback callback) {
+	bool preorder(Callback callback) const {
 		return this->preorderDelegate(this->_root, callback);
 	}
 
@@ -1403,7 +1416,7 @@ public:
 	 * it is encountered.
 	 */
 	template<typename Callback>
-	bool reverseorder(Callback callback) {
+	bool reverseorder(Callback callback) const {
 		return this->reverseorderDelegate(this->_root, callback);
 	}
 

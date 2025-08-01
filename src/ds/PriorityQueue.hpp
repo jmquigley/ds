@@ -7,6 +7,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <variant>
 #include <vector>
 
 namespace ds {
@@ -35,9 +36,20 @@ class Priority {
 	/// when multiple items have the same priority
 	PROPERTY(offset, Offset, size_t);
 
+private:
+
+	Priority<T> &move(const Priority<T> &priority) {
+		if (this != &priority) {
+			this->_data = priority._data;
+			this->_value = priority._value;
+			this->_offset = priority._offset;
+		}
+		return *this;
+	}
+
 public:
 
-	Priority() : _data({}), _value(0), _offset(0) {}
+	Priority() : _data {}, _value(0), _offset(0) {}
 
 	/**
 	 * @brief Constructs a Priority object
@@ -53,8 +65,12 @@ public:
 	 * @brief copy constructor for PriorityQueue
 	 * @param priority the `Priority<T>` object to copy
 	 */
-	Priority(const Priority &priority) : Priority<T>() {
-		this->operator=(priority);
+	Priority(const Priority<T> &priority) : Priority<T>() {
+		this->move(priority);
+	}
+
+	Priority(Priority<T> &&priority) : Priority<T>() {
+		this->move(std::move(priority));
 	}
 
 	virtual ~Priority() {}
@@ -68,12 +84,7 @@ public:
 	 * @returns a reference to the object that is being copied into
 	 */
 	Priority<T> &operator=(const Priority<T> &priority) {
-		if (this != &priority) {
-			this->_data = priority._data;
-			this->_value = priority._value;
-			this->_offset = priority._offset;
-		}
-		return *this;
+		return this->move(priority);
 	}
 
 	/**
@@ -192,7 +203,7 @@ public:
 	 * @param pq (`PriorityQueue<T>`) reference to the priority queue to
 	 * copy.
 	 */
-	PriorityQueue(PriorityQueue<T> &pq) : PriorityQueue<T>() {
+	PriorityQueue(const PriorityQueue<T> &pq) : PriorityQueue<T>() {
 		this->operator=(pq);
 	}
 
@@ -218,7 +229,7 @@ public:
 	 * copy.
 	 * @returns a reference to the this pointer for the class
 	 */
-	PriorityQueue<T> &operator=(PriorityQueue<T> &pq) {
+	PriorityQueue<T> &operator=(const PriorityQueue<T> &pq) {
 		this->offsets = pq.offsets;
 		BinaryTree<Priority<T>>::operator=(pq);
 		return *this;
@@ -384,3 +395,13 @@ public:
 };
 
 }  // namespace ds
+
+// Hash function specialization must be in the std namespace
+namespace std {
+template<typename T>
+struct hash<ds::Priority<T>> {
+	size_t operator()(const ds::Priority<T> &priority) const {
+		return hash<std::string>()(priority.key());
+	}
+};
+}  // namespace std

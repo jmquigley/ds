@@ -541,7 +541,7 @@ public:
 		return true;
 	}
 
-	virtual bool contains(char data) const override {
+	virtual bool contains(char data) override {
 		// TOOD: add contains for Buffer
 		return false;
 	}

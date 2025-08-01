@@ -54,6 +54,9 @@ class Path final {
 
 private:
 
+	/**
+	 * @brief the list of valid delimiters for classes
+	 */
 	const static inline std::vector<std::string> _delimiters {"\\", "/", "|"};
 
 	/**

@@ -24,7 +24,6 @@ namespace ds {
  */
 template<typename T>
 class GeneralTreeNode :
-	public BaseNode<T, GeneralTreeNode>,
 	public std::enable_shared_from_this<GeneralTreeNode<T>> {
 	/// @brief The data payload of the node.
 	PROPERTY_SCOPED_WITH_DEFAULT(data, Data, T, protected:, {});
@@ -61,7 +60,7 @@ public:
 	 * @param data The data to store in this node
 	 * @param path (`std::string`) the path to root for this child record
 	 */
-	GeneralTreeNode(std::string key, T data, std::string path)
+	GeneralTreeNode(const std::string &key, T data, const std::string &path)
 		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), key, data,
 							 path) {}
 
@@ -72,16 +71,24 @@ public:
 	 * @param data The data to store in this node
 	 * @param path (`std::string`) the path to root for this child record
 	 */
-	GeneralTreeNode(std::weak_ptr<GeneralTreeNode<T>> parent, std::string key,
-					T data, std::string path)
+	GeneralTreeNode(const std::weak_ptr<GeneralTreeNode<T>> &parent,
+					const std::string &key, T data, const std::string &path)
 		: _data(data), _key(key), _path(path), _parent(parent) {}
 
 	/**
-	 * @brief Copy constructor
+	 * @brief Copy constructor for GeneralTree
 	 * @param gtn The node to copy from
 	 */
-	GeneralTreeNode(GeneralTreeNode<T> &gtn) : GeneralTreeNode<T>() {
-		this->operator=(gtn);
+	GeneralTreeNode(const GeneralTreeNode<T> &gtn) : GeneralTreeNode<T>() {
+		this->move(gtn);
+	}
+
+	/**
+	 * @brief Move constructor for GeneralTree
+	 * @param gtn The node to move
+	 */
+	GeneralTreeNode(GeneralTreeNode<T> &&gtn) : GeneralTreeNode<T>() {
+		move(std::move(gtn));
 	}
 
 	/**
@@ -97,13 +104,8 @@ public:
 	 * @param gtn The node to assign from
 	 * @return Reference to this node after assignment
 	 */
-	GeneralTreeNode &operator=(GeneralTreeNode<T> &gtn) {
-		this->_children = gtn._children;
-		this->_key = gtn._key;
-		this->_path = gtn._path;
-		this->_data = gtn._data;
-		// this->_parent = gtn._parent;
-		return *this;
+	GeneralTreeNode &operator=(const GeneralTreeNode<T> &gtn) {
+		return this->move(gtn);
 	}
 
 	/**
@@ -206,6 +208,21 @@ public:
 	 */
 	bool hasChild(std::string key) {
 		return this->_children.contains(key);
+	}
+
+	/**
+	 * @brief a convenience method to copy elements from one general tree node
+	 * to another.
+	 * @param src The general tree node to move
+	 * @returns a reference to the this pointer for this general tree node
+	 */
+	GeneralTreeNode<T> &move(GeneralTreeNode<T> &src) {
+		this->_children = src._children;
+		this->_key = src._key;
+		this->_path = src._path;
+		this->_data = src._data;
+		// this->_parent = src._parent;
+		return *this;
 	}
 
 	/**

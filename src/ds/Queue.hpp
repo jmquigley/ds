@@ -110,7 +110,7 @@ public:
 	 * @brief Checks if an element exists in the Queue
 	 * @returns true if the item is in the Queue otherwise false
 	 */
-	inline bool contains(T data) const {
+	inline bool contains(T data) {
 		return List<T>::contains(data);
 	}
 

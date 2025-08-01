@@ -37,7 +37,7 @@ public:
 	 * @return true if found in the container, otherwise false
 	 * @pure
 	 */
-	virtual bool contains(T data) const = 0;
+	virtual bool contains(T data) = 0;
 
 	/**
 	 * @brief Check if the collection is empty

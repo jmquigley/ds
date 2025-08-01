@@ -62,7 +62,7 @@ class Searchable {
 	 *       - O(log n) for binary search in sorted collections
 	 *       - O(1) for hash-based collections (average case)
 	 */
-	virtual Match<T, C> find(T data) const = 0;
+	virtual Match<T, C> find(T data) = 0;
 };
 
 }  // namespace ds

@@ -283,7 +283,7 @@ public:
 	 * @brief Checks if a `T` data element exists within the list
 	 * @returns true if the data element exists in the list, otherwise false.
 	 */
-	inline bool contains(T data) const override {
+	inline bool contains(T data) override {
 		Match<T, Node> match = find(data);
 		return match.found();
 	}
@@ -310,7 +310,7 @@ public:
 	 * @returns a `Match<T>` object that contains information about the `Node`
 	 * that was found in the search.
 	 */
-	virtual Match<T, Node> find(T data) const override {
+	virtual Match<T, Node> find(T data) override {
 		size_t index = 0;
 		std::shared_ptr<Node<T>> lp = this->_root;
 		Match<T, Node> match;

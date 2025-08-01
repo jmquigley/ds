@@ -263,7 +263,7 @@ public:
 	 * @param initialCapacity Maximum number of items the cache can hold
 	 * @note If capacity is less than 1, it will default to 10
 	 */
-	explicit LRUCache(size_t initialCapacity) : LRUCache() {
+	LRUCache(size_t initialCapacity) : LRUCache() {
 		this->_capacity = initialCapacity;
 		if (this->_capacity == 0) {
 			this->_capacity = LRUCache::MIN_CAPACITY;
