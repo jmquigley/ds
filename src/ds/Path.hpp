@@ -409,3 +409,24 @@ public:
 };
 
 }  // namespace ds
+
+namespace std {
+
+/**
+ * @brief Specialized hash object for unordered_map objects
+ */
+template<>
+struct hash<ds::Path> {
+	/**
+	 * @brief a specialized hash function used by unordered_map to deal with
+	 * `Path` class object comparisons.
+	 *
+	 * @param path (`Path<> &`) a reference to the path object to be
+	 * hashed
+	 * @returns a hash value for the `Path<>` object path value.
+	 */
+	size_t operator()(const ds::Path &path) const {
+		return hash<std::string>()(path.path());
+	}
+};
+}  // namespace std

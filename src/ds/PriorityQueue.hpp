@@ -38,7 +38,13 @@ class Priority {
 
 private:
 
-	Priority<T> &move(const Priority<T> &priority) {
+	/**
+	 * @brief a convenience method to copy the information from one
+	 * `Priority<T>` object to another.
+	 * @param priority (`Priority<T>`) the priority object to copy.
+	 * @returns a reference to the object that was copied into.
+	 */
+	Priority<T> &copy(const Priority<T> &priority) {
 		if (this != &priority) {
 			this->_data = priority._data;
 			this->_value = priority._value;
@@ -62,17 +68,24 @@ public:
 		: _data(data), _value(value), _offset(offset) {}
 
 	/**
-	 * @brief copy constructor for PriorityQueue
+	 * @brief copy constructor for a `Priority<T>` object
 	 * @param priority the `Priority<T>` object to copy
 	 */
 	Priority(const Priority<T> &priority) : Priority<T>() {
-		this->move(priority);
+		this->copy(priority);
 	}
 
+	/**
+	 * @brief move constructor for a `Priority<T>` object.
+	 * @param priority the `Priority<T>` object to move
+	 */
 	Priority(Priority<T> &&priority) : Priority<T>() {
-		this->move(std::move(priority));
+		this->copy(std::move(priority));
 	}
 
+	/**
+	 * @brief the `Priority<T>` object destructor
+	 */
 	virtual ~Priority() {}
 
 	/**
@@ -84,7 +97,7 @@ public:
 	 * @returns a reference to the object that is being copied into
 	 */
 	Priority<T> &operator=(const Priority<T> &priority) {
-		return this->move(priority);
+		return this->copy(priority);
 	}
 
 	/**
@@ -396,10 +409,21 @@ public:
 
 }  // namespace ds
 
-// Hash function specialization must be in the std namespace
 namespace std {
+
+/**
+ * @brief Specialized hash object for unordered_map objects
+ */
 template<typename T>
 struct hash<ds::Priority<T>> {
+	/**
+	 * @brief a specialized hash function used by unordered_map to deal with
+	 * `Priority` class object comparisons.
+	 *
+	 * @param priority (`Priority<T> &`) a reference to the priority object to
+	 * be hashed
+	 * @returns a hash value for the `Priority<T>` object key value.
+	 */
 	size_t operator()(const ds::Priority<T> &priority) const {
 		return hash<std::string>()(priority.key());
 	}

@@ -221,11 +221,26 @@ endif(DS_BUILD_INSTALL)
 
 if (DS_BUILD_EXTRAS)
 
-add_executable(typesizes extras/typesizes.cpp)
-target_link_libraries(typesizes
+add_executable(crtp extras/crtp.cpp)
+target_link_libraries(crtp
     PRIVATE ${PROJECT_NAME}
 )
-target_include_directories(typesizes PRIVATE ${PROJECT_NAME})
+target_include_directories(crtp PRIVATE ${PROJECT_NAME})
+
+
+add_executable(dfs extras/dfs.cpp)
+target_link_libraries(dfs
+    PRIVATE ${PROJECT_NAME}
+)
+target_include_directories(dfs PRIVATE ${PROJECT_NAME})
+
+
+add_executable(foo extras/foo.cpp)
+target_link_libraries(foo
+    PRIVATE ${PROJECT_NAME}
+)
+target_include_directories(foo PRIVATE ${PROJECT_NAME})
+
 
 add_executable(inherit extras/inherit.cpp)
 target_link_libraries(inherit
@@ -233,16 +248,12 @@ target_link_libraries(inherit
 )
 target_include_directories(inherit PRIVATE ${PROJECT_NAME})
 
-add_executable(crtp extras/crtp.cpp)
-target_link_libraries(crtp
-    PRIVATE ${PROJECT_NAME}
-)
-target_include_directories(crtp PRIVATE ${PROJECT_NAME})
 
-add_executable(foo extras/foo.cpp)
-target_link_libraries(foo
+add_executable(typesizes extras/typesizes.cpp)
+target_link_libraries(typesizes
     PRIVATE ${PROJECT_NAME}
 )
-target_include_directories(crtp PRIVATE ${PROJECT_NAME})
+target_include_directories(typesizes PRIVATE ${PROJECT_NAME})
+
 
 endif(DS_BUILD_EXTRAS)

@@ -125,6 +125,20 @@ namespace ds {
  * 0
  * @endcode
  *
+ *
+ * NOTE: if a custom object is used as the key, then a special hash object must
+ * be created to handle hashing the values so they can be compared.  e.g.
+ *
+ * @code{.cpp}
+ * template<>
+ * struct hash<ds::Path> {
+ * 	size_t operator()(const ds::Path &path) const {
+ * 		return hash<std::string>()(path.path());
+ * 	}
+ * };
+ * }
+ * @endcode
+ *
  * TODO: Add callback mechanisms for significant operations (evictions, capacity
  * changes)
  */

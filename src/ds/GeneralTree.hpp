@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <ds/BaseTree.hpp>
 #include <ds/GeneralTreeNode.hpp>
+#include <ds/LRUCache.hpp>
 #include <ds/Match.hpp>
 #include <ds/Path.hpp>
 #include <ds/Queue.hpp>
@@ -37,6 +38,16 @@ namespace ds {
 template<typename T>
 class GeneralTree : public BaseTree<T, GeneralTreeNode> {
 private:
+
+	/**
+	 * @brief an internal recently used cache object for path searches
+	 */
+	LRUCache<Path, std::shared_ptr<GeneralTreeNode<T>>> _cacheByPath;
+
+	/**
+	 * @brief an internal recently used cache object for value searches
+	 */
+	LRUCache<T, std::shared_ptr<GeneralTreeNode<T>>> _cacheByValue;
 
 	/**
 	 * @brief Creates a new general tree node instance.
@@ -200,70 +211,6 @@ public:
 	}
 
 	/**
-	 * @brief Searches for a node with the specified key using breadth-first
-	 * search
-	 *
-	 * This method performs a breadth-first traversal of the tree to find a node
-	 * that matches the given key exactly. Breadth-first search explores nodes
-	 * level by level, starting from the root and moving outward.
-	 *
-	 * @param key The key to search for in the tree
-	 * @return A Match object containing the result of the search, including:
-	 *         - Whether the node was found (via found() method)
-	 *         - The data associated with the node if found
-	 *         - A reference to the node if found
-	 *
-	 * @note This method checks for exact key matches only and is
-	 * case-sensitive. It does not interpret the key as a path (unlike the
-	 * path-based find method).
-	 *
-	 * @par Example usage:
-	 * @code{.cpp}
-	 * GeneralTree<int> tree;
-	 * tree.insert("root/folder/file", 42);
-	 *
-	 * Match<int, GeneralTreeNode> result = tree.breadthSearch("folder");
-	 * if (result.found()) {
-	 *     std::cout << "Found folder with data: " << result.getData() <<
-	 * std::endl;
-	 * }
-	 * @endcode
-	 *
-	 * @par Complexity:
-	 *      Time: O(n) where n is the number of nodes in the tree
-	 *      Space: O(w) where w is the maximum width of the tree (for queue
-	 * storage)
-	 *
-	 * @see find() For a more flexible search that can handle path-based keys
-	 */
-	Match<T, GeneralTreeNode> breadthSearchByKey(std::string key) const {
-		Match<T, GeneralTreeNode> match;
-		size_t pos = 0;
-
-		// If key is empty or tree is empty, return not found
-		if (key.empty() || this->_size == 0) {
-			return match;
-		}
-
-		this->breadth([&](auto &node) {
-			if (node.key() == key) {
-				match.setData(node.getData());
-				match.setFound(true);
-				match.setIndex(pos);
-				match.setSearch(key);
-				match.setRef(std::static_pointer_cast<GeneralTreeNode<T>>(
-					node.shared_from_this()));
-				return false;
-			}
-
-			pos++;
-			return true;
-		});
-
-		return match;
-	}
-
-	/**
 	 * @brief Searches for a node with the specified path using breadth-first
 	 * search
 	 *
@@ -296,12 +243,21 @@ public:
 	 *      Space: O(w) where w is the maximum width of the tree (for queue
 	 * storage)
 	 */
-	Match<T, GeneralTreeNode> breadthSearchByPath(const Path &path) const {
+	Match<T, GeneralTreeNode> breadthSearchByPath(const Path &path) {
 		Match<T, GeneralTreeNode> match;
-		size_t pos = 0;
 
 		// If key is empty or tree is empty, return not found
 		if (path.empty() || this->_size == 0) {
+			return match;
+		}
+
+		std::shared_ptr<GeneralTreeNode<T>> tnode;
+
+		if (this->_cacheByPath.get(path, tnode)) {
+			match.setData(tnode->getData());
+			match.setFound(true);
+			match.setSearch(path);
+			match.setRef(tnode);
 			return match;
 		}
 
@@ -309,14 +265,13 @@ public:
 			if (node.path() == path) {
 				match.setData(node.getData());
 				match.setFound(true);
-				match.setIndex(pos);
 				match.setSearch(node.path());
 				match.setRef(std::static_pointer_cast<GeneralTreeNode<T>>(
 					node.shared_from_this()));
+				this->_cacheByPath.set(path, match.getRef().lock());
 				return false;
 			}
 
-			pos++;
 			return true;
 		});
 
@@ -324,7 +279,7 @@ public:
 	}
 
 	/**
-	 * @brief a convenience wrapper for the *Path* version of the
+	 * @brief a convenience wrapper for the `Path` version of the
 	 * breadthSearchByPath
 	 *
 	 * This function receives a std::string and converts it to a path before
@@ -362,18 +317,6 @@ public:
 	}
 
 	/**
-	 * @brief Checks if the tree contains a node with the specified key.
-	 *
-	 * @param key The key to check if it is in the tree
-	 * @return true if a node with the key is found, false otherwise.
-	 */
-	bool containsByKey(std::string key) {
-		Match<T, GeneralTreeNode> match;
-		match = this->findByKey(key);
-		return match.found();
-	}
-
-	/**
 	 * @brief Checks if the tree contains a node with the specified path.
 	 *
 	 * @param path (`Path &`) The path to check if it is in the tree
@@ -383,6 +326,15 @@ public:
 		Match<T, GeneralTreeNode> match;
 		match = this->findByPath(path);
 		return match.found();
+	}
+
+	/**
+	 * @brief a convenience method for search for a path using a std::string
+	 * @param path (`std::string &`) the string path to check
+	 * @returns true if the path is in the tree, otherwise false
+	 */
+	bool containsByPath(const std::string &path) {
+		return containsByPath(Path(path));
 	}
 
 	/**
@@ -419,7 +371,6 @@ public:
 	 */
 	virtual Match<T, GeneralTreeNode> find(T data) override {
 		Match<T, GeneralTreeNode> match;
-		size_t pos = 0;
 
 		if (this->_size == 0) {
 			return match;
@@ -436,30 +387,15 @@ public:
 			if (isEqual) {
 				match.setData(data);
 				match.setFound(true);
-				match.setIndex(pos);
 				match.setRef(std::static_pointer_cast<GeneralTreeNode<T>>(
 					node.shared_from_this()));
 				return false;  // Stop traversal
 			}
 
-			pos++;
 			return true;  // Continue traversal
 		});
 
 		return match;
-	}
-
-	/**
-	 * @brief Finds a node with the specified key.
-	 *
-	 * This function is a convenience wrapper for the breadthSearchByKey.
-	 *
-	 * @param key The key to search for
-	 * @return A Match object containing the result of the search
-	 * @see breadthSearchByKey
-	 */
-	Match<T, GeneralTreeNode> findByKey(const std::string &key) const {
-		return this->breadthSearchByKey(key);
 	}
 
 	/**
@@ -471,7 +407,7 @@ public:
 	 * @return A Match object containing the result of the search
 	 * @see breadthSearchByPath
 	 */
-	Match<T, GeneralTreeNode> findByPath(const std::string &path) const {
+	Match<T, GeneralTreeNode> findByPath(const std::string &path) {
 		return this->breadthSearchByPath(Path(path));
 	}
 
@@ -484,7 +420,7 @@ public:
 	 * @return A Match object containing the result of the search
 	 * @see breadthSearchByPath
 	 */
-	Match<T, GeneralTreeNode> findByPath(const Path &path) const {
+	Match<T, GeneralTreeNode> findByPath(const Path &path) {
 		return this->breadthSearchByPath(path);
 	}
 
@@ -562,6 +498,14 @@ public:
 				// child as the new key
 				node = node->addChild(k, {}, nodePath.str());
 				this->_size++;
+
+				// seed the cache with values while the cache capacity is less
+				// than the collection size
+				this->_cacheByPath.setCollectionSize(this->_size);
+				if (this->_size < this->_cacheByPath.capacity()) {
+					this->_cacheByPath.set(Path(nodePath.str()), node);
+				}
+
 			} else {
 				// Child exists, so get a reference to it and don't insert
 				// again
