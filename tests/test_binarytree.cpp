@@ -201,6 +201,23 @@ TEST_F(TestBinaryTree, Traversals) {
 	std::cout << std::endl;
 }
 
+TEST_F(TestBinaryTree, EmptyTraversals) {
+	ds::BinaryTree<int> bt;
+	std::vector<int> out;
+
+	EXPECT_EQ(bt.size(), 0);
+	EXPECT_EQ(bt.height(), 0);
+	EXPECT_TRUE(bt.empty());
+	EXPECT_TRUE(out.empty());
+
+	bt.inorder([&](auto &node) { out.push_back(node.getData()); });
+
+	EXPECT_EQ(bt.size(), 0);
+	EXPECT_EQ(bt.height(), 0);
+	EXPECT_TRUE(bt.empty());
+	EXPECT_TRUE(out.empty());
+}
+
 TEST_F(TestBinaryTree, InitializerListAndOperator) {
 	ds::BinaryTree<int> bt {1, 2, 3, 4, 5};
 

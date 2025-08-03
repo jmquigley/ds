@@ -412,19 +412,16 @@ TEST_F(TestList, Search) {
 
 	EXPECT_TRUE(match.getFound());
 	EXPECT_EQ(match.getData(), 3);
-	EXPECT_EQ(match.getIndex(), 2);
 
 	match = list.find(1);
 
 	EXPECT_TRUE(match.getFound());
 	EXPECT_EQ(match.getData(), 1);
-	EXPECT_EQ(match.getIndex(), 0);
 
 	match = list.find(9999);
 
 	EXPECT_FALSE(match.getFound());
 	EXPECT_EQ(match.getData(), 0);
-	EXPECT_EQ(match.getIndex(), 0);
 }
 
 TEST_F(TestList, SearchEmpty) {

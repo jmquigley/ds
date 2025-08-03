@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <ds/BaseIterator.hpp>
 #include <ds/Collection.hpp>
+#include <ds/LRUCache.hpp>
 #include <ds/Searchable.hpp>
 #include <ds/helpers.hpp>
 #include <ds/property.hpp>
@@ -25,6 +26,13 @@ namespace ds {
  */
 template<typename T>
 class List : public Collection<T, Node>, public Searchable<T, Node> {
+private:
+
+	/**
+	 * @brief an internal recently used cache object for search/at
+	 */
+	LRUCache<T, std::shared_ptr<Node<T>>> _cache;
+
 protected:
 
 	/**
@@ -76,6 +84,45 @@ protected:
 		}
 
 		return tnode;
+	}
+
+	/**
+	 * @brief Retrieves the node containing the specified value.
+	 *
+	 * This function searches through the list to find a node containing
+	 * the given value using the list's comparator. It performs a linear
+	 * search starting from the front of the list.
+	 *
+	 * @param value (`T`) The value to search for in the list
+	 * @return std::shared_ptr<Node<T>> Pointer to the node containing the
+	 * value, or nullptr if no node contains the value
+	 */
+	std::shared_ptr<Node<T>> getNodeByValue(const T &value) {
+		// Check if the value is in the cache first
+		std::shared_ptr<Node<T>> result;
+		if (this->_cache.get(value, result)) {
+			// Found in cache, return immediately
+			return result;
+		}
+
+		// Start search from the front of the list
+		std::shared_ptr<Node<T>> current = this->_root;
+
+		// Traverse the list
+		while (current) {
+			// Compare current node's data with the target value
+			if (this->_comparator->compare(current->getData(), value) == 0) {
+				// Value found - store in cache for future lookups
+				this->_cache.set(value, current);
+				return current;
+			}
+
+			// Move to the next node
+			current = current->getRight();
+		}
+
+		// Value not found in the list
+		return nullptr;
 	}
 
 public:
@@ -206,6 +253,8 @@ public:
 			throw std::out_of_range("Invalid list position index requested");
 		}
 
+		std::shared_ptr<Node<T>> tnode;
+
 		// Fast path for first element
 		if (index == 0) {
 			return this->_root->getData();
@@ -213,15 +262,15 @@ public:
 
 		// Fast path for last element
 		if (index == this->_size - 1) {
-			return this->_back.lock()->getData();
+			tnode = this->_back.lock();
+			return tnode->getData();
 		}
 
 		// Use the existing optimized getNodeByIndex method
 		// This already chooses the optimal traversal direction
-		std::shared_ptr<Node<T>> node =
-			const_cast<List<T> *>(this)->getNodeByIndex(index);
+		tnode = const_cast<List<T> *>(this)->getNodeByIndex(index);
 
-		return node->getData();
+		return tnode->getData();
 	}
 
 	/**
@@ -312,22 +361,28 @@ public:
 	 */
 	virtual Match<T, Node> find(T data) override {
 		size_t index = 0;
-		std::shared_ptr<Node<T>> lp = this->_root;
+		std::shared_ptr<Node<T>> tnode = this->_root;
 		Match<T, Node> match;
 		std::shared_ptr<Node<T>> next;
 
-		while (lp) {
-			if (this->_comparator->compare(lp->getData(), data) == 0) {
+		if (this->_cache.get(data, tnode)) {
+			match.setFound(true);
+			match.setData(data);
+			match.setRef(tnode);
+			return match;
+		}
+
+		while (tnode) {
+			if (this->_comparator->compare(tnode->getData(), data) == 0) {
 				match.setData(data);
 				match.setFound(true);
-				match.setIndex(index);
-				match.setRef(lp);
-
+				match.setRef(tnode);
+				this->_cache.set(data, tnode);
 				return match;
 			}
 
 			index++;
-			lp = lp->getRight();
+			tnode = tnode->getRight();
 		}
 
 		return match;
@@ -390,7 +445,12 @@ public:
 			}
 		}
 
-		this->_size++;
+		// seed the cache with values while the cache capacity is less than
+		// the collection size
+		this->_cache.setCollectionSize(++this->_size);
+		if (this->_size < this->_cache.capacity()) {
+			this->_cache.set(data, node);
+		}
 	}
 
 	/**
@@ -450,23 +510,65 @@ public:
 
 	/**
 	 * @brief Removes the first instance of the given value from the list.
-	 * @param value (`T`) a data value to find and remove from the list
-	 * @returns the T value that was removed from the list
+	 *
+	 * This function searches for the first occurrence of the specified value
+	 * using getNodeByValue() and removes it from the list. It maintains proper
+	 * list connections when removing the node.
+	 *
+	 * @param value (`T`) A data value to find and remove from the list
+	 * @returns The removed value
+	 * @throws std::range_error If the value is not found in the list
 	 */
 	virtual T removeValue(T value) override {
 		if (this->_size == 0) {
-			throw std::out_of_range(
-				"Invalid list position requested for remove");
+			throw std::out_of_range("Cannot remove item from an empty list");
 		}
 
-		Match<T, Node> match = find(value);
-		if (match.found()) {
-			return removeAt(match.getIndex(), match.getRef().lock());
+		// Get the node containing the value
+		std::shared_ptr<Node<T>> tnode = getNodeByValue(value);
+
+		// If the node is not found, throw an exception
+		if (!tnode) {
+			std::stringstream ss;
+			ss << "Invalid value selected for remove (" << value << ")";
+			throw std::range_error(ss.str());
 		}
 
-		std::stringstream ss;
-		ss << "Invalid value selected for remove (" << value << ")";
-		throw std::range_error(ss.str());
+		// Special case: removing the root node
+		if (tnode == this->_root) {
+			this->_root = tnode->getRight();
+
+			if (this->_root) {
+				this->_root->setLeft(nullptr);
+			}
+
+			this->_front = this->_root;
+		}
+		// Special case: removing the last node
+		else if (tnode == this->_back.lock()) {
+			this->_back = tnode->getLeft();
+			this->_back.lock()->setRight(nullptr);
+		}
+		// General case: removing a node in the middle
+		else {
+			// Update adjacent nodes' pointers
+			tnode->getLeft()->setRight(tnode->getRight());
+			tnode->getRight()->setLeft(tnode->getLeft());
+		}
+
+		// Get the value before clearing the node
+		T data = tnode->getData();
+
+		// Remove the value from the cache if it exists
+		this->_cache.eject(data);
+
+		// Clear and reset the node
+		tnode.reset();
+
+		// Update the size
+		this->_size--;
+
+		return data;
 	}
 
 	/**

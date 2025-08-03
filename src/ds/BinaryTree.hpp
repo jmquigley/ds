@@ -15,6 +15,7 @@
 #include <initializer_list>
 #include <limits>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -221,14 +222,12 @@ private:
 			this->_latestNode = tnode;
 			this->_root = tnode;
 			this->_front = this->_back = this->_latestNode;
-			this->_size++;
-			this->_cache.setCollectionSize(this->_size);
+			this->_cache.setCollectionSize(++this->_size);
 			return this->_root;
 		} else {
 			if (node == nullptr) {
 				// found a leaf, so insert in this location
-				this->_size++;
-				this->_cache.setCollectionSize(this->_size);
+				this->_cache.setCollectionSize(++this->_size);
 				tnode = newNode(data, parent);
 				this->_latestNode = tnode;
 
@@ -1146,7 +1145,6 @@ public:
 
 		if (this->_cache.get(data, tnode)) {
 			match.setFound(true);
-			match.setIndex(0);
 			match.setRef(tnode);
 			return match;
 		}
@@ -1157,7 +1155,6 @@ public:
 			if (result == 0) {
 				this->_cache.set(data, tnode);
 				match.setFound(true);
-				match.setIndex(0);
 				match.setRef(tnode);
 				return match;
 			} else if (result < 0) {

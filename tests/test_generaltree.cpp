@@ -33,7 +33,7 @@ TEST_F(TestGeneralTree, Create) {
 	EXPECT_EQ(out[3], "d");
 }
 
-TEST_F(TestGeneralTree, BreadthSearch) {
+TEST_F(TestGeneralTree, Breadth) {
 	ds::GeneralTree<size_t> gt {{"a/b/c", 42}, {"d/e/f/g", 24}};
 	std::vector<std::string> out;
 
@@ -51,6 +51,29 @@ TEST_F(TestGeneralTree, BreadthSearch) {
 	EXPECT_EQ(out[5], "f");
 	EXPECT_EQ(out[6], "g");
 }
+
+/* TODO: add depth test for GeneralTree
+
+TEST_F(TestGeneralTree, Depth) {
+	ds::GeneralTree<size_t> gt {
+		{"a/b/d", 42}, {"a/b/e", 24}, {"a/c/f", 12}, {"a/c/g", 13}};
+	std::vector<std::string> out;
+
+	EXPECT_EQ(gt.size(), 7);
+	EXPECT_EQ(gt.height(), 3);
+
+	gt.depth([&](auto &node) { out.push_back(node.getKey()); });
+
+	EXPECT_EQ(out.size(), 7);
+	EXPECT_EQ(out[0], "a");
+	EXPECT_EQ(out[1], "b");
+	EXPECT_EQ(out[2], "d");
+	EXPECT_EQ(out[3], "e");
+	EXPECT_EQ(out[4], "c");
+	EXPECT_EQ(out[5], "f");
+	EXPECT_EQ(out[6], "g");
+}
+*/
 
 TEST_F(TestGeneralTree, FindByPath) {
 	ds::GeneralTree<std::string> gt {{"a/b/c", "a"},   {"a/b/d", "d"},

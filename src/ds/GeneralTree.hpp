@@ -338,6 +338,50 @@ public:
 	}
 
 	/**
+	 * @brief performs a depth first traversal of the current general tree. This
+	 * is the entry point for the search.  It's a thin wrapper that calls a
+	 * delegate function.
+	 * @param callback A callback function that will be executed on each node as
+	 * it is encountered. The callback receives a reference to the current node.
+	 * @return bool Returns true if traversal was terminated early by a callback
+	 * that returned true, otherwise returns false.
+	 */
+	template<typename Callback>
+	bool depth(Callback callback) const {
+		return this->depthDelegate(this->_root->getChild(0), callback);
+	}
+
+	/**
+	 * @brief The implementation code for the depth first search.
+	 * @param node (`std::shared_ptr<GeneralTreeNode<T>> &`) the reference to
+	 * the current node being processed.
+	 * @param callback A callback function that will be executed on each node as
+	 * it is encountered. The callback receives a reference to the current node.
+	 */
+	template<typename Callback>
+	bool depthDelegate(std::shared_ptr<GeneralTreeNode<T>> &node,
+					   Callback callback) const {
+		if (node == nullptr) {
+			return false;
+		}
+
+		// allows for a callback with a short circuit return value
+		if constexpr (std::is_same_v<decltype(callback(*node)), bool>) {
+			if (!callback(*node)) {
+				return true;  // short circuit if callback returns false
+			}
+		} else {
+			callback(*node);
+		}
+
+		for (auto const &[key, child]: node->children()) {
+			depthDelegate(child, callback);
+		}
+
+		return false;
+	}
+
+	/**
 	 * @brief Finds a node containing the specified data value.
 	 *
 	 * Searches the entire tree for any node that contains the specified data
@@ -376,6 +420,15 @@ public:
 			return match;
 		}
 
+		std::shared_ptr<GeneralTreeNode<T>> tnode;
+
+		if (this->_cacheByValue.get(data, tnode)) {
+			match.setData(tnode->getData());
+			match.setFound(true);
+			match.setRef(tnode);
+			return match;
+		}
+
 		// Use breadth-first traversal to find the data
 		this->breadth([&](auto &node) {
 			// Use the comparator if available, otherwise use direct comparison
@@ -389,6 +442,7 @@ public:
 				match.setFound(true);
 				match.setRef(std::static_pointer_cast<GeneralTreeNode<T>>(
 					node.shared_from_this()));
+				this->_cacheByValue.set(data, match.getRef().lock());
 				return false;  // Stop traversal
 			}
 

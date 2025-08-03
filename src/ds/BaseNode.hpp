@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <ds/BaseBitFlag.hpp>
 #include <ds/BaseNodeBuilder.hpp>
+#include <ds/Replicate.hpp>
 #include <ds/helpers.hpp>
 #include <ds/property.hpp>
 #include <iomanip>
@@ -54,7 +55,7 @@ enum class NodeColor { Red = 0, Black = 1 };
  * @tparam T The type of data stored within the node.
  */
 template<typename T, template<class> class C>
-class BaseNode {
+class BaseNode : private Replicate<T, C<T>> {
 	/// @brief The data payload of the node.
 	PROPERTY_SCOPED_WITH_DEFAULT(data, Data, T, protected:, {});
 
@@ -108,7 +109,7 @@ public:
 	 * @param other The source Node object to move resources from
 	 */
 	BaseNode(const C<T> &other) : BaseNode() {
-		this->operator=(other);
+		this->copy(other);
 	}
 
 	/**
@@ -123,7 +124,7 @@ public:
 	 * valid but unspecified state)
 	 */
 	BaseNode(C<T> &&other) : BaseNode() {
-		move(std::move(other));
+		this->move(std::move(other));
 	}
 
 	/**
@@ -160,14 +161,7 @@ public:
 	 * @return Reference to this node after the assignment
 	 */
 	C<T> &operator=(const C<T> &other) {
-		if (this != &other) {
-			this->_data = other._data;
-			this->_right = other._right;
-			this->_left = other._left;
-			this->_flags = other._flags;
-		}
-
-		return *static_cast<C<T> *>(this);
+		return this->copy(other);
 	}
 
 	/**
@@ -178,12 +172,11 @@ public:
 	 * copying by moving resources from the source node, leaving it in a valid
 	 * but unspecified state.
 	 *
-	 * @param rhs The right-hand side Node object to move resources from
+	 * @param other The right-hand side Node object to move resources from
 	 * @return Reference to this node after the assignment
 	 */
-	C<T> &operator=(C<T> &&rhs) {
-		move(std::move(rhs));
-		return *static_cast<C<T> *>(this);
+	C<T> &operator=(C<T> &&other) {
+		return this->move(std::move(other));
 	}
 
 	/**
@@ -215,6 +208,45 @@ public:
 	}
 
 	/**
+	 * @brief Copies contents from another node
+	 * @param other The source node to copy from
+	 * @return C<T>& Reference to this node after copying
+	 */
+	virtual C<T> &copy(const C<T> &other) override {
+		if (this != &other) {
+			this->_data = other._data;
+			this->_right = other._right;
+			this->_left = other._left;
+			this->_flags = other._flags;
+		}
+		return *static_cast<C<T> *>(this);
+	}
+
+	/**
+	 * @brief Creates a deep copy of the node and its subtree
+	 * @return std::shared_ptr<C<T>> A shared pointer to the new copy
+	 */
+	virtual std::shared_ptr<C<T>> deepcopy() override {
+		// Create a shared_ptr to a new node copy
+		auto copy = std::make_shared<C<T>>(this->_data);
+
+		// Deep copy left subtree if it exists
+		if (this->_left) {
+			copy->_left = this->_left->deepcopy();
+		}
+
+		// Deep copy right subtree if it exists
+		if (this->_right) {
+			copy->_right = this->_right->deepcopy();
+		}
+
+		// Copy flags
+		copy->_flags = this->_flags;
+
+		return copy;
+	}
+
+	/**
 	 * @brief Returns the current color enumeration setting for this node
 	 * @returns a `NodeColor` enum reference to Red or Black
 	 */
@@ -239,21 +271,22 @@ public:
 	}
 
 	/**
-	 * @brief Helper function to implement move semantics.
-	 *
-	 * Transfers ownership of all resources from the source node to this node,
-	 * including ID, data, and child nodes. This operation
-	 * is more efficient than copying as it avoids deep copying of resources.
-	 *
-	 * @param src The source Node object to move resources from
-	 * @return Reference to this node after the move operation
+	 * @brief Moves contents from another node
+	 * @param other The source node to move from
+	 * @return C<T>& Reference to this node after moving
 	 */
-	C<T> &move(C<T> &&src) {
-		this->data = std::move(src.data);
-		this->right = std::move(src.right);
-		this->left = std::move(src.left);
+	virtual C<T> &move(C<T> &&other) override {
+		if (this != &other) {
+			this->_data = std::move(other._data);
+			this->_right = std::move(other._right);
+			this->_left = std::move(other._left);
+			this->_flags = std::move(other._flags);
 
-		return *this;
+			// Reset the moved-from node
+			other._left = nullptr;
+			other._right = nullptr;
+		}
+		return *static_cast<C<T> *>(this);
 	}
 
 	/**

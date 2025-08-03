@@ -79,6 +79,7 @@ set(DS_INCLUDES
     PriorityQueue.hpp
     property.hpp
     Queue.hpp
+    Replicate.hpp
     RingBuffer.hpp
     SortedList.hpp
     Stack.hpp
@@ -152,6 +153,7 @@ set(TEST_SOURCES
   tests/test_iterator.cpp
   tests/test_list.cpp
   tests/test_lrucache.cpp
+  tests/test_match.cpp
   tests/test_node.cpp
   tests/test_path.cpp
   tests/test_priorityqueue.cpp

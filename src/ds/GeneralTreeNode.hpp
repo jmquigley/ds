@@ -4,11 +4,14 @@
 #include <ds/BinaryTree.hpp>
 #include <ds/Comparator.hpp>
 #include <ds/Path.hpp>
+#include <ds/Replicate.hpp>
 #include <ds/property.hpp>
 #include <map>
 #include <memory>
 #include <sstream>
+#include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace ds {
@@ -24,7 +27,8 @@ namespace ds {
  */
 template<typename T>
 class GeneralTreeNode :
-	public std::enable_shared_from_this<GeneralTreeNode<T>> {
+	public std::enable_shared_from_this<GeneralTreeNode<T>>,
+	Replicate<T, GeneralTreeNode<T>> {
 	/// @brief The data payload of the node.
 	PROPERTY_SCOPED_WITH_DEFAULT(data, Data, T, protected:, {});
 
@@ -55,14 +59,23 @@ public:
 		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), "", {}, "") {}
 
 	/**
-	 * @brief Constructor with key and data
-	 * @param key The unique identifier for this node
-	 * @param data The data to store in this node
+	 * @brief Constructor with key, data, and path string
+	 * @param key (`std::string`) The unique identifier for this node
+	 * @param data (`T`) The data to store in this node
 	 * @param path (`std::string`) the path to root for this child record
 	 */
 	GeneralTreeNode(const std::string &key, T data, const std::string &path)
 		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), key, data,
 							 path) {}
+
+	/**
+	 * @brief Constructor with key, data, and path object
+	 * @param key (`std::string`) The unique identifier for this node
+	 * @param data (`T`) The data to store in this node
+	 * @param path (`Path`) the path object to the root for this child record
+	 */
+	GeneralTreeNode(const std::string &key, T data, const Path &path)
+		: GeneralTreeNode<T>(key, data, path.path()) {}
 
 	/**
 	 * @brief Full constructor with parent, key, path, and data
@@ -77,18 +90,18 @@ public:
 
 	/**
 	 * @brief Copy constructor for GeneralTree
-	 * @param gtn The node to copy from
+	 * @param other (`GeneralTreeNode<T> &`) The node to copy from
 	 */
-	GeneralTreeNode(const GeneralTreeNode<T> &gtn) : GeneralTreeNode<T>() {
-		this->move(gtn);
+	GeneralTreeNode(const GeneralTreeNode<T> &other) : GeneralTreeNode<T>() {
+		this->copy(other);
 	}
 
 	/**
 	 * @brief Move constructor for GeneralTree
-	 * @param gtn The node to move
+	 * @param other (`GeneralTreeNode<T> &&`) The node to move
 	 */
-	GeneralTreeNode(GeneralTreeNode<T> &&gtn) : GeneralTreeNode<T>() {
-		move(std::move(gtn));
+	GeneralTreeNode(GeneralTreeNode<T> &&other) : GeneralTreeNode<T>() {
+		this->move(std::move(other));
 	}
 
 	/**
@@ -149,6 +162,7 @@ public:
 	 * @param key The unique key for the new child
 	 * @param data The data for the new child
 	 * @param path (`std::string`) the path to root for this child record
+	 * @return A shared pointer to the newly created child node
 	 */
 	std::shared_ptr<GeneralTreeNode<T>> addChild(std::string key, T data,
 												 std::string path) {
@@ -158,7 +172,16 @@ public:
 	}
 
 	/**
+	 * @brief Gets the current list of children from the GeneralTreeNode
+	 * @returns a `std::map` to the children in this node
+	 */
+	std::map<std::string, std::shared_ptr<GeneralTreeNode<T>>> &children() {
+		return this->_children;
+	}
+
+	/**
 	 * @brief Clears all children and resets this node's data
+	 * Releases all child nodes and resets the node to its initial state
 	 */
 	void clear() {
 		for (auto &[key, value]: _children) {
@@ -172,6 +195,34 @@ public:
 	}
 
 	/**
+	 * @brief A convenience method to copy elements from one general tree node
+	 * to another.
+	 * @param other (`GeneralTreeNode<T> &`)  The general tree node to copy from
+	 * @returns a reference to the this pointer for this general tree node
+	 */
+	virtual GeneralTreeNode<T> &copy(const GeneralTreeNode<T> &other) override {
+		if (this != &other) {
+			this->_children = other._children;
+			this->_key = other._key;
+			this->_path = other._path;
+			this->_data = other._data;
+		}
+
+		return *this;
+	}
+
+	/**
+	 * @brief Creates a deep copy of this node and its children
+	 * @return A shared pointer to the newly created copy
+	 */
+	virtual std::shared_ptr<GeneralTreeNode<T>> deepcopy() override {
+		auto copy = std::make_shared<GeneralTreeNode<T>>(
+			this->_key, this->_data, this->_path);
+		copy->_children = this->_children;
+		return copy;
+	}
+
+	/**
 	 * @brief Retrieves a child node by its key
 	 * @param key The key of the child to retrieve
 	 * @return A shared pointer to the child node
@@ -179,6 +230,17 @@ public:
 	std::shared_ptr<GeneralTreeNode<T>> getChild(std::string key) {
 		return _children[key];
 	}
+
+	/*
+		std::shared_ptr<GeneralTreeNode<T>> getChild(size_t index) {
+			if (_children.size() == 0 || index >= _children.size()) {
+				throw std::out_of_range("Invalid child position index
+	   requested");
+			}
+
+			return _children[index];
+		}
+	*/
 
 	/**
 	 * @brief Gets all children of this node
@@ -202,7 +264,7 @@ public:
 	}
 
 	/**
-	 * @brief checks the child list for the existence of a key
+	 * @brief Checks the child list for the existence of a key
 	 * @param key (`std::string`) the key value for the node in the tree
 	 * @returns true if the key is in the child list, otherwise false
 	 */
@@ -211,17 +273,18 @@ public:
 	}
 
 	/**
-	 * @brief a convenience method to copy elements from one general tree node
-	 * to another.
-	 * @param src The general tree node to move
-	 * @returns a reference to the this pointer for this general tree node
+	 * @brief Moves content from another general tree node to this one
+	 * @param other The general tree node to move from
+	 * @return Reference to this node after the move operation
 	 */
-	GeneralTreeNode<T> &move(GeneralTreeNode<T> &src) {
-		this->_children = src._children;
-		this->_key = src._key;
-		this->_path = src._path;
-		this->_data = src._data;
-		// this->_parent = src._parent;
+	virtual GeneralTreeNode<T> &move(GeneralTreeNode<T> &&other) override {
+		if (this != &other) {
+			this->_children = std::move(other._children);
+			this->_key = std::move(other._key);
+			this->_path = std::move(other._path);
+			this->_data = std::move(other._data);
+		}
+
 		return *this;
 	}
 
@@ -244,7 +307,7 @@ public:
 	}
 
 	/**
-	 * @brief convenience method to retrieve the parent pointer
+	 * @brief Convenience method to retrieve the parent pointer
 	 * @returns a shared_pointer to to the parent object of this node
 	 */
 	inline std::shared_ptr<GeneralTreeNode<T>> parent() const {
@@ -252,7 +315,7 @@ public:
 	}
 
 	/**
-	 * @brief setting for the parent pointer of a node
+	 * @brief Setting for the parent pointer of a node
 	 * @param value `std::shared_ptr<TreeNode<T>>` to set as the parent
 	 */
 	void setParent(std::shared_ptr<GeneralTreeNode<T>> &value) {

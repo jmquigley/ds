@@ -2,6 +2,7 @@
 
 #include <ds/GeneralTreeNode.hpp>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -79,6 +80,17 @@ TEST_F(TestGeneralTreeNode, Create) {
 	EXPECT_EQ(gtn->key(), "");
 	EXPECT_EQ(gtn->parent(), nullptr);
 };
+
+TEST_F(TestGeneralTreeNode, NoChildren) {
+	std::shared_ptr<ds::GeneralTreeNode<int>> gtn =
+		std::make_shared<ds::GeneralTreeNode<int>>("a", 42, "a\\");
+
+	EXPECT_EQ(gtn->data(), 42);
+	EXPECT_EQ(gtn->parent().use_count(), 0);
+
+	EXPECT_EQ(gtn->totalChildren(), 0);
+	// EXPECT_THROW(gtn->getChild(0), std::out_of_range);
+}
 
 TEST_F(TestGeneralTreeNode, Comparisons) {
 	ds::GeneralTreeNode<int> gtn1("a", 1, "a");

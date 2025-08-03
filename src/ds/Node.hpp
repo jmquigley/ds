@@ -54,23 +54,6 @@ public:
 	 * @brief Node destructor
 	 */
 	virtual ~Node() {}
-
-	/**
-	 * @brief Creates a deep copy of this node
-	 *
-	 * This function creates a true deep copy of the node,
-	 * including properly copying the data and color state.
-	 * The new node will not have any parent or child relationships
-	 * since those should be established by the tree structure.
-	 *
-	 * @returns a copy of the Node<T> that was created
-	 */
-	Node<T> deepcopy() const {
-		NodeBuilder<T> builder;
-		auto newNode =
-			builder.withData(this->_data).withFlags(this->_flags).build();
-		return *newNode;
-	}
 };
 
 }  // namespace ds

@@ -93,11 +93,11 @@ TEST_F(TestNode, DeepCopy) {
 	EXPECT_EQ(node1.data(), 42);
 	EXPECT_TRUE(node1.isRed());
 
-	ds::Node<int> node2 = node1.deepcopy();
+	std::shared_ptr<ds::Node<int>> node2 = node1.deepcopy();
 
-	EXPECT_EQ(node2.data(), 42);
-	EXPECT_TRUE(node2.isRed());
-	EXPECT_TRUE(&node1 != &node2);
+	EXPECT_EQ(node2->data(), 42);
+	EXPECT_TRUE(node2->isRed());
+	EXPECT_TRUE(&node1 != node2.get());
 }
 
 TEST_F(TestNode, Dereference) {

@@ -65,7 +65,7 @@ public:
 	 * @param other the tree node to copy
 	 */
 	TreeNode(const TreeNode<T> &other) : BaseNode<T, TreeNode>(other) {
-		this->operator=(other);
+		copy(other);
 	}
 
 	/**
@@ -80,13 +80,25 @@ public:
 
 	/**
 	 * @brief equal operator for the TreeNode class
-	 * @param tn the tree node to copy
+	 * @param other (`TreeNode<T> &`) a reference to the tree node to copy
 	 * @returns a reference the this pointer for the object
 	 */
-	TreeNode<T> operator=(TreeNode<T> &tn) {
-		this->_parent = tn._parent;
-		// BaseNode<T, TreeNode>::operator=(tn);
-		return *static_cast<TreeNode<T> *>(this);
+	TreeNode<T> &operator=(const TreeNode<T> &other) {
+		return this->copy(other);
+	}
+
+	/**
+	 * @brief Override copy to include parent relationship
+	 *
+	 * @param other The TreeNode to copy from
+	 * @returns A reference to this TreeNode after copying
+	 */
+	TreeNode<T> &copy(const TreeNode<T> &other) override {
+		if (this != &other) {
+			BaseNode<T, TreeNode>::copy(other);
+			this->_parent = other._parent;
+		}
+		return *this;
 	}
 
 	/**
@@ -99,11 +111,25 @@ public:
 	 *
 	 * @returns a copy of the Node<T> that was created
 	 */
-	TreeNode<T> deepcopy() const {
-		TreeNodeBuilder<T> builder;
-		auto newNode =
-			builder.withData(this->_data).withFlags(this->_flags).build();
-		return *newNode;
+	std::shared_ptr<TreeNode<T>> deepcopy() override {
+		auto base = BaseNode<T, TreeNode>::deepcopy();
+		base->_parent = this->_parent;
+		return base;
+	}
+
+	/**
+	 * @brief Override move to include parent relationship
+	 *
+	 * @param other The TreeNode to move from
+	 * @returns A reference to this TreeNode after moving
+	 */
+	TreeNode<T> &move(TreeNode<T> &&other) override {
+		if (this != &other) {
+			BaseNode<T, TreeNode>::move(std::move(other));
+			this->_parent = std::move(other._parent);
+			other._parent.reset();
+		}
+		return *this;
 	}
 
 	/**
