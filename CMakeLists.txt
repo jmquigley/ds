@@ -63,7 +63,7 @@ set(DS_INCLUDES
     Buffer.hpp
     Collectable.hpp
     Collection.hpp
-    Comparator.hpp
+    Comparable.hpp
     constants.hpp
     cstr.h
     Deque.hpp
@@ -145,7 +145,7 @@ set(TEST_SOURCES
   tests/test_binarytree.cpp
   tests/test_bitflag.cpp
   tests/test_buffer.cpp
-  tests/test_comparator.cpp
+  tests/test_comparable.cpp
   tests/test_cstr.cpp
   tests/test_deque.cpp
   tests/test_generaltree.cpp

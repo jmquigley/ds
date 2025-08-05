@@ -33,12 +33,6 @@ public:
 	}
 
 	/**
-	 * @brief Constructor that initializes a queue with a custom comparator.
-	 * @param comparator The comparator function to use for element comparison
-	 */
-	Queue(Comparator<T> comparator) : List<T>(comparator) {}
-
-	/**
 	 * @brief Constructor that takes an initializer_list to insert values into
 	 * the queue.
 	 * @param il (`std::initializer_list`) a list of values to seed the queue

@@ -2,7 +2,7 @@
 
 #include <ds/BaseNode.hpp>
 #include <ds/BinaryTree.hpp>
-#include <ds/Comparator.hpp>
+#include <ds/Comparable.hpp>
 #include <ds/OrderedSet.hpp>
 #include <ds/Path.hpp>
 #include <ds/Replicate.hpp>

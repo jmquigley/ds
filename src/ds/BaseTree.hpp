@@ -27,12 +27,6 @@ public:
 
 	BaseTree() : Collection<T, C>(), _height(0) {}
 
-	/**
-	 * @brief Constructor for Tree that passes along a custom comparator.
-	 * @param comparator An object used to compare elements of type T.
-	 */
-	BaseTree(Comparator<T> &comparator) : Collection<T, C>(comparator) {}
-
 	virtual ~BaseTree() = default;
 
 	/**

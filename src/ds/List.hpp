@@ -118,7 +118,7 @@ protected:
 		// Traverse the list
 		while (current) {
 			// Compare current node's data with the target value
-			if (this->_comparator->compare(current->getData(), value) == 0) {
+			if (current->getData() == value) {
 				// Value found - store in cache for future lookups
 				// this->_cache.set(value, current);
 				return current;
@@ -159,13 +159,6 @@ public:
 	 * @brief Default constructor that initializes an empty list.
 	 */
 	List() : Collection<T, Node>() {}
-
-	/**
-	 * @brief Constructor that initializes a list with a custom comparator.
-	 *
-	 * @param comparator The comparator function to use for element comparison
-	 */
-	List(const Comparator<T> &comparator) : Collection<T, Node>(comparator) {}
 
 	/**
 	 * @brief a List copy constructor
@@ -416,7 +409,7 @@ public:
 		// }
 
 		while (tnode) {
-			if (this->_comparator->compare(tnode->getData(), data) == 0) {
+			if (tnode->getData() == data) {
 				match.setData(data);
 				match.setFound(true);
 				match.setRef(tnode);
@@ -508,7 +501,6 @@ public:
 			this->_front = std::move(other._front);
 			this->_back = std::move(other._back);
 			this->_size = other._size;
-			this->_comparator = std::move(other._comparator);
 
 			other._size = 0;
 			other._root = nullptr;

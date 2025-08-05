@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ds/cstr.h>
+#include <ds/str.h>
 
 #include <ds/BaseBitFlag.hpp>
 #include <ds/BaseIterator.hpp>
@@ -11,14 +12,18 @@
 #include <ds/Buffer.hpp>
 #include <ds/Collectable.hpp>
 #include <ds/Collection.hpp>
-#include <ds/Comparator.hpp>
+#include <ds/Comparable.hpp>
 #include <ds/Deque.hpp>
+#include <ds/GeneralTree.hpp>
 #include <ds/GeneralTreeNode.hpp>
+#include <ds/LRUCache.hpp>
 #include <ds/List.hpp>
 #include <ds/Match.hpp>
 #include <ds/Node.hpp>
 #include <ds/PriorityQueue.hpp>
 #include <ds/Queue.hpp>
+#include <ds/RingBuffer.hpp>
+#include <ds/Searchable.hpp>
 #include <ds/SortedList.hpp>
 #include <ds/Stack.hpp>
 #include <ds/TreeNode.hpp>

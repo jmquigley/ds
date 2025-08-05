@@ -95,13 +95,6 @@ public:
 	}
 
 	/**
-	 * @brief Constructor with comparator.
-	 *
-	 * @param comparator A comparator function for comparing elements of type T.
-	 */
-	GeneralTree(Comparator<T> &comparator) : GeneralTree<T>() {}
-
-	/**
 	 * @brief Initializer list constructor.
 	 *
 	 * Constructs a tree with initial key-value pairs. The initalizer list is

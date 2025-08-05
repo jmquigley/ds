@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ds/Comparator.hpp>
 #include <ds/SortedList.hpp>
 #include <iostream>
 
@@ -28,16 +27,6 @@ public:
 	 * Creates an empty OrderedSet with the default comparator for type T.
 	 */
 	OrderedSet() : SortedList<T>() {}
-
-	/**
-	 * @brief Constructor with custom comparator
-	 *
-	 * Creates an empty OrderedSet using the specified comparison object
-	 * to determine element ordering.
-	 *
-	 * @param comparator (`Comparator<T>`) A reference to a comparison object
-	 */
-	OrderedSet(const Comparator<T> &comparator) : SortedList<T>(comparator) {}
 
 	/**
 	 * @brief Copy constructor

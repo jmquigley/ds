@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ds/Comparator.hpp>
 #include <ds/List.hpp>
 #include <iostream>
 #include <stdexcept>
@@ -14,9 +13,7 @@ namespace ds {
  * elements in sorted order
  *
  * This container inherits from the general List class and overrides the insert
- * method to add elements in their proper sorted position. It uses a
- * `Comparator` to determine the correct placement of each element relative to
- * existing elements.
+ * method to add elements in their proper sorted position.
  *
  * Unlike standard sorting algorithms that rearrange elements after insertion,
  * SortedList ensures elements are always in the correct position as they are
@@ -54,17 +51,6 @@ public:
 	 * Creates an empty sorted list using the default comparator for type T
 	 */
 	SortedList() : List<T>() {}
-
-	/**
-	 * @brief Constructor with custom comparator
-	 *
-	 * Creates an empty sorted list using the specified comparator to determine
-	 * the ordering of elements when they are inserted.
-	 *
-	 * @param comparator A reference to a comparison object that defines element
-	 * ordering
-	 */
-	SortedList(const Comparator<T> &comparator) : List<T>(comparator) {}
 
 	/**
 	 * @brief Copy constructor
@@ -148,8 +134,7 @@ public:
 		} else {
 			std::shared_ptr<Node<T>> tnode = this->_root;
 
-			while (tnode &&
-				   (this->_comparator->compare(data, tnode->getData()) > 0)) {
+			while (tnode && (data > tnode->getData())) {
 				tnode = tnode->getRight();
 			}
 

@@ -231,9 +231,9 @@ private:
 				tnode = newNode(data, parent);
 				this->_latestNode = tnode;
 
-				if (this->_comparator->compare(data, this->minimum()) < 0) {
+				if (data < this->minimum()) {
 					this->_front = tnode;
-				} else if (this->_comparator->compare(data, this->maximum())) {
+				} else if (data > this->maximum()) {
 					this->_back = tnode;
 				}
 
@@ -241,9 +241,9 @@ private:
 			}
 
 			// recursively descend through the tree to find insertion point
-			if (this->_comparator->compare(data, node->getData()) < 0) {
+			if (data < node->getData()) {
 				node->setLeft(insertDelegate(data, node->getLeft(), node));
-			} else if (this->_comparator->compare(data, node->getData()) > 0) {
+			} else if (data > node->getData()) {
 				node->setRight(insertDelegate(data, node->getRight(), node));
 			}
 
@@ -859,12 +859,6 @@ public:
 	}
 
 	/**
-	 * @brief Constructor for BinaryTree that takes a custom comparator.
-	 * @param comparator An object used to compare elements of type T.
-	 */
-	BinaryTree(Comparator<T> &comparator) : BaseTree<T, TreeNode>(comparator) {}
-
-	/**
 	 * @brief Constructor that takes an initializer_list to insert values into
 	 * the tree.
 	 * @param il (`std::initializer_list`) a list of values to seed the tree
@@ -1084,7 +1078,7 @@ public:
 		while (!q.empty()) {
 			node = q.dequeue();
 
-			if (this->_comparator->compare(data, node->data()) == 0) {
+			if (data == node->data()) {
 				match.setData(data);
 				match.setFound(true);
 				match.setRef(node);
@@ -1150,14 +1144,12 @@ public:
 		}
 
 		while (tnode != nullptr) {
-			int result = this->_comparator->compare(tnode->getData(), data);
-
-			if (result == 0) {
+			if (tnode->getData() == data) {
 				this->_cache.set(data, tnode);
 				match.setFound(true);
 				match.setRef(tnode);
 				return match;
-			} else if (result < 0) {
+			} else if (tnode->getData() < data) {
 				tnode = tnode->right();
 			} else {
 				tnode = tnode->left();
@@ -1388,11 +1380,9 @@ public:
 		this->_size--;
 
 		if (this->_size != 0) {
-			if (this->_comparator->compare(znode->getData(), this->minimum()) ==
-				0) {
+			if (znode->getData() == this->minimum()) {
 				this->_front = minimumTreeNode(this->_root);
-			} else if (this->_comparator->compare(znode->getData(),
-												  this->maximum()) == 0) {
+			} else if (znode->getData() == this->maximum()) {
 				this->_back = maximumTreeNode(this->_root);
 			}
 		} else {

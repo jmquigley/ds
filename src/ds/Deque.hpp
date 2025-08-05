@@ -71,21 +71,6 @@ public:
 	}
 
 	/**
-	 * @brief Constructor that initializes a deque with a custom comparator.
-	 * @param comparator The comparator function to use for element comparison
-	 */
-	Deque(Comparator<T> &comparator) : Queue<T>(comparator) {}
-
-	/**
-	 * @brief Constructor that initializes a deque with a custom comparator.
-	 * and sets a default size
-	 * @param maxSize (`size_t`) the maximum size of the queue
-	 * @param comparator The comparator function to use for element comparison
-	 */
-	Deque(size_t maxSize, Comparator<T> comparator)
-		: Queue<T>(comparator), _maxSize(maxSize) {}
-
-	/**
 	 * @brief Constructor that takes an initializer_list to insert values into
 	 * the queue.
 	 * @param il (`std::initializer_list`) a list of values to see the list
