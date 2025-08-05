@@ -126,7 +126,7 @@ TEST_F(TestSortedList, Initializer) {
 }
 
 TEST_F(TestSortedList, Contains) {
-	ds::SortedList<int> slist = {1, 2, 3, 4, 5};
+	ds::SortedList<int> slist = {2, 3, 1, 5, 4};
 
 	EXPECT_EQ(slist.size(), 5);
 	EXPECT_TRUE(slist.contains(1));
@@ -186,4 +186,57 @@ TEST_F(TestSortedList, Search) {
 	EXPECT_FALSE(match.found());
 	EXPECT_EQ(match.data(), 0);
 	EXPECT_TRUE(match.reference() == nullptr);
+}
+
+TEST_F(TestSortedList, ComplexSearch) {
+	ds::SortedList<TestSearchClass> list;
+	ds::Match<TestSearchClass, ds::Node> match;
+	ds::SortedList<TestSearchClass>::Iterator it;
+
+	list.insert(TestSearchClass("c"));
+	list.insert(TestSearchClass("b"));
+	list.insert(TestSearchClass("a"));
+
+	EXPECT_EQ(list.size(), 3);
+
+	it = list.begin();
+	EXPECT_EQ((*it).data(), "a");
+	EXPECT_EQ((*it.next()).data(), "b");
+	EXPECT_EQ((*it.next()).data(), "c");
+	EXPECT_EQ((*it.next()).data(), "");
+
+	it = list.begin();
+	TestSearchClass a = *it;
+	EXPECT_EQ(a.data(), "a");
+
+	match = list.find(TestSearchClass("a"));
+
+	EXPECT_TRUE(match.found());
+	EXPECT_EQ(match.data().data(), "a");
+	EXPECT_TRUE(match.reference() != nullptr);
+
+	match = list.find(TestSearchClass("c"));
+
+	EXPECT_TRUE(match.found());
+	EXPECT_EQ(match.data().data(), "c");
+	EXPECT_TRUE(match.reference() != nullptr);
+
+	match = list.find(TestSearchClass("z"));
+
+	EXPECT_FALSE(match.found());
+	EXPECT_EQ(match.data().data(), "");
+	EXPECT_TRUE(match.reference() == nullptr);
+}
+
+TEST_F(TestSortedList, EmptySearch) {
+	ds::SortedList<TestSearchClass> list;
+	ds::Match<TestSearchClass, ds::Node> match;
+
+	EXPECT_EQ(list.size(), 0);
+
+	match = list.find(TestSearchClass(""));
+	EXPECT_FALSE(match.getFound());
+
+	match = list.find(TestSearchClass("z"));
+	EXPECT_FALSE(match.getFound());
 }

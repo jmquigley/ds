@@ -18,6 +18,25 @@ namespace ds {
  * compare() method that returns a three-way comparison result (-1, 0, 1) based
  * on the object's equality and ordering operators.
  *
+ * NOTE: that a hash function must be added for all classes that implement this
+ * interface.  It is needed by the unordered_map object that is part of the
+ * LRU for most classes.
+ *
+ * @code{.cpp}
+ * namespace std {
+ * template<>
+ * struct hash<TestListSearchClass> {
+ *     size_t operator()(const TestListSearchClass &search) const {
+ *         return hash<std::string>()(search.data());
+ *     }
+ * };
+ * }  // namespace std
+ * @endcode
+ *
+ * The LRU attempts to hash the object for search purposes.  This adds an
+ * operator that calls the specialized hash function and places it into the
+ * std:: namespace
+ *
  * @tparam T The type of objects that can be compared with instances of the
  * implementing class
  */

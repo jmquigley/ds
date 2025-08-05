@@ -3,9 +3,11 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <ds/Comparable.hpp>
 #include <ds/constants.hpp>
 #include <ds/property.hpp>
 #include <format>
+#include <iostream>
 #include <string>
 
 class TestingBase : public testing::Test {
@@ -26,3 +28,59 @@ protected:
 		bufptr = nullptr;
 	};
 };
+
+/**
+ * @brief Specialized class that contains all Comparable information for testing
+ *
+ * This class is used in all testing routines to satify all comparison operations
+ * that are needed for LRU and collection operations.
+ *
+ */
+class TestSearchClass : public ds::Comparable<TestSearchClass> {
+	PROPERTY(data, Data, std::string);
+
+public:
+
+	TestSearchClass() : _data("") {}
+
+	TestSearchClass(const std::string &data) : _data(data) {}
+
+	virtual ~TestSearchClass() = default;
+
+	virtual bool operator==(const TestSearchClass &other) const noexcept {
+		return this->_data == other._data;
+	}
+
+	virtual bool operator!=(const TestSearchClass &other) const noexcept {
+		return this->_data != other._data;
+	}
+
+	virtual bool operator<(const TestSearchClass &other) const noexcept {
+		return this->_data < other._data;
+	}
+
+	virtual bool operator>(const TestSearchClass &other) const noexcept {
+		return this->_data > other._data;
+	}
+
+	virtual bool operator<=(const TestSearchClass &other) const noexcept {
+		return this->_data <= other._data;
+	}
+
+	virtual bool operator>=(const TestSearchClass &other) const noexcept {
+		return this->_data >= other._data;
+	}
+
+	virtual void print(std::ostream &os) const {
+		os << this->_data;
+	}
+};
+
+namespace std {
+template<>
+struct hash<TestSearchClass> {
+	size_t operator()(const TestSearchClass &search) const {
+		return hash<std::string>()(search.data());
+	}
+};
+}  // namespace std

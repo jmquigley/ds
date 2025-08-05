@@ -38,7 +38,7 @@ private:
 	/**
 	 * @brief an internal recently used cache object for search/at
 	 */
-	// LRUCache<T, std::shared_ptr<Node<T>>> _cache;
+	LRUCache<T, std::shared_ptr<Node<T>>> _cache;
 
 protected:
 
@@ -172,7 +172,7 @@ public:
 	 * @brief a List move constructor
 	 * @param list (`List<T> &&`) an rvalue list reference to copy
 	 */
-	List(List<T> &&list) : Collection<T, Node>() {
+	List(List<T> &&list) noexcept : Collection<T, Node>() {
 		this->move(std::move(list));
 	}
 
@@ -285,14 +285,14 @@ public:
 	 * @returns a `vector<T>` collection that contains each element of the list
 	 */
 	std::vector<T> array(void) {
-		std::shared_ptr<Node<T>> lp = this->_root;
+		std::shared_ptr<Node<T>> nodeptr = this->_root;
 		std::shared_ptr<Node<T>> next;
 		std::vector<T> v;
 
-		while (lp) {
-			next = lp->getRight();
-			v.push_back(lp->getData());
-			lp = next;
+		while (nodeptr) {
+			next = nodeptr->getRight();
+			v.push_back(nodeptr->getData());
+			nodeptr = next;
 		}
 
 		return v;
@@ -319,14 +319,14 @@ public:
 	 * initialized state.
 	 */
 	virtual void clear() override {
-		std::shared_ptr<Node<T>> lp = this->_root;
+		std::shared_ptr<Node<T>> nodeptr = this->_root;
 		std::shared_ptr<Node<T>> next;
 
-		while (lp) {
-			next = lp->getRight();
-			lp->clear();
-			lp.reset();
-			lp = next;
+		while (nodeptr) {
+			next = nodeptr->getRight();
+			nodeptr->clear();
+			nodeptr.reset();
+			nodeptr = next;
 		}
 
 		this->_root.reset();
@@ -397,28 +397,28 @@ public:
 	 */
 	virtual Match<T, Node> find(T data) override {
 		size_t index = 0;
-		std::shared_ptr<Node<T>> tnode = this->_root;
+		std::shared_ptr<Node<T>> nodeptr = this->_root;
 		Match<T, Node> match;
 		std::shared_ptr<Node<T>> next;
 
-		// if (this->_cache.get(data, tnode)) {
-		// 	match.setFound(true);
-		// 	match.setData(data);
-		// 	match.setRef(tnode);
-		// 	return match;
-		// }
+		if (this->_cache.get(data, nodeptr)) {
+			match.setFound(true);
+			match.setData(data);
+			match.setRef(nodeptr);
+			return match;
+		}
 
-		while (tnode) {
-			if (tnode->getData() == data) {
+		while (nodeptr) {
+			if (nodeptr->getData() == data) {
 				match.setData(data);
 				match.setFound(true);
-				match.setRef(tnode);
+				match.setRef(nodeptr);
 				// this->_cache.set(data, tnode);
 				return match;
 			}
 
 			index++;
-			tnode = tnode->getRight();
+			nodeptr = nodeptr->getRight();
 		}
 
 		return match;
@@ -472,22 +472,21 @@ public:
 			addFront(node);
 		} else {
 			// add a new element to a arbitrary position in the list
-			std::shared_ptr<Node<T>> tnode = getNodeByIndex(index);
-			if (tnode != nullptr) {
-				node->setRight(tnode);
-				node->setLeft(tnode->getLeft());
-				tnode->getLeft()->setRight(node);
-				tnode->setLeft(node);
+			std::shared_ptr<Node<T>> nodeptr = getNodeByIndex(index);
+			if (nodeptr != nullptr) {
+				node->setRight(nodeptr);
+				node->setLeft(nodeptr->getLeft());
+				nodeptr->getLeft()->setRight(node);
+				nodeptr->setLeft(node);
 			}
 		}
 
-		this->_size++;
 		// seed the cache with values while the cache capacity is less than
 		// the collection size
-		// this->_cache.setCollectionSize(++this->_size);
-		// if (this->_size < this->_cache.capacity()) {
-		// 	this->_cache.set(data, node);
-		// }
+		this->_cache.setCollectionSize(++this->_size);
+		if (this->_size < this->_cache.capacity()) {
+			this->_cache.set(data, node);
+		}
 	}
 
 	/**
@@ -495,7 +494,7 @@ public:
 	 * @param other (`List<T> &&`) rvalue reference to the list to copy
 	 * @returns a reference to the list that contains the moved resources
 	 */
-	virtual List<T> &move(List<T> &&other) override {
+	virtual List<T> &move(List<T> &&other) noexcept override {
 		if (this != &other) {
 			this->_root = std::move(other._root);
 			this->_front = std::move(other._front);
@@ -560,6 +559,7 @@ public:
 		}
 
 		T data = tnode->getData();
+		this->_cache.eject(data);
 		tnode.reset();
 		this->_size--;
 
@@ -616,14 +616,8 @@ public:
 
 		// Get the value before clearing the node
 		T data = tnode->getData();
-
-		// Remove the value from the cache if it exists
-		// this->_cache.eject(data);
-
-		// Clear and reset the node
+		this->_cache.eject(data);
 		tnode.reset();
-
-		// Update the size
 		this->_size--;
 
 		return data;
@@ -635,14 +629,14 @@ public:
 	 * reverse order
 	 */
 	std::vector<T> reverse() {
-		std::shared_ptr<Node<T>> lp = this->_back.lock();
+		std::shared_ptr<Node<T>> nodeptr = this->_back.lock();
 		std::shared_ptr<Node<T>> previous;
 		std::vector<T> v;
 
-		while (lp) {
-			previous = lp->getLeft();
-			v.push_back(lp->getData());
-			lp = previous;
+		while (nodeptr) {
+			previous = nodeptr->getLeft();
+			v.push_back(nodeptr->getData());
+			nodeptr = previous;
 		}
 
 		return v;
