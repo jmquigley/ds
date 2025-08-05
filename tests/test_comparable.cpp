@@ -51,6 +51,10 @@ public:
 		const ComplexTestType<T> &other) const noexcept override {
 		return _value >= other._value;
 	}
+
+	virtual void print(std::ostream &os) const {
+		os << "data: " << _data << ", value: " << _value;
+	}
 };
 
 TEST_F(TestComparable, EqualityComparison) {

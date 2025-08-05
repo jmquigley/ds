@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 namespace ds {
 
 /**
@@ -31,6 +33,7 @@ public:
 	 * @param other The object to compare with
 	 * @return bool True if this object is equal to other, false otherwise
 	 * @throws noexcept This function must not throw exceptions
+	 * @pure
 	 */
 	virtual bool operator==(const T &other) const noexcept = 0;
 
@@ -42,6 +45,7 @@ public:
 	 * @param other The object to compare with
 	 * @return bool True if this object is not equal to other, false otherwise
 	 * @throws noexcept This function must not throw exceptions
+	 * @pure
 	 */
 	virtual bool operator!=(const T &other) const noexcept = 0;
 
@@ -54,6 +58,7 @@ public:
 	 * @param other The object to compare with
 	 * @return bool True if this object is less than other, false otherwise
 	 * @throws noexcept This function must not throw exceptions
+	 * @pure
 	 */
 	virtual bool operator<(const T &other) const noexcept = 0;
 
@@ -67,6 +72,7 @@ public:
 	 * @return bool True if this object is less than or equal to other, false
 	 * otherwise
 	 * @throws noexcept This function must not throw exceptions
+	 * @pure
 	 */
 	virtual bool operator<=(const T &other) const noexcept = 0;
 
@@ -79,6 +85,7 @@ public:
 	 * @param other The object to compare with
 	 * @return bool True if this object is greater than other, false otherwise
 	 * @throws noexcept This function must not throw exceptions
+	 * @pure
 	 */
 	virtual bool operator>(const T &other) const noexcept = 0;
 
@@ -92,8 +99,20 @@ public:
 	 * @return bool True if this object is greater than or equal to other, false
 	 * otherwise
 	 * @throws noexcept This function must not throw exceptions
+	 * @pure
 	 */
 	virtual bool operator>=(const T &other) const noexcept = 0;
+
+	/**
+	 * @brief Stream insertion operator for Comparable objects
+	 * @param os The output stream to write to
+	 * @param sl The Comparable object to output
+	 * @return Reference to the output stream after insertion
+	 */
+	friend std::ostream &operator<<(std::ostream &os, const T &sl) {
+		sl.print(os);
+		return os;
+	}
 
 	/**
 	 * @brief Compares two data values and returns an integer that
@@ -120,6 +139,13 @@ public:
 
 		return -1;
 	}
+
+	/**
+	 * @brief used to print the contents of this Comparable class
+	 * @param os (`std::ostream &`) the output stream object to print to
+	 * @pure
+	 */
+	virtual void print(std::ostream &os) const = 0;
 
 	/**
 	 * @brief Virtual destructor

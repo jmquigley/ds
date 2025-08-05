@@ -1,5 +1,6 @@
 #include <testing_base.h>
 
+#include <ds/Comparable.hpp>
 #include <ds/List.hpp>
 #include <ds/property.hpp>
 #include <iostream>
@@ -510,35 +511,72 @@ TEST_F(TestList, Search) {
 	EXPECT_TRUE(match.reference() == nullptr);
 }
 
-template<typename T>
-class TestListSearchClass {
+class TestListSearchClass : public ds::Comparable<TestListSearchClass> {
+	PROPERTY(data, Data, std::string);
+
 public:
 
-	T _data;
+	TestListSearchClass() : _data("") {}
 
-	TestListSearchClass(std::string &data) : _data(data) {}
+	TestListSearchClass(const std::string &data) : _data(data) {}
 
-	bool operator==(const TestListSearchClass &other) {
+	virtual ~TestListSearchClass() = default;
+
+	virtual bool operator==(const TestListSearchClass &other) const noexcept {
 		return this->_data == other._data;
 	}
 
-	bool operator!=(const TestListSearchClass &other) {
+	virtual bool operator!=(const TestListSearchClass &other) const noexcept {
 		return this->_data != other._data;
 	}
 
-	bool operator<(const TestListSearchClass &other) {
+	virtual bool operator<(const TestListSearchClass &other) const noexcept {
 		return other._data < this->_data;
 	}
 
-	bool operator>(const TestListSearchClass &other) {
+	virtual bool operator>(const TestListSearchClass &other) const noexcept {
 		return other._data > this->_data;
+	}
+
+	virtual bool operator<=(const TestListSearchClass &other) const noexcept {
+		return other._data <= this->_data;
+	}
+
+	virtual bool operator>=(const TestListSearchClass &other) const noexcept {
+		return other._data >= this->_data;
+	}
+
+	virtual void print(std::ostream &os) const {
+		os << this->_data;
 	}
 };
 
-// TEST_F(TestList, ComplexTypeSearch) {
-// 	ds::List<TestListSearchClass<std::string>> list;
-// 	ds::Match<TestListSearchClass<std::string>> match;
-// }
+TEST_F(TestList, ComplexTypeSearch) {
+	ds::List<TestListSearchClass> list;
+	ds::Match<TestListSearchClass, ds::Node> match;
+
+	list.insert(TestListSearchClass("a"));
+	list.insert(TestListSearchClass("b"));
+	list.insert(TestListSearchClass("c"));
+
+	match = list.find(TestListSearchClass("a"));
+
+	EXPECT_TRUE(match.found());
+	EXPECT_EQ(match.data().data(), "a");
+	EXPECT_TRUE(match.reference() != nullptr);
+
+	match = list.find(TestListSearchClass("c"));
+
+	EXPECT_TRUE(match.found());
+	EXPECT_EQ(match.data().data(), "c");
+	EXPECT_TRUE(match.reference() != nullptr);
+
+	match = list.find(TestListSearchClass("z"));
+
+	EXPECT_FALSE(match.found());
+	EXPECT_EQ(match.data().data(), "");
+	EXPECT_TRUE(match.reference() == nullptr);
+}
 
 TEST_F(TestList, SearchEmpty) {
 	ds::List<int> list;

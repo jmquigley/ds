@@ -28,7 +28,7 @@ namespace ds {
 template<typename T, template<class> class C>
 class Match : public Replicate<T, Match<T, C>> {
 	/// @brief The data value found during the search operation
-	PROPERTY(data, Data, T);
+	PROPERTY_WITH_DEFAULT(data, Data, T, {});
 
 	/// @brief Flag indicating whether the search operation was successful
 	PROPERTY_WITH_DEFAULT(found, Found, bool, {false});
@@ -46,8 +46,7 @@ private:
 	 *
 	 * @return std::shared_ptr<Match<T, C>> A shared pointer containing the copy
 	 */
-	std::shared_ptr<Match<T, C>> deepcopy()
-		override {	// Remove the reference &
+	std::shared_ptr<Match<T, C>> deepcopy() noexcept override {
 		auto copy = std::make_shared<Match<T, C>>();
 		copy->_data = this->_data;
 		copy->_found = this->_found;
@@ -63,7 +62,7 @@ private:
 	 * @param other The Match object to copy from
 	 * @return Match<T, C>& Reference to this object after copying
 	 */
-	Match<T, C> &copy(const Match<T, C> &other) override {
+	Match<T, C> &copy(const Match<T, C> &other) noexcept override {
 		if (this != &other) {
 			this->_data = other._data;
 			this->_found = other._found;
@@ -79,7 +78,7 @@ private:
 	 * @param other The Match object to move from
 	 * @return Match<T, C>& Reference to this object after moving
 	 */
-	Match<T, C> &move(Match<T, C> &&other) override {
+	Match<T, C> &move(Match<T, C> &&other) noexcept override {
 		if (this != &other) {
 			this->_data = std::move(other._data);
 			this->_found = std::move(other._found);
@@ -109,7 +108,7 @@ public:
 	 *
 	 * @param match The Match object to copy
 	 */
-	Match(Match<T, C> &match)
+	Match(Match<T, C> &match) noexcept
 		: _data(match._data),
 		  _found(match._found),
 		  _ref(match._ref),
@@ -122,7 +121,7 @@ public:
 	 *
 	 * @param match The Match object to move from
 	 */
-	Match(Match<T, C> &&match)
+	Match(Match<T, C> &&match) noexcept
 		: _data(std::move(match._data)),
 		  _found(std::move(match._found)),
 		  _ref(std::move(match._ref)),
@@ -141,7 +140,7 @@ public:
 	 * @param other The Match object to copy from
 	 * @return Match<T, C>& Reference to this object after copying
 	 */
-	Match<T, C> &operator=(const Match<T, C> &other) {
+	Match<T, C> &operator=(const Match<T, C> &other) noexcept {
 		return copy(other);
 	}
 
@@ -151,7 +150,7 @@ public:
 	 * @param other The Match object to move from
 	 * @return Match<T, C>& Reference to this object after moving
 	 */
-	Match<T, C> &operator=(Match<T, C> &&other) {
+	Match<T, C> &operator=(Match<T, C> &&other) noexcept {
 		return move(std::move(other));
 	}
 
