@@ -3,51 +3,139 @@
 #include <ds/Comparator.hpp>
 #include <ds/List.hpp>
 #include <iostream>
+#include <stdexcept>
 #include <typeinfo>
 
 namespace ds {
 
 /**
  * @class SortedList
- * @brief A special list implementation that sorts entries as they are inserted.
+ * @brief A specialized list implementation that automatically maintains
+ * elements in sorted order
  *
- * This list structure inherits from the general list and overrides the insert
- * method to add an item into its sorted location.  It uses a `Comparator` to
- * find the proper location as compared to other elements in the collection.
+ * This container inherits from the general List class and overrides the insert
+ * method to add elements in their proper sorted position. It uses a
+ * `Comparator` to determine the correct placement of each element relative to
+ * existing elements.
  *
- * @tparam T The type of data stored within the queue.
+ * Unlike standard sorting algorithms that rearrange elements after insertion,
+ * SortedList ensures elements are always in the correct position as they are
+ * added, providing efficient lookups and ordered traversal at all times.
+ *
+ * @tparam T The type of data stored within the sorted list
  */
 template<typename T>
 class SortedList : public List<T> {
+private:
+
+	/**
+	 * @brief Deleted to prevent unordered operations
+	 * @note These operations would violate the sorted property of the list
+	 */
+	std::vector<T> reverse() = delete;
+
+	/**
+	 * @brief Deleted to prevent unordered operations
+	 * @note These operations would violate the sorted property of the list
+	 */
+	void shuffle() = delete;
+
+	/**
+	 * @brief Deleted to prevent unordered operations
+	 * @note These operations would violate the sorted property of the list
+	 */
+	void swap(size_t pos1, size_t pos2) = delete;
+
 public:
 
+	/**
+	 * @brief Default constructor
+	 *
+	 * Creates an empty sorted list using the default comparator for type T
+	 */
 	SortedList() : List<T>() {}
 
 	/**
-	 * @brief Constructor that sets a custom `Comparator` object
-	 * @param comparator (`Comparator`) a reference to a comparison object
+	 * @brief Constructor with custom comparator
+	 *
+	 * Creates an empty sorted list using the specified comparator to determine
+	 * the ordering of elements when they are inserted.
+	 *
+	 * @param comparator A reference to a comparison object that defines element
+	 * ordering
 	 */
-	SortedList(Comparator<T> &comparator) : List<T>(comparator) {}
+	SortedList(const Comparator<T> &comparator) : List<T>(comparator) {}
 
 	/**
 	 * @brief Copy constructor
-	 * @param slist (`SortedList<T>`) the sorted list to copy
+	 *
+	 * Creates a new sorted list as a deep copy of an existing one,
+	 * preserving the sorted order of elements.
+	 *
+	 * @param slist A reference to the sorted list to copy
 	 */
-	SortedList(SortedList<T> &slist) : List<T>(slist) {}
+	SortedList(const SortedList<T> &slist) : List<T>(slist) {}
 
 	/**
-	 * @brief Constructor that takes an initializer_list to insert values into
-	 * the collection.
-	 * @param il (`std::initializer_list`) a list of values to see the list
+	 * @brief Move constructor
+	 *
+	 * Efficiently transfers ownership of resources from an existing sorted list
+	 * to a new one without copying elements.
+	 *
+	 * @param slist An rvalue reference to a sorted list whose resources will be
+	 * moved
 	 */
-	SortedList(std::initializer_list<T> il) : List<T>() {
-		for (auto it: il) {
+	SortedList(SortedList<T> &&slist) : List<T>(std::move(slist)) {}
+
+	/**
+	 * @brief Initializer list constructor
+	 *
+	 * Creates a sorted list from the provided initializer list,
+	 * automatically inserting elements in their sorted positions.
+	 *
+	 * @param il An initializer list containing values to populate the list with
+	 */
+	SortedList(const std::initializer_list<T> &il) : List<T>() {
+		for (const auto &it: il) {
 			this->insert(it);
 		}
 	}
 
 	/**
-	 * @brief Inserts an element into a list based on its comparator position.
+	 * @brief Copy assignment operator
+	 *
+	 * Assigns the contents of another sorted list to this one,
+	 * replacing any existing elements.
+	 *
+	 * @param other The sorted list to copy from
+	 * @return Reference to this sorted list after assignment
+	 */
+	SortedList<T> &operator=(const SortedList<T> &other) {
+		List<T>::operator=(other);
+		return *this;
+	}
+
+	/**
+	 * @brief Initializer list assignment operator
+	 *
+	 * Replaces the contents of the sorted list with elements from the
+	 * initializer list, inserting them in sorted order.
+	 *
+	 * @param il An initializer list containing values to populate the list with
+	 * @return Reference to this sorted list after assignment
+	 */
+	SortedList<T> &operator=(const std::initializer_list<T> &il) {
+		List<T>::operator=(il);
+		return *this;
+	}
+
+	/**
+	 * @brief Inserts an element into its sorted position in the list
+	 *
+	 * This method overrides the base class insert to place the element
+	 * in its correct position according to the list's ordering. It uses
+	 * the comparator to determine where the element should be inserted.
+	 *
 	 * @param data The element to insert
 	 */
 	virtual void insert(T data) override {

@@ -11,6 +11,4 @@ public:
 	TestMatch() : TestingBase() {}
 };
 
-TEST_F(TestMatch, Create) {
-
-};
+TEST_F(TestMatch, Create) {};

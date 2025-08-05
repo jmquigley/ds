@@ -79,12 +79,90 @@ public:
 	virtual ~TreeNode() {}
 
 	/**
-	 * @brief equal operator for the TreeNode class
-	 * @param other (`TreeNode<T> &`) a reference to the tree node to copy
-	 * @returns a reference the this pointer for the object
+	 * @brief Copy assignment operator for TreeNode
+	 *
+	 * Assigns the contents of another TreeNode to this one, including all
+	 * tree structure properties and data. This performs a shallow copy,
+	 * maintaining the same references to child nodes.
+	 *
+	 * @param other The TreeNode to copy from
+	 * @return Reference to this TreeNode after assignment
 	 */
 	TreeNode<T> &operator=(const TreeNode<T> &other) {
 		return this->copy(other);
+	}
+
+	/**
+	 * @brief Move assignment operator for TreeNode
+	 *
+	 * Transfers ownership of resources from another TreeNode to this one.
+	 * The source node is left in a valid but empty state after the move
+	 * operation. All tree structure and relationships are preserved in the
+	 * target node.
+	 *
+	 * @param other The TreeNode to move resources from
+	 * @return Reference to this TreeNode after move assignment
+	 */
+	TreeNode<T> &operator=(TreeNode<T> &&other) {
+		return this->move(std::move(other));
+	}
+
+	/**
+	 * @brief Equality comparison operator
+	 *
+	 * Compares this TreeNode with another to determine if they are equal.
+	 * Two nodes are considered equal if they have the same data value
+	 * (uses T's equality operator).
+	 *
+	 * @param other The TreeNode to compare with
+	 * @return true if the nodes contain equal data, false otherwise
+	 */
+	bool operator==(const TreeNode<T> &other) const {
+		return this->_data == other._data;
+	}
+
+	/**
+	 * @brief Inequality comparison operator
+	 *
+	 * Compares this TreeNode with another to determine if they are not equal.
+	 * Two nodes are considered unequal if they have different data values
+	 * (uses T's inequality operator).
+	 *
+	 * @param other The TreeNode to compare with
+	 * @return true if the nodes contain different data, false otherwise
+	 */
+	bool operator!=(const TreeNode<T> &other) const {
+		return this->_data != other._data;
+	}
+
+	/**
+	 * @brief Less-than comparison operator
+	 *
+	 * Compares this TreeNode with another to establish an ordering.
+	 * This operator uses T's less-than operator to compare the nodes' data
+	 * values. Useful for sorting and ordered containers.
+	 *
+	 * @param other The TreeNode to compare with
+	 * @return true if this node's data is less than other's data, false
+	 * otherwise
+	 */
+	bool operator<(const TreeNode<T> &other) const {
+		return this->_data < other._data;
+	}
+
+	/**
+	 * @brief Greater-than comparison operator
+	 *
+	 * Compares this TreeNode with another to establish an ordering.
+	 * This operator uses T's greater-than operator to compare the nodes' data
+	 * values. Useful for sorting and ordered containers.
+	 *
+	 * @param other The TreeNode to compare with
+	 * @return true if this node's data is greater than other's data, false
+	 * otherwise
+	 */
+	bool operator>(const TreeNode<T> &other) const {
+		return this->_data > other._data;
 	}
 
 	/**

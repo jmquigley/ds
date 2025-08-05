@@ -1318,7 +1318,8 @@ public:
 			throw std::invalid_argument(ss.str());
 		}
 
-		znode = match.getRef().lock();
+		znode =
+			std::any_cast<std::shared_ptr<TreeNode<T>>>(match.getRef().lock());
 		if (!znode) {
 			throw std::runtime_error("Node reference exired during removal");
 		}

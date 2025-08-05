@@ -75,6 +75,7 @@ set(DS_INCLUDES
     LRUCache.hpp
     Match.hpp
     Node.hpp
+    OrderedSet.hpp
     Path.hpp
     PriorityQueue.hpp
     property.hpp
@@ -155,6 +156,7 @@ set(TEST_SOURCES
   tests/test_lrucache.cpp
   tests/test_match.cpp
   tests/test_node.cpp
+  tests/test_orderedset.cpp
   tests/test_path.cpp
   tests/test_priorityqueue.cpp
   tests/test_queue.cpp

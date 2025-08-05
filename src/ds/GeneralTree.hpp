@@ -186,7 +186,7 @@ public:
 		ds::Queue<std::shared_ptr<GeneralTreeNode<T>>> q {};
 
 		// load the root children into the queue
-		for (auto const &[key, data]: node->getChildrenRef()) {
+		for (auto const &data: node->children()) {
 			q.enqueue(data);
 		}
 
@@ -203,7 +203,7 @@ public:
 			}
 
 			if (node->totalChildren() > 0) {
-				for (auto const &[key, data]: node->getChildrenRef()) {
+				for (auto const &data: node->children()) {
 					q.enqueue(data);
 				}
 			}

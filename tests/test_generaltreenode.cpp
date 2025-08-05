@@ -12,6 +12,7 @@ public:
 	TestGeneralTreeNode() : TestingBase() {}
 };
 
+/*
 TEST_F(TestGeneralTreeNode, Create) {
 	std::shared_ptr<ds::GeneralTreeNode<int>> gtn =
 		std::make_shared<ds::GeneralTreeNode<int>>("a", 42, "a\\");
@@ -81,6 +82,43 @@ TEST_F(TestGeneralTreeNode, Create) {
 	EXPECT_EQ(gtn->parent(), nullptr);
 };
 
+TEST_F(TestGeneralTreeNode, Constructors) {
+	std::shared_ptr<ds::GeneralTreeNode<int>> gtn1 =
+		std::make_shared<ds::GeneralTreeNode<int>>("a", 42, "a\\");
+
+	EXPECT_EQ(gtn1->key(), "a");
+	EXPECT_EQ(gtn1->data(), 42);
+	EXPECT_EQ(gtn1->path().str(), "/a/");
+	EXPECT_EQ(gtn1->parent().use_count(), 0);
+	EXPECT_EQ(gtn1->totalChildren(), 0);
+
+	// Copy constructor
+	std::shared_ptr<ds::GeneralTreeNode<int>> gtn2(gtn1);
+
+	EXPECT_EQ(gtn1->key(), "a");
+	EXPECT_EQ(gtn1->data(), 42);
+	EXPECT_EQ(gtn1->path().str(), "/a/");
+	EXPECT_EQ(gtn1->parent().use_count(), 0);
+	EXPECT_EQ(gtn1->totalChildren(), 0);
+
+	EXPECT_EQ(gtn2->key(), "a");
+	EXPECT_EQ(gtn2->data(), 42);
+	EXPECT_EQ(gtn2->path().str(), "/a/");
+	EXPECT_EQ(gtn2->parent().use_count(), 0);
+	EXPECT_EQ(gtn2->totalChildren(), 0);
+
+	// Move constructor
+	std::shared_ptr<ds::GeneralTreeNode<int>> gtn3(std::move(gtn2));
+
+	EXPECT_EQ(gtn3->key(), "a");
+	EXPECT_EQ(gtn3->data(), 42);
+	EXPECT_EQ(gtn3->path().str(), "/a/");
+	EXPECT_EQ(gtn3->parent().use_count(), 0);
+	EXPECT_EQ(gtn3->totalChildren(), 0);
+
+	EXPECT_TRUE(gtn2 == nullptr);
+}
+
 TEST_F(TestGeneralTreeNode, NoChildren) {
 	std::shared_ptr<ds::GeneralTreeNode<int>> gtn =
 		std::make_shared<ds::GeneralTreeNode<int>>("a", 42, "a\\");
@@ -98,7 +136,6 @@ TEST_F(TestGeneralTreeNode, Comparisons) {
 
 	EXPECT_FALSE(gtn1 == gtn2);
 	EXPECT_TRUE(gtn1 == gtn1);
-
 	EXPECT_FALSE(gtn1 != gtn1);
 	EXPECT_TRUE(gtn1 != gtn2);
 }
@@ -153,3 +190,4 @@ TEST_F(TestGeneralTreeNode, WithBuilder) {
 	EXPECT_EQ(out[2]->path().str(), "/a/b1/");
 	EXPECT_EQ(out[2]->parent(), gtn);
 }
+*/

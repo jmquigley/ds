@@ -1,11 +1,13 @@
 #pragma once
 
+#include <any>
 #include <ds/BaseNode.hpp>
 #include <ds/Node.hpp>
 #include <ds/Path.hpp>
 #include <ds/Replicate.hpp>
 #include <ds/property.hpp>
 #include <memory>
+#include <utility>
 
 namespace ds {
 
@@ -94,9 +96,6 @@ private:
 
 public:
 
-	/// @brief Bit flag that determines if the index is valid
-	static const unsigned char FLAG_INDEX = 0x01;
-
 	/**
 	 * @brief Default constructor
 	 *
@@ -110,25 +109,25 @@ public:
 	 *
 	 * @param match The Match object to copy
 	 */
-	Match(Match &match)
+	Match(Match<T, C> &match)
 		: _data(match._data),
 		  _found(match._found),
 		  _ref(match._ref),
-		  _search(match._search) {}
+		  _search(match._search) {
+		this->copy(match);
+	}
 
 	/**
 	 * @brief Move constructor for the Match object
 	 *
 	 * @param match The Match object to move from
 	 */
-	Match(Match &&match)
+	Match(Match<T, C> &&match)
 		: _data(std::move(match._data)),
 		  _found(std::move(match._found)),
 		  _ref(std::move(match._ref)),
 		  _search(std::move(match._search)) {
-		match._found = false;
-		match._search = "";
-		match._ref.reset();
+		move(std::move(match));
 	}
 
 	/**

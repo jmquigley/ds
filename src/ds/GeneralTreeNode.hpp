@@ -3,10 +3,10 @@
 #include <ds/BaseNode.hpp>
 #include <ds/BinaryTree.hpp>
 #include <ds/Comparator.hpp>
+#include <ds/OrderedSet.hpp>
 #include <ds/Path.hpp>
 #include <ds/Replicate.hpp>
 #include <ds/property.hpp>
-#include <map>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -47,7 +47,7 @@ private:
 protected:
 
 	/// @brief A map to hold child nodes indexed by their keys
-	std::map<std::string, std::shared_ptr<GeneralTreeNode<T>>> _children;
+	// OrderedSet<GeneralTreeNode<T>> _children;
 
 public:
 
@@ -57,6 +57,17 @@ public:
 	 */
 	GeneralTreeNode()
 		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), "", {}, "") {}
+
+	/**
+	 * @brief Constructor with key only construction.
+	 *
+	 * This constructor is used to create a search key GeneralTreeNode
+	 *
+	 * @param key (`std::string`) The unique identifier for this node
+	 */
+	GeneralTreeNode(const std::string &key)
+		: GeneralTreeNode<T>(std::weak_ptr<GeneralTreeNode<T>>(), key, {}, "") {
+	}
 
 	/**
 	 * @brief Constructor with key, data, and path string
@@ -113,12 +124,21 @@ public:
 	}
 
 	/**
-	 * @brief Assignment operator
-	 * @param gtn The node to assign from
+	 * @brief Assignment operator for general tree
+	 * @param other (`GeneralTreeNode &`) Reference to the node to assign from
 	 * @return Reference to this node after assignment
 	 */
-	GeneralTreeNode &operator=(const GeneralTreeNode<T> &gtn) {
-		return this->move(gtn);
+	GeneralTreeNode<T> &operator=(const GeneralTreeNode<T> &other) {
+		return this->copy(other);
+	}
+
+	/**
+	 * @brief Move operator for general tree
+	 * @param other (`GeneralTree<T> &&`) an rvalue general tree refrence
+	 * @return Reference to this node after assignment
+	 */
+	GeneralTreeNode<T> &operator=(GeneralTreeNode<T> &&other) {
+		return this->move(std::move(other));
 	}
 
 	/**
@@ -145,7 +165,7 @@ public:
 	 * @return true if this node's key is less than other's key
 	 */
 	bool operator<(const GeneralTreeNode<T> &other) {
-		return this->_key < this->_key;
+		return this->_key < other._key;
 	}
 
 	/**
@@ -154,7 +174,7 @@ public:
 	 * @return true if this node's key is greater than other's key
 	 */
 	bool operator>(const GeneralTreeNode<T> &other) {
-		return this->_key > this->_key;
+		return this->_key > other._key;
 	}
 
 	/**
@@ -164,30 +184,25 @@ public:
 	 * @param path (`std::string`) the path to root for this child record
 	 * @return A shared pointer to the newly created child node
 	 */
-	std::shared_ptr<GeneralTreeNode<T>> addChild(std::string key, T data,
-												 std::string path) {
-		_children[key] = std::make_shared<GeneralTreeNode<T>>(
-			this->shared_from_this(), key, data, path);
-		return _children[key];
-	}
+	// void addChild(std::string key, T data, std::string path) {
+	// 	// GeneralTreeNode<T> gtn(key, data, path);
+	// 	// _children.insert(gtn);
+	// }
 
 	/**
 	 * @brief Gets the current list of children from the GeneralTreeNode
 	 * @returns a `std::map` to the children in this node
 	 */
-	std::map<std::string, std::shared_ptr<GeneralTreeNode<T>>> &children() {
-		return this->_children;
-	}
+	// OrderedSet<std::shared_ptr<GeneralTreeNode<T>>> &children() {
+	// 	return this->_children;
+	// }
 
 	/**
 	 * @brief Clears all children and resets this node's data
 	 * Releases all child nodes and resets the node to its initial state
 	 */
 	void clear() {
-		for (auto &[key, value]: _children) {
-			value.reset();
-		}
-		_children.clear();
+		//_children.clear();
 		_key = "";
 		_path = "";
 		_data = {};
@@ -202,7 +217,7 @@ public:
 	 */
 	virtual GeneralTreeNode<T> &copy(const GeneralTreeNode<T> &other) override {
 		if (this != &other) {
-			this->_children = other._children;
+			// this->_children = other._children;
 			this->_key = other._key;
 			this->_path = other._path;
 			this->_data = other._data;
@@ -218,7 +233,7 @@ public:
 	virtual std::shared_ptr<GeneralTreeNode<T>> deepcopy() override {
 		auto copy = std::make_shared<GeneralTreeNode<T>>(
 			this->_key, this->_data, this->_path);
-		copy->_children = this->_children;
+		// copy->_children = this->_children;
 		return copy;
 	}
 
@@ -227,9 +242,17 @@ public:
 	 * @param key The key of the child to retrieve
 	 * @return A shared pointer to the child node
 	 */
-	std::shared_ptr<GeneralTreeNode<T>> getChild(std::string key) {
-		return _children[key];
-	}
+	// std::shared_ptr<GeneralTreeNode<T>> getChild(std::string key) {
+	// 	std::shared_ptr<GeneralTreeNode<T>> search =
+	// 		std::make_shared<GeneralTreeNode<T>>(key);
+	// 	auto match = this->_children.find(search);
+
+	// 	if (match.found()) {
+	// 		return match.reference()->data();
+	// 	}
+
+	// 	return nullptr;
+	// }
 
 	/*
 		std::shared_ptr<GeneralTreeNode<T>> getChild(size_t index) {
@@ -246,31 +269,33 @@ public:
 	 * @brief Gets all children of this node
 	 * @return A vector containing shared pointers to all child nodes
 	 */
-	std::vector<std::shared_ptr<GeneralTreeNode<T>>> getChildren() {
-		std::vector<std::shared_ptr<GeneralTreeNode<T>>> out;
-		for (const auto &[key, value]: _children) {
-			out.push_back(value);
-		}
-		return out;
-	}
+	// std::vector<std::shared_ptr<GeneralTreeNode<T>>> getChildren() {
+	// 	std::vector<std::shared_ptr<GeneralTreeNode<T>>> out;
+	// 	for (const auto &value: _children) {
+	// 		out.push_back(value);
+	// 	}
+	// 	return out;
+	// }
 
-	/**
-	 * @brief Retrieves the reference to the child map structure
-	 * @returns a map structure for all child nodes
-	 */
-	std::map<std::string, std::shared_ptr<GeneralTreeNode<T>>>
-	getChildrenRef() {
-		return this->_children;
-	}
+	// /**
+	//  * @brief Retrieves the reference to the child map structure
+	//  * @returns a map structure for all child nodes
+	//  */
+	// OrderedSet<std::shared_ptr<GeneralTreeNode<T>>> getChildrenRef() {
+	// 	return this->_children;
+	// }
 
-	/**
-	 * @brief Checks the child list for the existence of a key
-	 * @param key (`std::string`) the key value for the node in the tree
-	 * @returns true if the key is in the child list, otherwise false
-	 */
-	bool hasChild(std::string key) {
-		return this->_children.contains(key);
-	}
+	// /**
+	//  * @brief Checks the child list for the existence of a key
+	//  * @param key (`std::string`) the key value for the node in the tree
+	//  * @returns true if the key is in the child list, otherwise false
+	//  */
+	// bool hasChild(std::string key) {
+	// 	std::shared_ptr<GeneralTreeNode<T>> search =
+	// 		std::make_shared<GeneralTreeNode<T>>(key);
+
+	// 	return this->_children.contains(search);
+	// }
 
 	/**
 	 * @brief Moves content from another general tree node to this one
@@ -279,10 +304,23 @@ public:
 	 */
 	virtual GeneralTreeNode<T> &move(GeneralTreeNode<T> &&other) override {
 		if (this != &other) {
-			this->_children = std::move(other._children);
+			// this->_children = std::move(other._children);
 			this->_key = std::move(other._key);
 			this->_path = std::move(other._path);
 			this->_data = std::move(other._data);
+			this->_parent = std::move(other._parent);
+
+			// Update parent pointers in children
+			// for (const auto &child: this->_children) {
+			// 	child->setParent(this->shared_from_this());
+			// }
+
+			// Reset other
+			// other._children.clear();
+			other._key = "";
+			other._path = "";
+			other._data = T {};
+			other._parent.reset();
 		}
 
 		return *this;
@@ -292,19 +330,20 @@ public:
 	 * @brief Removes a child node with the specified key
 	 * @param key The key of the child to remove
 	 */
-	void removeChild(std::string key) {
-		std::shared_ptr<GeneralTreeNode<T>> tnode = _children[key];
-		tnode.reset();
-		_children.erase(key);
-	}
+	// void removeChild(std::string key) {
+	// 	std::shared_ptr<GeneralTreeNode<T>> search =
+	// 		std::make_shared<GeneralTreeNode<T>>(key);
+
+	// 	_children.removeValue(search);
+	// }
 
 	/**
 	 * @brief Gets the total number of immediate children
 	 * @return The number of child nodes
 	 */
-	size_t totalChildren() const {
-		return _children.size();
-	}
+	// size_t totalChildren() const {
+	// 	return _children.size();
+	// }
 
 	/**
 	 * @brief Convenience method to retrieve the parent pointer
@@ -318,9 +357,30 @@ public:
 	 * @brief Setting for the parent pointer of a node
 	 * @param value `std::shared_ptr<TreeNode<T>>` to set as the parent
 	 */
-	void setParent(std::shared_ptr<GeneralTreeNode<T>> &value) {
+	void setParent(std::shared_ptr<GeneralTreeNode<T>> value) {
 		this->_parent = value;
 	}
 };
 
 }  // namespace ds
+
+// namespace std {
+
+// /**
+//  * @brief Specialized hash object for unordered_map objects
+//  */
+// template<typename T>
+// struct hash<ds::GeneralTreeNode<T>> {
+// 	/**
+// 	 * @brief a specialized hash function used by unordered_map to deal with
+// 	 * `GeneralTreeNode` class object comparisons.
+// 	 *
+// 	 * @param gtn (`GeneralTreeNode<T> &`) a reference to the general tree
+// 	 * object to be hashed
+// 	 * @returns a hash value for the `GeneralTreeNode<T>` object key value.
+// 	 */
+// 	size_t operator()(const ds::GeneralTreeNode<T> &gtn) const {
+// 		return hash<std::string>()(gtn.path().str());
+// 	}
+// };
+// }  // namespace std

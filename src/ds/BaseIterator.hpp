@@ -121,7 +121,7 @@ public:
 	 * @return The data of the current node, or a default T value if no node
 	 */
 	T operator*() const {
-		T nil = 0;
+		T nil {};
 
 		if (!_lp.expired()) {
 			return _lp.lock()->getData();
@@ -160,6 +160,15 @@ public:
 		}
 
 		return *this;
+	}
+
+	/**
+	 * @brief retrieves a reference to the shared pointer contained in the
+	 * iterator.
+	 * @returns a `std::shared_ptr` to the iterators current node pointer
+	 */
+	std::shared_ptr<C<T>> get() {
+		return _lp.lock();
 	}
 
 	/**

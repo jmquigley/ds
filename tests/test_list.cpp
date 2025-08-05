@@ -1,9 +1,11 @@
 #include <testing_base.h>
 
 #include <ds/List.hpp>
+#include <ds/property.hpp>
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 class TestList : public TestingBase {
@@ -27,6 +29,92 @@ TEST_F(TestList, Create) {
 
 	EXPECT_EQ(list.minimum(), 1);
 	EXPECT_EQ(list.maximum(), 3);
+}
+
+TEST_F(TestList, Constructors) {
+	// Initialization list constructor
+	ds::List<int> l1 {1, 2, 3, 4, 5};
+
+	EXPECT_EQ(l1.size(), 5);
+	EXPECT_EQ(l1.at(0), 1);
+	EXPECT_EQ(l1.at(1), 2);
+	EXPECT_EQ(l1.at(2), 3);
+	EXPECT_EQ(l1.at(3), 4);
+	EXPECT_EQ(l1.at(4), 5);
+	EXPECT_EQ(**l1.front().lock(), 1);
+	EXPECT_EQ(l1.minimum(), 1);
+	EXPECT_EQ(**l1.back().lock(), 5);
+	EXPECT_EQ(l1.maximum(), 5);
+	EXPECT_FALSE(l1.empty());
+
+	auto it1 = l1.begin();
+	auto it2 = l1.end();
+
+	EXPECT_EQ(*it1, 1);
+	EXPECT_EQ(*it1.next(), 2);
+	EXPECT_EQ(*it1.next(), 3);
+	EXPECT_EQ(*it1.next(), 4);
+	EXPECT_EQ(*it1.next(), 5);
+	EXPECT_EQ(*it1.next(), 0);
+
+	// Copy constructor
+	ds::List<int> l2(l1);
+
+	EXPECT_TRUE(l1.root() != l2.root());
+	EXPECT_EQ(l2.size(), 5);
+	EXPECT_EQ(l2.at(0), 1);
+	EXPECT_EQ(l2.at(1), 2);
+	EXPECT_EQ(l2.at(2), 3);
+	EXPECT_EQ(l2.at(3), 4);
+	EXPECT_EQ(l2.at(4), 5);
+	EXPECT_EQ(**l2.front().lock(), 1);
+	EXPECT_EQ(l2.minimum(), 1);
+	EXPECT_EQ(**l2.back().lock(), 5);
+	EXPECT_EQ(l2.maximum(), 5);
+	EXPECT_FALSE(l2.empty());
+
+	it1 = l1.begin();
+	it2 = l2.begin();
+
+	EXPECT_TRUE(it1.get() != it2.get());
+
+	it1.next();
+	it2.next();
+
+	EXPECT_TRUE(it1.get() != it2.get());
+
+	// Assignment/copy constructor
+	ds::List<int> l3 = l2;
+	EXPECT_EQ(l3.size(), 5);
+
+	EXPECT_EQ(l3.at(0), 1);
+	EXPECT_EQ(l3.at(1), 2);
+	EXPECT_EQ(l3.at(2), 3);
+	EXPECT_EQ(l3.at(3), 4);
+	EXPECT_EQ(l3.at(4), 5);
+
+	l3.clear();
+	l3.insert(1);
+	l3.insert(2);
+	l3.insert(3);
+
+	EXPECT_EQ(l3.size(), 3);
+	EXPECT_EQ(l3.at(0), 1);
+	EXPECT_EQ(l3.at(1), 2);
+	EXPECT_EQ(l3.at(2), 3);
+
+	// Move constructor
+	ds::List<int> l4(std::move(l3));
+
+	EXPECT_EQ(l4.size(), 3);
+	EXPECT_EQ(l4.at(0), 1);
+	EXPECT_EQ(l4.at(1), 2);
+	EXPECT_EQ(l4.at(2), 3);
+
+	EXPECT_EQ(l3.size(), 0);
+	EXPECT_EQ(l3.root(), nullptr);
+	EXPECT_EQ(l3.front().use_count(), 0);
+	EXPECT_EQ(l3.back().use_count(), 0);
 }
 
 TEST_F(TestList, InsertFront) {
@@ -201,17 +289,6 @@ TEST_F(TestList, EqualOperator) {
 	EXPECT_EQ(list.at(4), 5);
 }
 
-TEST_F(TestList, CopyConstructor) {
-	ds::List<int> l1 {1, 2, 3, 4, 5};
-	EXPECT_EQ(l1.size(), 5);
-
-	ds::List<int> l2(l1);
-	EXPECT_EQ(l2.size(), 5);
-
-	ds::List<int> l3 = l2;
-	EXPECT_EQ(l3.size(), 5);
-}
-
 TEST_F(TestList, ToVector) {
 	ds::List<int> list;
 
@@ -252,13 +329,9 @@ TEST_F(TestList, ToVectorReverseEmpty) {
 }
 
 TEST_F(TestList, Iterator) {
-	ds::List<int> list;
+	ds::List<int> list {1, 2, 3, 4, 5};
 
-	list.insert(1);
-	list.insert(2);
-	list.insert(3);
-
-	EXPECT_EQ(list.size(), 3);
+	EXPECT_EQ(list.size(), 5);
 
 	ds::List<int>::Iterator it(list.getFront().lock());
 
@@ -275,7 +348,7 @@ TEST_F(TestList, Iterator) {
 		std::cout << "val: " << it << ", *: " << *it << std::endl;
 	}
 
-	for (auto it: list) {
+	for (const auto &it: list) {
 		std::cout << "it: " << it << std::endl;
 	}
 
@@ -294,17 +367,22 @@ TEST_F(TestList, Iterator) {
 		i++;
 	}
 
+	it1 = list.begin();
+
+	EXPECT_EQ(*it1, 1);
+	EXPECT_EQ(*it1.next(), 2);
+	EXPECT_EQ(*it1.next(), 3);
+	EXPECT_EQ(*it1.next(), 4);
+	EXPECT_EQ(*it1.next(), 5);
+	EXPECT_EQ(*it1.next(), 0);
+
 	list.clear();
 };
 
 TEST_F(TestList, IteratorReverse) {
-	ds::List<int> list;
+	ds::List<int> list {1, 2, 3, 4, 5};
 
-	list.insert(1);
-	list.insert(2);
-	list.insert(3);
-
-	EXPECT_EQ(list.size(), 3);
+	EXPECT_EQ(list.size(), 5);
 
 	ds::List<int>::Iterator it(list.getBack());
 
@@ -322,25 +400,30 @@ TEST_F(TestList, IteratorReverse) {
 		std::cout << "it: " << *it << std::endl;
 
 		if (i == 0) {
-			EXPECT_EQ(*it, 3);
+			EXPECT_EQ(*it, 5);
 		} else if (i == 1) {
-			EXPECT_EQ(*it, 2);
+			EXPECT_EQ(*it, 4);
 		} else if (i == 2) {
-			EXPECT_EQ(*it, 1);
+			EXPECT_EQ(*it, 3);
 		}
 
 		i++;
 	}
 
+	it1 = list.rbegin();
+
+	EXPECT_EQ(*it1, 5);
+	EXPECT_EQ(*it1.previous(), 4);
+	EXPECT_EQ(*it1.previous(), 3);
+	EXPECT_EQ(*it1.previous(), 2);
+	EXPECT_EQ(*it1.previous(), 1);
+	EXPECT_EQ(*it1.previous(), 0);
+
 	list.clear();
 }
 
 TEST_F(TestList, Clear) {
-	ds::List<int> list;
-
-	list.insert(1);
-	list.insert(2);
-	list.insert(3);
+	ds::List<int> list {1, 2, 3};
 
 	EXPECT_EQ(list.size(), 3);
 	list.clear();
@@ -351,11 +434,7 @@ TEST_F(TestList, Clear) {
 }
 
 TEST_F(TestList, ClearOperator) {
-	ds::List<int> list;
-
-	list.insert(1);
-	list.insert(2);
-	list.insert(3);
+	ds::List<int> list {1, 2, 3};
 
 	EXPECT_EQ(list.size(), 3);
 	~list;
@@ -366,11 +445,7 @@ TEST_F(TestList, ClearOperator) {
 }
 
 TEST_F(TestList, At) {
-	ds::List<int> list;
-
-	list.insert(1);
-	list.insert(2);
-	list.insert(3);
+	ds::List<int> list {1, 2, 3};
 
 	EXPECT_EQ(list.size(), 3);
 	EXPECT_EQ(list.at(0), 1);
@@ -413,16 +488,57 @@ TEST_F(TestList, Search) {
 	EXPECT_TRUE(match.getFound());
 	EXPECT_EQ(match.getData(), 3);
 
+	auto ref = match.reference();
+	EXPECT_TRUE(ref != nullptr);
+
 	match = list.find(1);
 
 	EXPECT_TRUE(match.getFound());
 	EXPECT_EQ(match.getData(), 1);
+	EXPECT_TRUE(match.reference() != nullptr);
+
+	match = list.find(2);
+
+	EXPECT_TRUE(match.getFound());
+	EXPECT_EQ(match.getData(), 2);
+	EXPECT_TRUE(match.reference() != nullptr);
 
 	match = list.find(9999);
 
 	EXPECT_FALSE(match.getFound());
 	EXPECT_EQ(match.getData(), 0);
+	EXPECT_TRUE(match.reference() == nullptr);
 }
+
+template<typename T>
+class TestListSearchClass {
+public:
+
+	T _data;
+
+	TestListSearchClass(std::string &data) : _data(data) {}
+
+	bool operator==(const TestListSearchClass &other) {
+		return this->_data == other._data;
+	}
+
+	bool operator!=(const TestListSearchClass &other) {
+		return this->_data != other._data;
+	}
+
+	bool operator<(const TestListSearchClass &other) {
+		return other._data < this->_data;
+	}
+
+	bool operator>(const TestListSearchClass &other) {
+		return other._data > this->_data;
+	}
+};
+
+// TEST_F(TestList, ComplexTypeSearch) {
+// 	ds::List<TestListSearchClass<std::string>> list;
+// 	ds::Match<TestListSearchClass<std::string>> match;
+// }
 
 TEST_F(TestList, SearchEmpty) {
 	ds::List<int> list;

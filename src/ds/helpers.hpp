@@ -1,11 +1,13 @@
 #pragma once
 
+#include <any>
 #include <cstddef>
 #include <initializer_list>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 namespace ds {
 
@@ -98,6 +100,12 @@ std::string pointerToString(std::shared_ptr<T> p) {
 	void *rawAddress = static_cast<void *>(p.get());
 	ss << rawAddress;
 	return ss.str();
+}
+
+template<typename T>
+std::weak_ptr<std::any> to_weak_any(std::shared_ptr<T> original) {
+	auto any_shared = std::make_shared<std::any>(*original);
+	return std::weak_ptr<std::any>(any_shared);
 }
 
 /**

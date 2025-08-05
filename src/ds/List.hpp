@@ -4,14 +4,18 @@
 #include <ds/BaseIterator.hpp>
 #include <ds/Collection.hpp>
 #include <ds/LRUCache.hpp>
+#include <ds/Node.hpp>
+#include <ds/Replicate.hpp>
 #include <ds/Searchable.hpp>
 #include <ds/helpers.hpp>
 #include <ds/property.hpp>
 #include <exception>
+#include <initializer_list>
 #include <limits>
 #include <random>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace ds {
@@ -25,13 +29,16 @@ namespace ds {
  * @tparam T The type of data stored within the list.
  */
 template<typename T>
-class List : public Collection<T, Node>, public Searchable<T, Node> {
+class List :
+	public Collection<T, Node>,
+	public Searchable<T, Node>,
+	private Replicate<T, List<T>> {
 private:
 
 	/**
 	 * @brief an internal recently used cache object for search/at
 	 */
-	LRUCache<T, std::shared_ptr<Node<T>>> _cache;
+	// LRUCache<T, std::shared_ptr<Node<T>>> _cache;
 
 protected:
 
@@ -99,11 +106,11 @@ protected:
 	 */
 	std::shared_ptr<Node<T>> getNodeByValue(const T &value) {
 		// Check if the value is in the cache first
-		std::shared_ptr<Node<T>> result;
-		if (this->_cache.get(value, result)) {
-			// Found in cache, return immediately
-			return result;
-		}
+		// std::shared_ptr<Node<T>> result;
+		// if (this->_cache.get(value, result)) {
+		// 	// Found in cache, return immediately
+		// 	return result;
+		// }
 
 		// Start search from the front of the list
 		std::shared_ptr<Node<T>> current = this->_root;
@@ -113,7 +120,7 @@ protected:
 			// Compare current node's data with the target value
 			if (this->_comparator->compare(current->getData(), value) == 0) {
 				// Value found - store in cache for future lookups
-				this->_cache.set(value, current);
+				// this->_cache.set(value, current);
 				return current;
 			}
 
@@ -158,14 +165,22 @@ public:
 	 *
 	 * @param comparator The comparator function to use for element comparison
 	 */
-	List(Comparator<T> &comparator) : Collection<T, Node>(comparator) {}
+	List(const Comparator<T> &comparator) : Collection<T, Node>(comparator) {}
 
 	/**
 	 * @brief a List copy constructor
-	 * @param list (`List &`) the list object to copy
+	 * @param list (`List<T> &`) the list object to copy
 	 */
-	List(List<T> &list) {
-		this->operator=(list);
+	List(const List<T> &list) : Collection<T, Node>() {
+		this->copy(list);
+	}
+
+	/**
+	 * @brief a List move constructor
+	 * @param list (`List<T> &&`) an rvalue list reference to copy
+	 */
+	List(List<T> &&list) : Collection<T, Node>() {
+		this->move(std::move(list));
 	}
 
 	/**
@@ -174,7 +189,7 @@ public:
 	 *
 	 * @param il (`std::initializer_list`) a list of values to seed the list
 	 */
-	List(std::initializer_list<T> il) : Collection<T, Node>() {
+	List(const std::initializer_list<T> &il) : Collection<T, Node>() {
 		operator=(il);
 	}
 
@@ -187,13 +202,29 @@ public:
 
 	/**
 	 * @brief equals operator to set one list object to another
-	 * @param list (`List<T>`) a reference to the list to copy
+	 * @param other (`List<T>`) a reference to the list to copy
 	 * @returns a reference to the this pointer for the object
 	 */
-	List<T> &operator=(List<T> &list) {
-		for (auto it: list) {
+	List<T> &operator=(const List<T> &other) {
+		this->clear();
+		this->copy(other);
+		return *this;
+	}
+
+	/**
+	 * @brief Allows for the use of an initializer list after a list has
+	 * been defined.
+	 *
+	 * @param il (`std::initializer_list`) a list of values to seedthe list
+	 * @returns a reference to the list that was initilaized.
+	 */
+	List<T> &operator=(const std::initializer_list<T> &il) {
+		this->clear();
+
+		for (const auto &it: il) {
 			this->insert(it);
 		}
+
 		return *this;
 	}
 
@@ -222,23 +253,6 @@ public:
 	 */
 	friend std::ostream &operator<<(std::ostream &st, const List<T> &list) {
 		return st << list.str();
-	}
-
-	/**
-	 * @brief Allows for the use of an initializer list after a list has
-	 * been defined.
-	 *
-	 * @param il (`std::initializer_list`) a list of values to seedthe list
-	 * @returns a reference to the list that was initilaized.
-	 */
-	List<T> &operator=(std::initializer_list<T> il) {
-		this->clear();
-
-		for (auto it: il) {
-			this->insert(it);
-		}
-
-		return *this;
 	}
 
 	/**
@@ -338,6 +352,35 @@ public:
 	}
 
 	/**
+	 * @brief Takes the given list and copies it into this list.
+	 * @param other (`List<T>`) the list to copy
+	 * @returns a reference to the this pointer for the object
+	 */
+	virtual List<T> &copy(const List<T> &other) override {
+		this->clear();
+
+		for (const auto &it: other) {
+			this->insert(it);
+		}
+
+		return *this;
+	}
+
+	/**
+	 * @brief makes a new copy of the current list and returns it
+	 * @returns a `shared_ptr<List<T>>` to the newly created list
+	 */
+	virtual std::shared_ptr<List<T>> deepcopy() override {
+		auto copy = std::make_shared<List<T>>();
+
+		for (const auto &it: *this) {
+			copy->insert(it);
+		}
+
+		return copy;
+	}
+
+	/**
 	 * @brief Retrieves an iterator to the back of the list
 	 * @returns A new Iterator object that points to the end of the list
 	 */
@@ -365,19 +408,19 @@ public:
 		Match<T, Node> match;
 		std::shared_ptr<Node<T>> next;
 
-		if (this->_cache.get(data, tnode)) {
-			match.setFound(true);
-			match.setData(data);
-			match.setRef(tnode);
-			return match;
-		}
+		// if (this->_cache.get(data, tnode)) {
+		// 	match.setFound(true);
+		// 	match.setData(data);
+		// 	match.setRef(tnode);
+		// 	return match;
+		// }
 
 		while (tnode) {
 			if (this->_comparator->compare(tnode->getData(), data) == 0) {
 				match.setData(data);
 				match.setFound(true);
 				match.setRef(tnode);
-				this->_cache.set(data, tnode);
+				// this->_cache.set(data, tnode);
 				return match;
 			}
 
@@ -445,12 +488,35 @@ public:
 			}
 		}
 
+		this->_size++;
 		// seed the cache with values while the cache capacity is less than
 		// the collection size
-		this->_cache.setCollectionSize(++this->_size);
-		if (this->_size < this->_cache.capacity()) {
-			this->_cache.set(data, node);
+		// this->_cache.setCollectionSize(++this->_size);
+		// if (this->_size < this->_cache.capacity()) {
+		// 	this->_cache.set(data, node);
+		// }
+	}
+
+	/**
+	 * @brief moves the resources of one list to another
+	 * @param other (`List<T> &&`) rvalue reference to the list to copy
+	 * @returns a reference to the list that contains the moved resources
+	 */
+	virtual List<T> &move(List<T> &&other) override {
+		if (this != &other) {
+			this->_root = std::move(other._root);
+			this->_front = std::move(other._front);
+			this->_back = std::move(other._back);
+			this->_size = other._size;
+			this->_comparator = std::move(other._comparator);
+
+			other._size = 0;
+			other._root = nullptr;
+			other._front.reset();
+			other._back.reset();
 		}
+
+		return *this;
 	}
 
 	/**
@@ -560,7 +626,7 @@ public:
 		T data = tnode->getData();
 
 		// Remove the value from the cache if it exists
-		this->_cache.eject(data);
+		// this->_cache.eject(data);
 
 		// Clear and reset the node
 		tnode.reset();
