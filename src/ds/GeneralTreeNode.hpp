@@ -34,7 +34,7 @@ class GeneralTreeNode :
 	PROPERTY_SCOPED_WITH_DEFAULT(data, Data, T, protected:, {});
 
 	/// @brief a unique key used by each general tree node
-	PROPERTY_SCOPED(key, Key, std::string, protected:);
+	PROPERTY_SCOPED_WITH_DEFAULT(key, Key, std::string, protected:, {""});
 
 	/// @brief the path from the root to this node
 	PROPERTY_SCOPED(path, Path, Path, protected:);
@@ -194,8 +194,12 @@ public:
 	 * @return A shared pointer to the newly created child node
 	 */
 	void addChild(std::string key, T data, std::string path) {
-		_children.insert(
-			GeneralTreeNode<T>(this->shared_from_this(), key, data, path));
+		std::shared_ptr<GeneralTreeNode<T>> parent = this->shared_from_this();
+		std::cout << "parent: " << parent << std::endl;
+		_children.insert(GeneralTreeNode<T>(parent, key, data, path));
+
+		// _children.insert(
+		// 	GeneralTreeNode<T>(this->shared_from_this(), key, data, path));
 	}
 
 	/**
@@ -211,7 +215,7 @@ public:
 	 * Releases all child nodes and resets the node to its initial state
 	 */
 	void clear() {
-		//_children.clear();
+		_children.clear();
 		_key = "";
 		_path = "";
 		_data = {};
@@ -226,7 +230,7 @@ public:
 	 */
 	virtual GeneralTreeNode<T> &copy(const GeneralTreeNode<T> &other) override {
 		if (this != &other) {
-			// this->_children = other._children;
+			this->_children = other._children;
 			this->_key = other._key;
 			this->_path = other._path;
 			this->_data = other._data;
@@ -250,6 +254,7 @@ public:
 	 * @brief Retrieves a child node by its key
 	 * @param key The key of the child to retrieve
 	 * @return A shared pointer to the child node
+	 * @throws a std::runtime_error if the requested child doesn't exist
 	 */
 	GeneralTreeNode<T> &getChild(std::string key) {
 		auto match = this->_children.find(GeneralTreeNode<T>(key));

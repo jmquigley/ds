@@ -94,6 +94,16 @@ TEST_F(TestPath, InitializerList) {
 	EXPECT_EQ(path2.str(), "/x/y/z/");
 }
 
+TEST_F(TestPath, EmptyInitializerList) {
+	ds::Path path {};
+	EXPECT_EQ(path.size(), 0);
+	EXPECT_EQ(path.str(), "");
+
+	ds::Path path2 {""};
+	EXPECT_EQ(path2.size(), 0);
+	EXPECT_EQ(path2.str(), "");
+}
+
 TEST_F(TestPath, CopyConstructor) {
 	ds::Path path1("a", "b", "c");
 	ds::Path path2(path1);

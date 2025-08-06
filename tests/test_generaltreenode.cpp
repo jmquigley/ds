@@ -35,58 +35,62 @@ TEST_F(TestGeneralTreeNode, Create) {
 	EXPECT_EQ(ch1.path().str(), "/a/a1/");
 
 	/*
-			EXPECT_EQ(out[0]->key(), "a1");
-				EXPECT_EQ(out[0], ch1);
-				EXPECT_EQ(out[0]->data(), 1);
-				EXPECT_EQ(out[0]->path().str(), "/a/a1/");
-				EXPECT_EQ(out[0]->parent(), gtn);
+		EXPECT_EQ(ch1.parent(), gtn);
 
-				std::shared_ptr<ds::GeneralTreeNode<int>> ch2 =
-	   gtn->getChild("a2");
+		std::cout << "ch1 parent: " << ch1.parent() << std::endl;
 
-				EXPECT_EQ(ch1->key(), "a2");
-				EXPECT_EQ(ch1->path().str(), "/a/a2/");
-				EXPECT_EQ(out[1]->key(), "a2");
-				EXPECT_EQ(out[1], ch2);
-				EXPECT_EQ(out[1]->data(), 3);
-				EXPECT_EQ(out[1]->path().str(), "/a/a2/");
-				EXPECT_EQ(out[1]->parent(), gtn);
+		EXPECT_EQ(out[0].key(), "a1");
+		EXPECT_EQ(out[0], ch1);
+		EXPECT_EQ(out[0].data(), 1);
+		EXPECT_EQ(out[0].path().str(), "/a/a1/");
+		EXPECT_EQ(out[0].parent(), gtn);
+						std::shared_ptr<ds::GeneralTreeNode<int>> ch2 =
+			   gtn->getChild("a2");
 
-											std::shared_ptr<ds::GeneralTreeNode<int>>
-			   ch3 = gtn->getChild("b1"); EXPECT_EQ(out[2]->key(), "b1");
-							   EXPECT_EQ(out[2], ch3); EXPECT_EQ(out[2]->data(),
-	   2); EXPECT_EQ(out[2]->path().str(),
-								   "/a/b1/"); EXPECT_EQ(out[2]->parent(), gtn);
+						EXPECT_EQ(ch1->key(), "a2");
+						EXPECT_EQ(ch1->path().str(), "/a/a2/");
+						EXPECT_EQ(out[1]->key(), "a2");
+						EXPECT_EQ(out[1], ch2);
+						EXPECT_EQ(out[1]->data(), 3);
+						EXPECT_EQ(out[1]->path().str(), "/a/a2/");
+						EXPECT_EQ(out[1]->parent(), gtn);
 
-																	EXPECT_TRUE(gtn->hasChild("a1"));
-																	EXPECT_FALSE(gtn->hasChild("zz"));
+													std::shared_ptr<ds::GeneralTreeNode<int>>
+					   ch3 = gtn->getChild("b1"); EXPECT_EQ(out[2]->key(),
+	   "b1"); EXPECT_EQ(out[2], ch3); EXPECT_EQ(out[2]->data(), 2);
+	   EXPECT_EQ(out[2]->path().str(),
+										   "/a/b1/");
+	   EXPECT_EQ(out[2]->parent(), gtn);
 
-																	gtn->removeChild("a2");
+																			EXPECT_TRUE(gtn->hasChild("a1"));
+																			EXPECT_FALSE(gtn->hasChild("zz"));
 
-																	EXPECT_EQ(gtn->totalChildren(),
-						   2);
+																			gtn->removeChild("a2");
 
-																	out =
-				   gtn->getChildren();
+																			EXPECT_EQ(gtn->totalChildren(),
+								   2);
 
-																	ch1 =
-				   gtn->getChild("a1"); EXPECT_EQ(out[0]->key(), "a1");
-			   EXPECT_EQ(out[0], ch1); EXPECT_EQ(out[0]->data(), 1);
-			   EXPECT_EQ(out[0]->path().str(),
-								   "/a/a1/"); EXPECT_EQ(out[0]->parent(), gtn);
+																			out
+	   = gtn->getChildren();
 
-																	ch3 =
-				   gtn->getChild("b1"); EXPECT_EQ(out[1]->key(), "b1");
-			   EXPECT_EQ(out[1], ch3); EXPECT_EQ(out[1]->data(), 2);
-			   EXPECT_EQ(out[1]->path().str(),
-								   "/a/b1/"); EXPECT_EQ(out[1]->parent(), gtn);
+																			ch1
+	   = gtn->getChild("a1"); EXPECT_EQ(out[0]->key(), "a1"); EXPECT_EQ(out[0],
+	   ch1); EXPECT_EQ(out[0]->data(), 1); EXPECT_EQ(out[0]->path().str(),
+										   "/a/a1/");
+	   EXPECT_EQ(out[0]->parent(), gtn);
 
-																	gtn->clear();
+																			ch3
+	   = gtn->getChild("b1"); EXPECT_EQ(out[1]->key(), "b1"); EXPECT_EQ(out[1],
+	   ch3); EXPECT_EQ(out[1]->data(), 2); EXPECT_EQ(out[1]->path().str(),
+										   "/a/b1/");
+	   EXPECT_EQ(out[1]->parent(), gtn);
 
-																	EXPECT_EQ(gtn->totalChildren(),
-						   0); EXPECT_EQ(gtn->key(), "");
-	   EXPECT_EQ(gtn->parent(), nullptr);
-																*/
+																			gtn->clear();
+
+																			EXPECT_EQ(gtn->totalChildren(),
+								   0); EXPECT_EQ(gtn->key(), "");
+			   EXPECT_EQ(gtn->parent(), nullptr);
+																		*/
 };
 
 /*

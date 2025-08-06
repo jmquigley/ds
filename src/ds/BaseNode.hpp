@@ -57,7 +57,7 @@ enum class NodeColor { Red = 0, Black = 1 };
 template<typename T, template<class> class C>
 class BaseNode : private Replicate<T, C<T>> {
 	/// @brief The data payload of the node.
-	PROPERTY_SCOPED_WITH_DEFAULT(data, Data, T, protected:, {});
+	PROPERTY_SCOPED_WITH_DEFAULT_NO_CONST(data, Data, T, protected:, {});
 
 	/// @brief flags used to determine bit properties in a node
 	PROPERTY_SCOPED_WITH_DEFAULT(flags, Flags, ByteFlag, protected:, {0});
@@ -123,7 +123,7 @@ public:
 	 * @param other (`Node<T>`) The Node object to move from (will be left in a
 	 * valid but unspecified state)
 	 */
-	BaseNode(C<T> &&other) : BaseNode() {
+	BaseNode(C<T> &&other) noexcept : BaseNode() {
 		this->move(std::move(other));
 	}
 
@@ -175,7 +175,7 @@ public:
 	 * @param other The right-hand side Node object to move resources from
 	 * @return Reference to this node after the assignment
 	 */
-	C<T> &operator=(C<T> &&other) {
+	C<T> &operator=(C<T> &&other) noexcept {
 		return this->move(std::move(other));
 	}
 
@@ -197,14 +197,6 @@ public:
 	void clear() {
 		this->_right.reset();
 		this->_left.reset();
-	}
-
-	/**
-	 * @brief Convenience method to get the data stored in the node
-	 * @returns a `T &` that references the data in the node
-	 */
-	inline T &dataR() {
-		return this->_data;
 	}
 
 	/**
@@ -275,7 +267,7 @@ public:
 	 * @param other The source node to move from
 	 * @return C<T>& Reference to this node after moving
 	 */
-	virtual C<T> &move(C<T> &&other) override {
+	virtual C<T> &move(C<T> &&other) noexcept override {
 		if (this != &other) {
 			this->_data = std::move(other._data);
 			this->_right = std::move(other._right);

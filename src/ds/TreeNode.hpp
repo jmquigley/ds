@@ -71,7 +71,8 @@ public:
 	/**
 	 * @brief Move constructor for the TreeNode class
 	 */
-	TreeNode(const TreeNode<T> &&other) : BaseNode<T, TreeNode>(other) {}
+	TreeNode(const TreeNode<T> &&other) noexcept
+		: BaseNode<T, TreeNode>(other) {}
 
 	/**
 	 * @brief TreeNode desstrutor
@@ -103,7 +104,7 @@ public:
 	 * @param other The TreeNode to move resources from
 	 * @return Reference to this TreeNode after move assignment
 	 */
-	TreeNode<T> &operator=(TreeNode<T> &&other) {
+	TreeNode<T> &operator=(TreeNode<T> &&other) noexcept {
 		return this->move(std::move(other));
 	}
 
@@ -201,7 +202,7 @@ public:
 	 * @param other The TreeNode to move from
 	 * @returns A reference to this TreeNode after moving
 	 */
-	TreeNode<T> &move(TreeNode<T> &&other) override {
+	TreeNode<T> &move(TreeNode<T> &&other) noexcept override {
 		if (this != &other) {
 			BaseNode<T, TreeNode>::move(std::move(other));
 			this->_parent = std::move(other._parent);

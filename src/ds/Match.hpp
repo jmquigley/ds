@@ -28,13 +28,14 @@ namespace ds {
 template<typename T, template<class> class C>
 class Match : public Replicate<T, Match<T, C>> {
 	/// @brief The data value found during the search operation
-	PROPERTY_WITH_DEFAULT(data, Data, T, {});
+	PROPERTY_WITH_DEFAULT_NO_CONST(data, Data, T, {});
 
 	/// @brief Flag indicating whether the search operation was successful
 	PROPERTY_WITH_DEFAULT(found, Found, bool, {false});
 
 	/// @brief Weak pointer to the node containing the found value
-	PROPERTY(ptr, Ptr, std::weak_ptr<C<T>>);
+	PROPERTY_WITH_DEFAULT(ptr, Ptr, std::weak_ptr<C<T>>,
+						  {std::weak_ptr<C<T>>()});
 
 	/// @brief The search string value used in the search operation
 	PROPERTY_WITH_DEFAULT(search, Search, Path, {""});
@@ -100,8 +101,7 @@ public:
 	 *
 	 * Initializes a Match object with default values indicating no match found
 	 */
-	Match()
-		: _data {}, _found(false), _ptr(std::weak_ptr<C<T>>()), _search("") {}
+	Match() {}
 
 	/**
 	 * @brief Copy constructor for the Match object
@@ -154,22 +154,24 @@ public:
 		return move(std::move(other));
 	}
 
+	/**
+	 * @brief Retrieves the pointer to the node for this match object.
+	 * @returns a `std::shared_ptr` to the node type object for this match
+	 */
 	std::shared_ptr<C<T>> pointer() {
 		return this->_ptr.lock();
 	}
 
 	/**
 	 * @brief Retrieves the value stored within the node (reference)
-	 *
-	 * @returns A reference to the value in the node that this
-	 * match has f2ound.
+	 * @returns A reference to the value in the node that this match has found.
 	 */
 	T &reference() {
 		if (!this->_found) {
 			throw std::runtime_error("Cannot reference a failed match");
 		}
 		// Return a reference to the actual node in the container
-		return this->pointer()->dataR();
+		return this->pointer()->data();
 	}
 };
 

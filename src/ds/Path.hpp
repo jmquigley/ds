@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace ds {
@@ -45,12 +46,12 @@ class Path final {
 	/**
 	 * @brief Property for the current full path string
 	 */
-	PROPERTY(currentPath, CurrentPath, std::string);
+	PROPERTY_WITH_DEFAULT(currentPath, CurrentPath, std::string, {});
 
 	/**
 	 * @brief Property for the vector of path elements
 	 */
-	PROPERTY(elements, Elements, std::vector<std::string>);
+	PROPERTY_WITH_DEFAULT(elements, Elements, std::vector<std::string>, {});
 
 private:
 
@@ -68,8 +69,11 @@ private:
 	 * @return The built path string
 	 */
 	std::string buildPath() {
-		this->_currentPath =
-			join(this->_elements, constants::SEPARATOR, true, true);
+		this->_currentPath = "";
+		if (this->_elements.size() > 0) {
+			this->_currentPath =
+				join(this->_elements, constants::SEPARATOR, true, true);
+		}
 		return this->_currentPath;
 	}
 
@@ -98,7 +102,7 @@ public:
 	}
 
 	/**
-	 * @brief Copy constructor
+	 * @brief Copy constructor for the Path object
 	 *
 	 * Creates a new Path object as a copy of the provided Path.
 	 *
@@ -108,12 +112,27 @@ public:
 		: _currentPath(path._currentPath), _elements(path._elements) {}
 
 	/**
+	 * @brief Move constructor for the Path object
+	 *
+	 * Creates a new path object as a move of the provided path.  Note that the
+	 * resources are moved to this new object and the original object is
+	 * destroyed.
+	 *
+	 * @param other The Path object to move.
+	 */
+	Path(Path &&other) noexcept : Path() {
+		this->move(std::move(other));
+	}
+
+	/**
 	 * @brief an initializer list to build a path
 	 * @param il (`std::initializer_list`) a list of values to seed the path
 	 */
 	explicit Path(std::initializer_list<std::string> il) : Path() {
-		for (auto &it: il) {
-			this->append(it);
+		for (const std::string &it: il) {
+			if (it != "") {
+				this->append(it);
+			}
 		}
 		this->buildPath();
 	}
@@ -202,6 +221,10 @@ public:
 		this->_currentPath = path._currentPath;
 		this->_elements = path._elements;
 		return *this;
+	}
+
+	Path &operator=(Path &&path) noexcept {
+		return this->move(std::move(path));
 	}
 
 	/**
@@ -311,6 +334,15 @@ public:
 	 */
 	inline bool empty() const {
 		return this->_currentPath == "";
+	}
+
+	Path &move(Path &&other) noexcept {
+		if (this != &other) {
+			this->_currentPath = std::move(other._currentPath);
+			this->_elements = std::move(other._elements);
+		}
+
+		return *this;
 	}
 
 	/**

@@ -351,8 +351,9 @@ public:
 	 * @brief Checks if a `T` data element exists within the list
 	 * @returns true if the data element exists in the list, otherwise false.
 	 */
-	inline bool contains(T data) override {
-		Match<T, Node> match = find(data);
+	bool contains(T data) override {
+		Match<T, Node> match {};
+		match = find(data);
 		return match.found();
 	}
 
@@ -408,24 +409,24 @@ public:
 	 * that was found in the search.
 	 */
 	virtual Match<T, Node> find(T data) override {
-		size_t index = 0;
+		size_t index {};
 		std::shared_ptr<Node<T>> nodeptr = this->_root;
-		Match<T, Node> match;
-		std::shared_ptr<Node<T>> next;
+		Match<T, Node> match {};
+		std::shared_ptr<Node<T>> next {};
 
-		if (this->_cache.get(data, nodeptr)) {
-			match.setFound(true);
-			match.setData(data);
-			match.setPtr(nodeptr);
-			return match;
-		}
+		// if (this->_cache.get(data, nodeptr)) {
+		// 	match.setFound(true);
+		// 	match.setData(data);
+		// 	match.setPtr(nodeptr);
+		// 	return match;
+		// }
 
 		while (nodeptr) {
 			if (nodeptr->getData() == data) {
 				match.setData(data);
 				match.setFound(true);
 				match.setPtr(nodeptr);
-				// this->_cache.set(data, tnode);
+				// this->_cache.set(data, nodeptr);
 				return match;
 			}
 
