@@ -489,26 +489,25 @@ TEST_F(TestList, Search) {
 	EXPECT_TRUE(match.getFound());
 	EXPECT_EQ(match.getData(), 3);
 
-	auto ref = match.reference();
-	EXPECT_TRUE(ref != nullptr);
+	EXPECT_TRUE(match.pointer() != nullptr);
 
 	match = list.find(1);
 
 	EXPECT_TRUE(match.getFound());
 	EXPECT_EQ(match.getData(), 1);
-	EXPECT_TRUE(match.reference() != nullptr);
+	EXPECT_TRUE(match.pointer() != nullptr);
 
 	match = list.find(2);
 
 	EXPECT_TRUE(match.getFound());
 	EXPECT_EQ(match.getData(), 2);
-	EXPECT_TRUE(match.reference() != nullptr);
+	EXPECT_TRUE(match.pointer() != nullptr);
 
 	match = list.find(9999);
 
 	EXPECT_FALSE(match.getFound());
 	EXPECT_EQ(match.getData(), 0);
-	EXPECT_TRUE(match.reference() == nullptr);
+	EXPECT_TRUE(match.pointer() == nullptr);
 }
 
 TEST_F(TestList, ComplexTypeSearch) {
@@ -523,19 +522,19 @@ TEST_F(TestList, ComplexTypeSearch) {
 
 	EXPECT_TRUE(match.found());
 	EXPECT_EQ(match.data().data(), "a");
-	EXPECT_TRUE(match.reference() != nullptr);
+	EXPECT_TRUE(match.pointer() != nullptr);
 
 	match = list.find(TestSearchClass("c"));
 
 	EXPECT_TRUE(match.found());
 	EXPECT_EQ(match.data().data(), "c");
-	EXPECT_TRUE(match.reference() != nullptr);
+	EXPECT_TRUE(match.pointer() != nullptr);
 
 	match = list.find(TestSearchClass("z"));
 
 	EXPECT_FALSE(match.found());
 	EXPECT_EQ(match.data().data(), "");
-	EXPECT_TRUE(match.reference() == nullptr);
+	EXPECT_TRUE(match.pointer() == nullptr);
 }
 
 TEST_F(TestList, EmptySearch) {

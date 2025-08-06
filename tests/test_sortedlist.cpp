@@ -151,25 +151,25 @@ TEST_F(TestSortedList, Search) {
 
 	EXPECT_TRUE(match.found());
 	EXPECT_EQ(match.data(), 1);
-	EXPECT_TRUE(match.reference() != nullptr);
+	EXPECT_TRUE(match.pointer() != nullptr);
 
 	match = slist.find(5);
 
 	EXPECT_TRUE(match.found());
 	EXPECT_EQ(match.data(), 5);
-	EXPECT_TRUE(match.reference() != nullptr);
+	EXPECT_TRUE(match.pointer() != nullptr);
 
 	match = slist.find(3);
 
 	EXPECT_TRUE(match.found());
 	EXPECT_EQ(match.data(), 3);
-	EXPECT_TRUE(match.reference() != nullptr);
+	EXPECT_TRUE(match.pointer() != nullptr);
 
 	match = slist.find(999);
 
 	EXPECT_FALSE(match.found());
 	EXPECT_EQ(match.data(), 0);
-	EXPECT_TRUE(match.reference() == nullptr);
+	EXPECT_TRUE(match.pointer() == nullptr);
 
 	ds::SortedList<int> slist2;
 
@@ -179,13 +179,13 @@ TEST_F(TestSortedList, Search) {
 
 	EXPECT_FALSE(match.found());
 	EXPECT_EQ(match.data(), 0);
-	EXPECT_TRUE(match.reference() == nullptr);
+	EXPECT_TRUE(match.pointer() == nullptr);
 
 	match = slist2.find(999);
 
 	EXPECT_FALSE(match.found());
 	EXPECT_EQ(match.data(), 0);
-	EXPECT_TRUE(match.reference() == nullptr);
+	EXPECT_TRUE(match.pointer() == nullptr);
 }
 
 TEST_F(TestSortedList, ComplexSearch) {
@@ -213,19 +213,19 @@ TEST_F(TestSortedList, ComplexSearch) {
 
 	EXPECT_TRUE(match.found());
 	EXPECT_EQ(match.data().data(), "a");
-	EXPECT_TRUE(match.reference() != nullptr);
+	EXPECT_TRUE(match.pointer() != nullptr);
 
 	match = list.find(TestSearchClass("c"));
 
 	EXPECT_TRUE(match.found());
 	EXPECT_EQ(match.data().data(), "c");
-	EXPECT_TRUE(match.reference() != nullptr);
+	EXPECT_TRUE(match.pointer() != nullptr);
 
 	match = list.find(TestSearchClass("z"));
 
 	EXPECT_FALSE(match.found());
 	EXPECT_EQ(match.data().data(), "");
-	EXPECT_TRUE(match.reference() == nullptr);
+	EXPECT_TRUE(match.pointer() == nullptr);
 }
 
 TEST_F(TestSortedList, EmptySearch) {

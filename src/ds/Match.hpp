@@ -34,7 +34,7 @@ class Match : public Replicate<T, Match<T, C>> {
 	PROPERTY_WITH_DEFAULT(found, Found, bool, {false});
 
 	/// @brief Weak pointer to the node containing the found value
-	PROPERTY(ref, Ref, std::weak_ptr<C<T>>);
+	PROPERTY(ptr, Ptr, std::weak_ptr<C<T>>);
 
 	/// @brief The search string value used in the search operation
 	PROPERTY_WITH_DEFAULT(search, Search, Path, {""});
@@ -50,7 +50,7 @@ private:
 		auto copy = std::make_shared<Match<T, C>>();
 		copy->_data = this->_data;
 		copy->_found = this->_found;
-		copy->_ref = this->_ref;
+		copy->_ptr = this->_ptr;
 		copy->_search = this->_search;
 
 		return copy;
@@ -66,7 +66,7 @@ private:
 		if (this != &other) {
 			this->_data = other._data;
 			this->_found = other._found;
-			this->_ref = other._ref;
+			this->_ptr = other._ptr;
 			this->_search = other._search;
 		}
 		return *this;
@@ -82,13 +82,13 @@ private:
 		if (this != &other) {
 			this->_data = std::move(other._data);
 			this->_found = std::move(other._found);
-			this->_ref = std::move(other._ref);
+			this->_ptr = std::move(other._ptr);
 			this->_search = std::move(other._search);
 
 			// Reset moved-from object
 			other._found = false;
 			other._search = "";
-			other._ref.reset();
+			other._ptr.reset();
 		}
 		return *this;
 	}
@@ -101,7 +101,7 @@ public:
 	 * Initializes a Match object with default values indicating no match found
 	 */
 	Match()
-		: _data {}, _found(false), _ref(std::weak_ptr<C<T>>()), _search("") {}
+		: _data {}, _found(false), _ptr(std::weak_ptr<C<T>>()), _search("") {}
 
 	/**
 	 * @brief Copy constructor for the Match object
@@ -111,7 +111,7 @@ public:
 	Match(Match<T, C> &match) noexcept
 		: _data(match._data),
 		  _found(match._found),
-		  _ref(match._ref),
+		  _ptr(match._ptr),
 		  _search(match._search) {
 		this->copy(match);
 	}
@@ -124,7 +124,7 @@ public:
 	Match(Match<T, C> &&match) noexcept
 		: _data(std::move(match._data)),
 		  _found(std::move(match._found)),
-		  _ref(std::move(match._ref)),
+		  _ptr(std::move(match._ptr)),
 		  _search(std::move(match._search)) {
 		move(std::move(match));
 	}
@@ -154,15 +154,22 @@ public:
 		return move(std::move(other));
 	}
 
+	std::shared_ptr<C<T>> pointer() {
+		return this->_ptr.lock();
+	}
+
 	/**
-	 * @brief Retrieves the current shared pointer value stored within the match
+	 * @brief Retrieves the value stored within the node (reference)
 	 *
-	 * @returns A std::shared_ptr<C<T>> that references the node that this
-	 * match has found. A nullptr will be returned if the reference is no longer
-	 * valid.
+	 * @returns A reference to the value in the node that this
+	 * match has f2ound.
 	 */
-	std::shared_ptr<C<T>> reference() const {
-		return this->_ref.lock();
+	T &reference() {
+		if (!this->_found) {
+			throw std::runtime_error("Cannot reference a failed match");
+		}
+		// Return a reference to the actual node in the container
+		return this->pointer()->dataR();
 	}
 };
 

@@ -116,25 +116,25 @@ TEST_F(TestOrderedSet, Search) {
 
 	EXPECT_TRUE(match.found());
 	EXPECT_EQ(match.data(), 1);
-	EXPECT_TRUE(match.reference() != nullptr);
+	EXPECT_TRUE(match.pointer() != nullptr);
 
 	match = set.find(5);
 
 	EXPECT_TRUE(match.found());
 	EXPECT_EQ(match.data(), 5);
-	EXPECT_TRUE(match.reference() != nullptr);
+	EXPECT_TRUE(match.pointer() != nullptr);
 
 	match = set.find(3);
 
 	EXPECT_TRUE(match.found());
 	EXPECT_EQ(match.data(), 3);
-	EXPECT_TRUE(match.reference() != nullptr);
+	EXPECT_TRUE(match.pointer() != nullptr);
 
 	match = set.find(999);
 
 	EXPECT_FALSE(match.found());
 	EXPECT_EQ(match.data(), 0);
-	EXPECT_TRUE(match.reference() == nullptr);
+	EXPECT_TRUE(match.pointer() == nullptr);
 
 	ds::OrderedSet<int> set2;
 
@@ -144,13 +144,98 @@ TEST_F(TestOrderedSet, Search) {
 
 	EXPECT_FALSE(match.found());
 	EXPECT_EQ(match.data(), 0);
-	EXPECT_TRUE(match.reference() == nullptr);
+	EXPECT_TRUE(match.pointer() == nullptr);
 
 	match = set2.find(999);
 
 	EXPECT_FALSE(match.found());
 	EXPECT_EQ(match.data(), 0);
-	EXPECT_TRUE(match.reference() == nullptr);
+	EXPECT_TRUE(match.pointer() == nullptr);
 }
 
-TEST_F(TestOrderedSet, ComplexTypeSearch) {}
+TEST_F(TestOrderedSet, ComplexTypeSearch) {
+	ds::OrderedSet<TestSearchClass> set;
+	ds::Match<TestSearchClass, ds::Node> match;
+	ds::OrderedSet<TestSearchClass>::Iterator it;
+
+	set.insert(TestSearchClass("c"));
+	set.insert(TestSearchClass("c"));
+	set.insert(TestSearchClass("a"));
+	set.insert(TestSearchClass("a"));
+	set.insert(TestSearchClass("b"));
+	set.insert(TestSearchClass("b"));
+
+	EXPECT_EQ(set.size(), 3);
+
+	it = set.begin();
+	EXPECT_EQ((*it).data(), "a");
+	EXPECT_EQ((*it.next()).data(), "b");
+	EXPECT_EQ((*it.next()).data(), "c");
+	EXPECT_EQ((*it.next()).data(), "");
+
+	match = set.find(TestSearchClass("a"));
+
+	EXPECT_TRUE(match.found());
+	EXPECT_EQ(match.data().data(), "a");
+	EXPECT_TRUE(match.pointer() != nullptr);
+
+	match = set.find(TestSearchClass("c"));
+
+	EXPECT_TRUE(match.found());
+	EXPECT_EQ(match.data().data(), "c");
+	EXPECT_TRUE(match.pointer() != nullptr);
+
+	match = set.find(TestSearchClass("z"));
+
+	EXPECT_FALSE(match.found());
+	EXPECT_EQ(match.data().data(), "");
+	EXPECT_TRUE(match.pointer() == nullptr);
+}
+
+TEST_F(TestOrderedSet, EmptySearch) {
+	ds::OrderedSet<TestSearchClass> set;
+	ds::Match<TestSearchClass, ds::Node> match;
+
+	EXPECT_EQ(set.size(), 0);
+
+	match = set.find(TestSearchClass(""));
+	EXPECT_FALSE(match.getFound());
+
+	match = set.find(TestSearchClass("z"));
+	EXPECT_FALSE(match.getFound());
+}
+
+TEST_F(TestOrderedSet, Iterator) {
+	ds::OrderedSet<int> set {4, 5, 2, 1, 1, 2, 2, 3};
+
+	EXPECT_EQ(set.size(), 5);
+
+	size_t i = 0;
+	for (const auto &it: set) {
+		std::cout << "it: " << it << std::endl;
+
+		switch (i) {
+			case 0:
+				EXPECT_EQ(it, 1);
+				break;
+
+			case 1:
+				EXPECT_EQ(it, 2);
+				break;
+
+			case 2:
+				EXPECT_EQ(it, 3);
+				break;
+
+			case 3:
+				EXPECT_EQ(it, 4);
+				break;
+
+			case 4:
+				EXPECT_EQ(it, 5);
+				break;
+		}
+
+		i++;
+	}
+}

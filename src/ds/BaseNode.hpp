@@ -203,7 +203,7 @@ public:
 	 * @brief Convenience method to get the data stored in the node
 	 * @returns a `T &` that references the data in the node
 	 */
-	inline T &data() {
+	inline T &dataR() {
 		return this->_data;
 	}
 

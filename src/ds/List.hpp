@@ -205,6 +205,18 @@ public:
 	}
 
 	/**
+	 * @brief Move assignment operator for List
+	 *
+	 * Transfers ownership of resources from another List to this List
+	 *
+	 * @param other The List to move resources from
+	 * @returns Reference to this List after assignment
+	 */
+	List<T> &operator=(List<T> &&other) noexcept {
+		this->move(std::move(other));
+	}
+
+	/**
 	 * @brief Allows for the use of an initializer list after a list has
 	 * been defined.
 	 *
@@ -404,7 +416,7 @@ public:
 		if (this->_cache.get(data, nodeptr)) {
 			match.setFound(true);
 			match.setData(data);
-			match.setRef(nodeptr);
+			match.setPtr(nodeptr);
 			return match;
 		}
 
@@ -412,7 +424,7 @@ public:
 			if (nodeptr->getData() == data) {
 				match.setData(data);
 				match.setFound(true);
-				match.setRef(nodeptr);
+				match.setPtr(nodeptr);
 				// this->_cache.set(data, tnode);
 				return match;
 			}

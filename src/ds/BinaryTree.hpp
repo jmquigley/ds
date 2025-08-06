@@ -1081,7 +1081,7 @@ public:
 			if (data == node->data()) {
 				match.setData(data);
 				match.setFound(true);
-				match.setRef(node);
+				match.setPtr(node);
 				break;
 			}
 
@@ -1139,7 +1139,7 @@ public:
 
 		if (this->_cache.get(data, tnode)) {
 			match.setFound(true);
-			match.setRef(tnode);
+			match.setPtr(tnode);
 			return match;
 		}
 
@@ -1147,7 +1147,7 @@ public:
 			if (tnode->getData() == data) {
 				this->_cache.set(data, tnode);
 				match.setFound(true);
-				match.setRef(tnode);
+				match.setPtr(tnode);
 				return match;
 			} else if (tnode->getData() < data) {
 				tnode = tnode->right();
@@ -1310,8 +1310,7 @@ public:
 			throw std::invalid_argument(ss.str());
 		}
 
-		znode =
-			std::any_cast<std::shared_ptr<TreeNode<T>>>(match.getRef().lock());
+		znode = std::any_cast<std::shared_ptr<TreeNode<T>>>(match.pointer());
 		if (!znode) {
 			throw std::runtime_error("Node reference exired during removal");
 		}

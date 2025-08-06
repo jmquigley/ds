@@ -80,7 +80,7 @@ namespace std {
 template<>
 struct hash<TestSearchClass> {
 	size_t operator()(const TestSearchClass &search) const {
-		return hash<std::string>()(search.data());
+	return hash<std::string>()(search.data());
 	}
 };
 }  // namespace std

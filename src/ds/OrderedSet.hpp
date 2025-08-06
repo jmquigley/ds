@@ -42,7 +42,7 @@ public:
 	 * @param set (`OrderedSet<T> &&`) an rvalue reference to a ordered set to
 	 * move
 	 */
-	OrderedSet(OrderedSet<T> &&set) : SortedList<T>(std::move(set)) {}
+	OrderedSet(OrderedSet<T> &&set) noexcept : SortedList<T>(std::move(set)) {}
 
 	/**
 	 * @brief Initializer list constructor
@@ -68,6 +68,19 @@ public:
 	 * @return Reference to this OrderedSet after assignment
 	 */
 	OrderedSet<T> &operator=(const OrderedSet<T> &other) {
+		SortedList<T>::operator=(other);
+		return *this;
+	}
+
+	/**
+	 * @brief Move assignemtn opertor for OrderedSet
+	 *
+	 * Transfers ownership of resources from another OrderedSet to this set
+	 *
+	 * @param other The OrderedSetto move resources from
+	 * @returns Reference to this `OrderedSet` assignment
+	 */
+	OrderedSet<T> &operator=(OrderedSet<T> &&other) noexcept {
 		SortedList<T>::operator=(other);
 		return *this;
 	}
