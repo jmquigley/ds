@@ -122,7 +122,7 @@ public:
 	 * @brief deletes everything from the current deque and resets it to its
 	 * initialized state.
 	 */
-	inline void clear() {
+	inline void clear() override {
 		Queue<T>::clear();
 	}
 

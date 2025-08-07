@@ -108,6 +108,45 @@ private:
 	}
 
 	/**
+	 * @brief Helper method that performs an in-order traversal of the tree
+	 *
+	 * This private method implements the in-order traversal logic used by
+	 * public traversal methods. It recursively visits the left subtree,
+	 * processes the current node, then visits the right subtree. For each node,
+	 * it invokes the provided callback with the current index and a reference
+	 * to the node.  This version cannot be short circuited.  It also allows
+	 * for the node to be changed.
+	 *
+	 * @tparam Callback A callable type that accepts (size_t,
+	 * std::shared_ptr<TreeNode<T>>) parameters
+	 * @param node The current node being processed in the traversal
+	 * @param index Reference to a counter tracking the position in the
+	 * traversal sequence
+	 * @param callback The function to execute for each node.
+	 *                 First argument is the node's index in traversal order
+	 *                 Second argument is a shared pointer to the current node
+	 *
+	 * @note The callback receives the data by reference, so modifications
+	 *       to the data will affect the list contents.
+	 */
+	template<typename Callback>
+	void eachDelegate(std::shared_ptr<TreeNode<T>> node, size_t &index,
+					  Callback callback) {
+		if (!node) {
+			return;
+		}
+
+		// Process left subtree
+		eachDelegate(node->left(), index, callback);
+
+		// Process current node
+		callback(index++, node->data());
+
+		// Process right subtree
+		return eachDelegate(node->right(), index, callback);
+	}
+
+	/**
 	 * @brief Calculates the height of a subtree rooted at the given node
 	 *
 	 * This recursive function computes the height of a binary tree, defined as
@@ -1033,26 +1072,28 @@ public:
 	 */
 	template<typename Callback>
 	void breadth(Callback callback) const {
-		std::shared_ptr<TreeNode<T>> node;
-		ds::Queue<std::shared_ptr<TreeNode<T>>> q {this->_root};
+		if (this->_root) {
+			std::shared_ptr<TreeNode<T>> node;
+			ds::Queue<std::shared_ptr<TreeNode<T>>> q {this->_root};
 
-		while (!q.empty()) {
-			node = q.dequeue();
+			while (!q.empty()) {
+				node = q.dequeue();
 
-			// allows for a callback with a short circuit return value
-			if constexpr (std::is_same_v<decltype(callback(*node)), bool>) {
-				if (!callback(*node)) {
-					return;	 // short circuit if callback returns false
+				// allows for a callback with a short circuit return value
+				if constexpr (std::is_same_v<decltype(callback(*node)), bool>) {
+					if (!callback(*node)) {
+						return;	 // short circuit if callback returns false
+					}
+				} else {
+					callback(*node);
 				}
-			} else {
-				callback(*node);
-			}
 
-			if (node->left()) {
-				q.enqueue(node->left());
-			}
-			if (node->right()) {
-				q.enqueue(node->right());
+				if (node->left()) {
+					q.enqueue(node->left());
+				}
+				if (node->right()) {
+					q.enqueue(node->right());
+				}
 			}
 		}
 	}
@@ -1099,7 +1140,7 @@ public:
 	/**
 	 * Removes all nodes from the current tree.
 	 */
-	void clear() {
+	virtual void clear() override {
 		clearDelegate(this->_root);
 
 		if (this->_root) {
@@ -1115,9 +1156,25 @@ public:
 	 * @brief Checks if a `T` data element exists within the binary tree
 	 * @returns true if the data element exists in the list, otherwise false.
 	 */
-	inline bool contains(T data) {
+	inline virtual bool contains(T data) override {
 		Match<T, TreeNode> match = find(data);
 		return match.found();
+	}
+
+	/**
+	 * @brief Visits each of the nodes in the tree inorder.
+	 *
+	 * In-order traversal visits nodes in the order: left subtree, root, then
+	 * right subtree. This traversal is useful to retrieve the data in sorted
+	 * order and then apply a lambda function to each node as it is visited.
+	 *
+	 * @param callback a function pointer that will be executed on each node as
+	 * it is encountered.
+	 */
+	template<typename Callback>
+	void each(Callback callback) {
+		size_t index {};
+		return this->eachDelegate(this->_root, index, callback);
 	}
 
 	/**
@@ -1131,7 +1188,7 @@ public:
 	 * @param data The value to search for
 	 * @return Match object containing the result of the search
 	 */
-	virtual Match<T, TreeNode> find(T data) {
+	virtual Match<T, TreeNode> find(T data) override {
 		std::shared_ptr<TreeNode<T>> tnode = this->_root;
 		Match<T, TreeNode> match;
 
@@ -1204,10 +1261,10 @@ public:
 	 * @brief Inserts a new element into the binary tree
 	 * @param data The data to insert into the tree
 	 */
-	virtual void insert(T data) override {
+	virtual void insert(const T &data) override {
 		std::shared_ptr<TreeNode<T>> tnode;
-
 		std::shared_ptr<TreeNode<T>> snode;
+
 		this->insertDelegate(data, this->_root, nullptr);
 
 		tnode = this->_latestNode.lock();

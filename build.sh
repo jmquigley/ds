@@ -50,6 +50,7 @@ function banner() {
 }
 
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
+CLANG_OPT=0
 CLEAN_OPT=0
 MEMTEST_OPT=0
 NODOCS_OPT=0
@@ -57,6 +58,7 @@ NOINSTALL_OPT=0
 NOTEST_OPT=0
 BUILD_TYPE=Release
 PREFIX=${SCRIPT_DIR}
+USE_CLANG=0
 export GTEST_SHUFFLE=1
 export FILTER='*'
 export THREADS=10
@@ -70,6 +72,10 @@ while :; do
             shift
             ;;
 
+        --clang)
+            CLANG_OPT=1
+            shift
+            ;;
 
         --debug)
             BUILD_TYPE=Debug
@@ -176,6 +182,11 @@ if [ ${NOINSTALL_OPT} == 1 ]; then
     USE_INSTALL=OFF
 fi
 
+USE_CLANG=OFF
+if [ ${CLANG_OPT} == 1 ]; then
+    USE_CLANG=ON
+fi
+
 banner ${BUILD_TYPE}
 
 if [ ${CLEAN_OPT} == 1 ] && [ -f "Makefile" ]; then
@@ -188,7 +199,7 @@ fi
 #
 
 banner "Building"
-cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDS_BUILD_EXTRAS=${USE_EXTRAS} -DDS_BUILD_TESTING=${USE_TESTING} -DDS_BUILD_INSTALL=${USE_INSTALL} -DBUILD_TESTING=${USE_TESTING} ..
+cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDS_BUILD_EXTRAS=${USE_EXTRAS} -DDS_BUILD_TESTING=${USE_TESTING} -DDS_BUILD_INSTALL=${USE_INSTALL} -DDS_BUILD_CLANG=${USE_CLANG} -DBUILD_TESTING=${USE_TESTING} ..
 exitOnError $? "Failed to create cmake build files!"
 
 cmake --build . -v -- -j ${THREADS}

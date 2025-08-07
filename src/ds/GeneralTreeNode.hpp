@@ -31,7 +31,7 @@ class GeneralTreeNode :
 	public Comparable<GeneralTreeNode<T>>,
 	public Replicate<T, GeneralTreeNode<T>> {
 	/// @brief The data payload of the node.
-	PROPERTY_SCOPED_WITH_DEFAULT(data, Data, T, protected:, {});
+	PROPERTY_SCOPED_WITH_DEFAULT_NO_CONST(data, Data, T, protected:, {});
 
 	/// @brief a unique key used by each general tree node
 	PROPERTY_SCOPED_WITH_DEFAULT(key, Key, std::string, protected:, {""});
@@ -147,7 +147,7 @@ public:
 	 * @param other The node to compare with
 	 * @return true if the keys are equal, false otherwise
 	 */
-	bool operator==(const GeneralTreeNode<T> &other) const noexcept {
+	bool operator==(const GeneralTreeNode<T> &other) const noexcept override {
 		return this->_key == other._key;
 	}
 
@@ -156,20 +156,25 @@ public:
 	 * @param other The node to compare with
 	 * @return true if the keys are not equal, false otherwise
 	 */
-	bool operator!=(const GeneralTreeNode<T> &other) const noexcept {
+	bool operator!=(const GeneralTreeNode<T> &other) const noexcept override {
 		return this->_key != other._key;
 	}
 
 	/**
-	 * @brief Less than operator
+	 * @brief Less than operator for GeneralTreeNode
 	 * @param other The node to compare with
 	 * @return true if this node's key is less than other's key
 	 */
-	bool operator<(const GeneralTreeNode<T> &other) const noexcept {
+	bool operator<(const GeneralTreeNode<T> &other) const noexcept override {
 		return this->_key < other._key;
 	}
 
-	bool operator<=(const GeneralTreeNode<T> &other) const noexcept {
+	/**
+	 * @brief Less than or eqqual operator for GeneralTreeNode
+	 * @param other The node to compare with
+	 * @return true if this node's key is less than or equal to the other's key
+	 */
+	bool operator<=(const GeneralTreeNode<T> &other) const noexcept override {
 		return this->_key <= other._key;
 	}
 
@@ -178,11 +183,17 @@ public:
 	 * @param other The node to compare with
 	 * @return true if this node's key is greater than other's key
 	 */
-	bool operator>(const GeneralTreeNode<T> &other) const noexcept {
+	bool operator>(const GeneralTreeNode<T> &other) const noexcept override {
 		return this->_key > other._key;
 	}
 
-	bool operator>=(const GeneralTreeNode<T> &other) const noexcept {
+	/**
+	 * @brief Greater than or eqqual operator for GeneralTreeNode
+	 * @param other The node to compare with
+	 * @return true if this node's key is greater than or equal to the other's
+	 * key
+	 */
+	bool operator>=(const GeneralTreeNode<T> &other) const noexcept override {
 		return this->_key >= other._key;
 	}
 
@@ -191,7 +202,6 @@ public:
 	 * @param key The unique key for the new child
 	 * @param data The data for the new child
 	 * @param path (`std::string`) the path to root for this child record
-	 * @return A shared pointer to the newly created child node
 	 */
 	void addChild(std::string key, T data, std::string path) {
 		std::shared_ptr<GeneralTreeNode<T>> parent = this->shared_from_this();
@@ -303,11 +313,15 @@ public:
 	 */
 	virtual GeneralTreeNode<T> &move(GeneralTreeNode<T> &&other) override {
 		if (this != &other) {
-			this->_children = std::move(other._children);
+			// this->_children = std::move(other._children);
 			this->_key = std::move(other._key);
 			this->_path = std::move(other._path);
 			this->_data = std::move(other._data);
 			this->_parent = std::move(other._parent);
+
+			this->_children.each([&](size_t index, GeneralTreeNode<T> &gtn) {
+				gtn.setParent(this->shared_from_this());
+			});
 
 			// Reset other
 			other._children.clear();
@@ -320,7 +334,11 @@ public:
 		return *this;
 	}
 
-	virtual void print(std::ostream &os) const {
+	/**
+	 * @brief a special print function that is used by the comparable interface
+	 * @param os an `std::ostream &` object that will perform the print
+	 */
+	virtual void print(std::ostream &os) const override {
 		os << this->str();
 	}
 
@@ -328,13 +346,17 @@ public:
 	 * @brief Removes a child node with the specified key
 	 * @param key The key of the child to remove
 	 */
-	// void removeChild(std::string key) {
-	// 	std::shared_ptr<GeneralTreeNode<T>> search =
-	// 		std::make_shared<GeneralTreeNode<T>>(key);
+	void removeChild(std::string key) {
+		std::shared_ptr<GeneralTreeNode<T>> search =
+			std::make_shared<GeneralTreeNode<T>>(key);
 
-	// 	_children.removeValue(search);
-	// }
+		_children.removeValue(GeneralTreeNode<T>(key));
+	}
 
+	/**
+	 * @brief gives a string representation of the general tree node
+	 * @returns a string value that represents the contents of the node
+	 */
 	std::string str() const {
 		std::stringstream ss;
 
@@ -363,7 +385,7 @@ public:
 	 * @brief Setting for the parent pointer of a node
 	 * @param value `std::shared_ptr<TreeNode<T>>` to set as the parent
 	 */
-	void setParent(std::shared_ptr<GeneralTreeNode<T>> &value) {
+	void setParent(const std::shared_ptr<GeneralTreeNode<T>> &value) {
 		this->_parent = value;
 	}
 };

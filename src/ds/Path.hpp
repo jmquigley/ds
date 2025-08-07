@@ -212,10 +212,10 @@ public:
 	}
 
 	/**
-	 * @brief Assignment operator for Path objects
+	 * @brief Assignment operator for `Path` objects
 	 *
 	 * @param path The Path object to copy from
-	 * @return Reference to this Path object after assignment
+	 * @return Reference to this `Path` object after assignment
 	 */
 	Path &operator=(const Path &path) {
 		this->_currentPath = path._currentPath;
@@ -223,6 +223,11 @@ public:
 		return *this;
 	}
 
+	/**
+	 * @brief Move assignment operator for Path objects
+	 * @param path the path object to move
+	 * @return Reference to this `Path` object after moving
+	 */
 	Path &operator=(Path &&path) noexcept {
 		return this->move(std::move(path));
 	}
@@ -336,6 +341,11 @@ public:
 		return this->_currentPath == "";
 	}
 
+	/**
+	 * @brief a convenience function to perform move operations on this
+	 * @param other the path object to move
+	 * @return Reference to this `Path` object after moving
+	 */
 	Path &move(Path &&other) noexcept {
 		if (this != &other) {
 			this->_currentPath = std::move(other._currentPath);

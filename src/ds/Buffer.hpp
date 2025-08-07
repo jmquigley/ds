@@ -128,7 +128,7 @@ private:
 		return this->buffer;
 	}
 
-	virtual void insert(char data) override {
+	virtual void insert(const char &data) override {
 		throw std::runtime_error("insert() is not implemented");
 	}
 
@@ -464,7 +464,7 @@ public:
 	 * @throws std::out_of_range if `index` is outside the valid data range `[0,
 	 * size-1]`.
 	 */
-	char at(size_t index) {
+	virtual char at(size_t index) override {
 		std::stringstream ss;
 
 		if (index < 0 or
@@ -492,7 +492,7 @@ public:
 		return nullptr;
 	}
 
-	virtual void clear() {
+	virtual void clear() override {
 		this->clear(false, 0);
 	}
 
@@ -640,12 +640,12 @@ public:
 		return this->data();
 	}
 
-	virtual char removeAt(size_t index) {
+	virtual char removeAt(size_t index) override {
 		// TODO: add removeAt to Buffer
 		return ' ';
 	}
 
-	virtual char removeValue(char value) {
+	virtual char removeValue(char value) override {
 		// TODO: add removeValue to Buffer
 		return ' ';
 	}

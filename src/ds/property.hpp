@@ -110,7 +110,7 @@ public:                                  \
 	PROPERTY_WITH_DEFAULT(variable, fn, dtype, );
 
 #define PROPERTY_NO_CONST(variable, fn, dtype) \
-	PROPERTY_WITH_DEFAULT_NO_CONST(
+	PROPERTY_WITH_DEFAULT_NO_CONST(variable, fn, dtype, );
 
 #define PROPERTY_READONLY_WITH_DEFAULT(variable, fn, dtype, def) \
                                                                  \

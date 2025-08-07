@@ -51,7 +51,7 @@ public:
 	 * @param data The element to insert
 	 * @pure
 	 */
-	virtual void insert(T data) = 0;
+	virtual void insert(const T &data) = 0;
 
 	/**
 	 * @brief returns a JSON representation of the given collection.

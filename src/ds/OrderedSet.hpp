@@ -106,7 +106,7 @@ public:
 	 *
 	 * @param data The element to insert
 	 */
-	virtual void insert(T data) override {
+	virtual void insert(const T &data) override {
 		if (!this->contains(data)) {
 			SortedList<T>::insert(data);
 		}

@@ -100,7 +100,7 @@ public:
 		: _data(data), _flags(flags), _left(left), _right(right) {}
 
 	/**
-	 * @brief Move constructor for Node.
+	 * @brief Copy constructor for Node.
 	 *
 	 * Creates a new node by transferring ownership of resources from another
 	 * node. The source node will be left in a valid but unspecified state after

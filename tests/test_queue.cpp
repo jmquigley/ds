@@ -184,3 +184,35 @@ TEST_F(TestQueue, ToStringEmpty) {
 	EXPECT_EQ(q.size(), 0);
 	EXPECT_EQ(q.str(), "[]");
 }
+
+TEST_F(TestQueue, Each) {
+	ds::Queue<int> q {1, 2, 3, 4, 5};
+	std::vector<int> out;
+
+	EXPECT_EQ(q.size(), 5);
+	out = q.array();
+
+	EXPECT_EQ(out[0], 1);
+	EXPECT_EQ(out[1], 2);
+	EXPECT_EQ(out[2], 3);
+	EXPECT_EQ(out[3], 4);
+	EXPECT_EQ(out[4], 5);
+
+	q.each([&](size_t index, auto &x) { x *= 2; });
+	out = q.array();
+
+	EXPECT_EQ(q.size(), 5);
+	EXPECT_EQ(out[0], 2);
+	EXPECT_EQ(out[1], 4);
+	EXPECT_EQ(out[2], 6);
+	EXPECT_EQ(out[3], 8);
+	EXPECT_EQ(out[4], 10);
+}
+
+TEST_F(TestQueue, EmptyEach) {
+	ds::Queue<int> q {};
+
+	EXPECT_EQ(q.size(), 0);
+	q.each([&](size_t index, auto &x) { x *= 2; });
+	EXPECT_EQ(q.size(), 0);
+}

@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+using namespace std::literals;
+
 class TestLRUCache : public TestingBase {
 public:
 
@@ -761,10 +763,10 @@ TEST_F(TestLRUCache, HitMissRate) {
 
 	const double epsilon = 0.001;
 
-	ASSERT_NEAR(0.8d, cache.getTargetHitRatio(), epsilon);
-	ASSERT_NEAR(0.20784d, cache.hitRatio(), epsilon);
-	ASSERT_NEAR(0.79216d, cache.missRatio(), epsilon);
-	ASSERT_NEAR(0.81982d, cache.ejectRatio(), epsilon);
+	ASSERT_NEAR(0.8, cache.getTargetHitRatio(), epsilon);
+	ASSERT_NEAR(0.20784, cache.hitRatio(), epsilon);
+	ASSERT_NEAR(0.79216, cache.missRatio(), epsilon);
+	ASSERT_NEAR(0.81982, cache.ejectRatio(), epsilon);
 
 	EXPECT_EQ(cache.hits(), 53);
 	EXPECT_EQ(cache.misses(), 202);

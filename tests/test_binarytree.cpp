@@ -201,6 +201,57 @@ TEST_F(TestBinaryTree, Traversals) {
 	std::cout << std::endl;
 }
 
+TEST_F(TestBinaryTree, Each) {
+	ds::BinaryTree<int> bt {1, 2, 3, 4, 5, 6, 7};
+	std::vector<int> out {};
+	std::vector<size_t> indices {};
+
+	bt.array(out);
+
+	EXPECT_EQ(bt.size(), 7);
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_EQ(out[0], 1);
+	EXPECT_EQ(out[1], 2);
+	EXPECT_EQ(out[2], 3);
+	EXPECT_EQ(out[3], 4);
+	EXPECT_EQ(out[4], 5);
+	EXPECT_EQ(out[5], 6);
+	EXPECT_EQ(out[6], 7);
+	EXPECT_FALSE(bt.empty());
+	EXPECT_TRUE(indices.empty());
+
+	// modify each node to multiple the data by 2
+	// this will change the original node
+	bt.each([&](size_t index, auto &x) {
+		indices.push_back(index);
+		x *= 2;
+	});
+
+	out.clear();
+	bt.array(out);
+
+	EXPECT_EQ(bt.size(), 7);
+	EXPECT_EQ(bt.height(), 3);
+	EXPECT_EQ(out[0], 2);
+	EXPECT_EQ(out[1], 4);
+	EXPECT_EQ(out[2], 6);
+	EXPECT_EQ(out[3], 8);
+	EXPECT_EQ(out[4], 10);
+	EXPECT_EQ(out[5], 12);
+	EXPECT_EQ(out[6], 14);
+	EXPECT_FALSE(bt.empty());
+
+	EXPECT_FALSE(indices.empty());
+	EXPECT_EQ(indices.size(), 7);
+	EXPECT_EQ(indices[0], 0);
+	EXPECT_EQ(indices[1], 1);
+	EXPECT_EQ(indices[2], 2);
+	EXPECT_EQ(indices[3], 3);
+	EXPECT_EQ(indices[4], 4);
+	EXPECT_EQ(indices[5], 5);
+	EXPECT_EQ(indices[6], 6);
+}
+
 TEST_F(TestBinaryTree, EmptyTraversals) {
 	ds::BinaryTree<int> bt;
 	std::vector<int> out;
@@ -211,6 +262,38 @@ TEST_F(TestBinaryTree, EmptyTraversals) {
 	EXPECT_TRUE(out.empty());
 
 	bt.inorder([&](auto &node) { out.push_back(node.getData()); });
+
+	EXPECT_EQ(bt.size(), 0);
+	EXPECT_EQ(bt.height(), 0);
+	EXPECT_TRUE(bt.empty());
+	EXPECT_TRUE(out.empty());
+
+	out.clear();
+	bt.preorder([&](auto &node) { out.push_back(node.getData()); });
+
+	EXPECT_EQ(bt.size(), 0);
+	EXPECT_EQ(bt.height(), 0);
+	EXPECT_TRUE(bt.empty());
+	EXPECT_TRUE(out.empty());
+
+	out.clear();
+	bt.postorder([&](auto &node) { out.push_back(node.getData()); });
+
+	EXPECT_EQ(bt.size(), 0);
+	EXPECT_EQ(bt.height(), 0);
+	EXPECT_TRUE(bt.empty());
+	EXPECT_TRUE(out.empty());
+
+	out.clear();
+	bt.breadth([&](auto &node) { out.push_back(node.getData()); });
+
+	EXPECT_EQ(bt.size(), 0);
+	EXPECT_EQ(bt.height(), 0);
+	EXPECT_TRUE(bt.empty());
+	EXPECT_TRUE(out.empty());
+
+	out.clear();
+	bt.each([&](size_t index, auto &x) { out.push_back(x); });
 
 	EXPECT_EQ(bt.size(), 0);
 	EXPECT_EQ(bt.height(), 0);

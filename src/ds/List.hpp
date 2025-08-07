@@ -387,6 +387,33 @@ public:
 	}
 
 	/**
+	 * @brief Executes a callback function for each element in the list
+	 *
+	 * Iterates through all elements in the list sequentially, calling the
+	 * provided callback function for each element with its index and a
+	 * reference to its data value.
+	 *
+	 * @tparam Callback A callable type that accepts (size_t, T&) parameters
+	 * @param callback The function to execute for each element.
+	 *                 First argument is the element's index (0-based)
+	 *                 Second argument is a reference to the element's data
+	 *
+	 * @note The callback receives the data by reference, so modifications
+	 *       to the data will affect the list contents.
+	 */
+	template<typename Callback>
+	void each(Callback callback) {
+		std::shared_ptr<Node<T>> nodeptr = this->_root;
+		std::shared_ptr<Node<T>> next {};
+		size_t index = 0;
+
+		while (nodeptr) {
+			callback(index++, nodeptr->data());
+			nodeptr = nodeptr->getRight();
+		}
+	}
+
+	/**
 	 * @brief Retrieves an iterator to the back of the list
 	 * @returns A new Iterator object that points to the end of the list
 	 */
@@ -409,7 +436,6 @@ public:
 	 * that was found in the search.
 	 */
 	virtual Match<T, Node> find(T data) override {
-		size_t index {};
 		std::shared_ptr<Node<T>> nodeptr = this->_root;
 		Match<T, Node> match {};
 		std::shared_ptr<Node<T>> next {};
@@ -430,7 +456,6 @@ public:
 				return match;
 			}
 
-			index++;
 			nodeptr = nodeptr->getRight();
 		}
 
@@ -441,7 +466,7 @@ public:
 	 * @brief Insert the given data into a collection at back of the collection
 	 * @param data The element to insert
 	 */
-	virtual void insert(T data) override {
+	virtual void insert(const T &data) override {
 		this->insert(data, Position::BACK);
 	}
 
@@ -451,7 +476,7 @@ public:
 	 * @param data The element to insert
 	 * @param position The position to insert at (default is BACK)
 	 */
-	void insert(T data, Position position) {
+	void insert(const T &data, Position position) {
 		if (position == Position::BACK) {
 			this->insert(data, this->_size);
 		} else if (position == Position::FRONT) {
@@ -472,7 +497,7 @@ public:
 	 * - If index == 0: Adds element to the beginning
 	 * - Otherwise: Inserts element at the specified position
 	 */
-	void insert(T data, size_t index) {
+	void insert(const T &data, size_t index) {
 		std::shared_ptr<Node<T>> node = std::make_shared<Node<T>>(data);
 
 		if (this->_root == nullptr) {
@@ -529,7 +554,7 @@ public:
 	 * @returns the T value that was removed from the list
 	 * @throws an out_of_range exception if the requested index is invalid
 	 */
-	virtual T removeAt(size_t index) {
+	virtual T removeAt(size_t index) override {
 		return this->removeAt(index, nullptr);
 	}
 

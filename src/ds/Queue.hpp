@@ -96,7 +96,7 @@ public:
 	 * @brief deletes everything from the current queue and resets it to its
 	 * initialized state.
 	 */
-	void clear() {
+	virtual void clear() override {
 		List<T>::clear();
 	}
 
@@ -104,7 +104,7 @@ public:
 	 * @brief Checks if an element exists in the Queue
 	 * @returns true if the item is in the Queue otherwise false
 	 */
-	inline bool contains(T data) {
+	inline bool contains(T data) override {
 		return List<T>::contains(data);
 	}
 
@@ -128,10 +128,30 @@ public:
 	}
 
 	/**
+	 * @brief Executes a callback function for each element in the queue
+	 *
+	 * Iterates through all elements in the queue sequentially, calling the
+	 * provided callback function for each element with its index and a
+	 * reference to its data value.
+	 *
+	 * @tparam Callback A callable type that accepts (size_t, T&) parameters
+	 * @param callback The function to execute for each element.
+	 *                 First argument is the element's index (0-based)
+	 *                 Second argument is a reference to the element's data
+	 *
+	 * @note The callback receives the data by reference, so modifications
+	 *       to the data will affect the list contents.
+	 */
+	template<typename Callback>
+	void each(Callback callback) {
+		List<T>::each(callback);
+	}
+
+	/**
 	 * @brief Check if the queue is empty
 	 * @return true if the queue is empty, otherwise false
 	 */
-	bool empty() {
+	virtual inline bool empty() const override {
 		return List<T>::empty();
 	}
 
@@ -158,7 +178,7 @@ public:
 	 * @brief returns the contents of the stack as a JSON string
 	 * @returns a string that holds the stack in a JSON string
 	 */
-	std::string json() const {
+	std::string json() const override {
 		return List<T>::json();
 	}
 
@@ -166,7 +186,7 @@ public:
 	 * @brief returns the item at the front of the queue
 	 * @returns a `T` object at the front of the queue
 	 */
-	inline T maximum() const {
+	inline T maximum() const override {
 		return List<T>::maximum();
 	}
 
@@ -174,7 +194,7 @@ public:
 	 * @brief returns the item at the end of the queue
 	 * @returns a `T` object at the back of the queue
 	 */
-	inline T minimum() const {
+	inline T minimum() const override {
 		return List<T>::minimum();
 	}
 

@@ -239,3 +239,31 @@ TEST_F(TestOrderedSet, Iterator) {
 		i++;
 	}
 }
+
+TEST_F(TestOrderedSet, Each) {
+	ds::OrderedSet<int> set {1, 5, 4, 3, 4, 2, 5};
+
+	EXPECT_EQ(set.size(), 5);
+	EXPECT_EQ(set[0], 1);
+	EXPECT_EQ(set[1], 2);
+	EXPECT_EQ(set[2], 3);
+	EXPECT_EQ(set[3], 4);
+	EXPECT_EQ(set[4], 5);
+
+	set.each([&](size_t index, auto &x) { x *= 2; });
+
+	EXPECT_EQ(set.size(), 5);
+	EXPECT_EQ(set[0], 2);
+	EXPECT_EQ(set[1], 4);
+	EXPECT_EQ(set[2], 6);
+	EXPECT_EQ(set[3], 8);
+	EXPECT_EQ(set[4], 10);
+}
+
+TEST_F(TestOrderedSet, EmptyEach) {
+	ds::OrderedSet<int> set {};
+
+	EXPECT_EQ(set.size(), 0);
+	set.each([&](size_t index, auto &x) { x *= 2; });
+	EXPECT_EQ(set.size(), 0);
+}

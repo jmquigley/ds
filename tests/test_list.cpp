@@ -832,3 +832,31 @@ TEST_F(TestList, Shuffle) {
 
 	EXPECT_THROW(list3.shuffle(), std::runtime_error);
 }
+
+TEST_F(TestList, Each) {
+	ds::List<int> list {1, 2, 3, 4, 5};
+
+	EXPECT_EQ(list.size(), 5);
+	EXPECT_EQ(list[0], 1);
+	EXPECT_EQ(list[1], 2);
+	EXPECT_EQ(list[2], 3);
+	EXPECT_EQ(list[3], 4);
+	EXPECT_EQ(list[4], 5);
+
+	list.each([&](size_t index, auto &x) { x *= 2; });
+
+	EXPECT_EQ(list.size(), 5);
+	EXPECT_EQ(list[0], 2);
+	EXPECT_EQ(list[1], 4);
+	EXPECT_EQ(list[2], 6);
+	EXPECT_EQ(list[3], 8);
+	EXPECT_EQ(list[4], 10);
+}
+
+TEST_F(TestList, EmptyEach) {
+	ds::List<int> list {};
+
+	EXPECT_EQ(list.size(), 0);
+	list.each([&](size_t index, auto &x) { x *= 2; });
+	EXPECT_EQ(list.size(), 0);
+}

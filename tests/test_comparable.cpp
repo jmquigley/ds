@@ -52,7 +52,7 @@ public:
 		return _value >= other._value;
 	}
 
-	virtual void print(std::ostream &os) const {
+	virtual void print(std::ostream &os) const override {
 		os << "data: " << _data << ", value: " << _value;
 	}
 };

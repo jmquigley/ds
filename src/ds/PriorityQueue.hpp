@@ -25,7 +25,7 @@ namespace ds {
 template<typename T>
 class Priority {
 	/// @brief The data associated with this priority value
-	PROPERTY(data, Data, T);
+	PROPERTY_NO_CONST(data, Data, T);
 
 	/// @brief The actual priority value associated with this element in the
 	/// queue Higher values indicate higher priority

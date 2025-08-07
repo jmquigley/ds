@@ -132,7 +132,7 @@ public:
 	 * Empties the stack and resets it.  It will remove all entries from the
 	 * stack and free up associated memory.
 	 */
-	void clear() {
+	void clear() override {
 		List<T>::clear();
 	}
 
@@ -140,7 +140,7 @@ public:
 	 * @brief Checks if a `T` data element exists within the stack
 	 * @returns true if the data element exists in the stack, otherwise false.
 	 */
-	bool contains(T data) {
+	bool contains(T data) override {
 		return List<T>::contains(data);
 	}
 

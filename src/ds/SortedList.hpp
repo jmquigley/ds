@@ -126,7 +126,7 @@ public:
 	 *
 	 * @param data The element to insert
 	 */
-	virtual void insert(T data) override {
+	virtual void insert(const T &data) override {
 		std::shared_ptr<Node<T>> node = std::make_shared<Node<T>>(data);
 
 		if (this->_root == nullptr) {
