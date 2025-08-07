@@ -120,7 +120,7 @@ public:
 	 *
 	 * @return The data of the current node, or a default T value if no node
 	 */
-	T operator*() const {
+	T operator*() {
 		T nil {};
 
 		if (!_lp.expired()) {

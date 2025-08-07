@@ -13,7 +13,9 @@ namespace ds {
  * elements in sorted order
  *
  * This container inherits from the general List class and overrides the insert
- * method to add elements in their proper sorted position.
+ * method to add elements in their proper sorted position. It uses a
+ * `Comparator` to determine the correct placement of each element relative to
+ * existing elements.
  *
  * Unlike standard sorting algorithms that rearrange elements after insertion,
  * SortedList ensures elements are always in the correct position as they are

@@ -106,11 +106,11 @@ protected:
 	 */
 	std::shared_ptr<Node<T>> getNodeByValue(const T &value) {
 		// Check if the value is in the cache first
-		// std::shared_ptr<Node<T>> result;
-		// if (this->_cache.get(value, result)) {
-		// 	// Found in cache, return immediately
-		// 	return result;
-		// }
+		std::shared_ptr<Node<T>> result;
+		if (this->_cache.get(value, result)) {
+			// Found in cache, return immediately
+			return result;
+		}
 
 		// Start search from the front of the list
 		std::shared_ptr<Node<T>> current = this->_root;
@@ -414,19 +414,19 @@ public:
 		Match<T, Node> match {};
 		std::shared_ptr<Node<T>> next {};
 
-		// if (this->_cache.get(data, nodeptr)) {
-		// 	match.setFound(true);
-		// 	match.setData(data);
-		// 	match.setPtr(nodeptr);
-		// 	return match;
-		// }
+		if (this->_cache.get(data, nodeptr)) {
+			match.setFound(true);
+			match.setData(data);
+			match.setPtr(nodeptr);
+			return match;
+		}
 
 		while (nodeptr) {
 			if (nodeptr->getData() == data) {
 				match.setData(data);
 				match.setFound(true);
 				match.setPtr(nodeptr);
-				// this->_cache.set(data, nodeptr);
+				this->_cache.set(data, nodeptr);
 				return match;
 			}
 
