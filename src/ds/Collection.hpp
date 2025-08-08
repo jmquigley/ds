@@ -104,7 +104,7 @@ public:
 	 * @param index The index of the element to access
 	 * @return T The element at the specified index
 	 */
-	T operator[](size_t index) {
+	T &operator[](size_t index) {
 		return this->at(index);
 	}
 

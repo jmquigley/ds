@@ -43,7 +43,7 @@ TEST_F(TestGeneralTreeNode, Create) {
 	EXPECT_EQ(ch3.path().str(), "/a/b1/");
 	EXPECT_EQ(ch3.parent(), gtn);
 
-	std::vector<ds::GeneralTreeNode<int>> out = gtn->getChildren();
+	std::vector<ds::GeneralTreeNode<int>> out = gtn->getChildrenArray();
 
 	EXPECT_EQ(out.size(), 3);
 	EXPECT_EQ(out[0].key(), "a1");
@@ -67,36 +67,32 @@ TEST_F(TestGeneralTreeNode, Create) {
 	EXPECT_TRUE(gtn->hasChild("a1"));
 	EXPECT_FALSE(gtn->hasChild("zz"));
 
-	/*
-			gtn->removeChild("a2");
+	gtn->removeChild("a2");
+	EXPECT_EQ(gtn->totalChildren(), 2);
 
-			EXPECT_EQ(gtn->totalChildren(), 2);
+	out.clear();
+	out = gtn->getChildrenArray();
 
-			out = gtn->getChildren();
+	EXPECT_EQ(out.size(), 2);
+	EXPECT_EQ(out[0].key(), "a1");
+	EXPECT_EQ(out[0], ch1);
+	EXPECT_EQ(out[0].data(), 1);
+	EXPECT_EQ(out[0].path().str(), "/a/a1/");
+	EXPECT_EQ(out[0].parent(), gtn);
 
-			ch1 = gtn->getChild("a1");
-			EXPECT_EQ(out[0]->key(), "a1");
-			EXPECT_EQ(out[0], ch1);
-			EXPECT_EQ(out[0]->data(), 1);
-			EXPECT_EQ(out[0]->path().str(), "/a/a1/");
-			EXPECT_EQ(out[0]->parent(), gtn);
+	EXPECT_EQ(out[1].key(), "b1");
+	EXPECT_EQ(out[1], ch3);
+	EXPECT_EQ(out[1].data(), 2);
+	EXPECT_EQ(out[1].path().str(), "/a/b1/");
+	EXPECT_EQ(out[1].parent(), gtn);
 
-			ch3 = gtn->getChild("b1");
-			EXPECT_EQ(out[1]->key(), "b1");
-			EXPECT_EQ(out[1], ch3);
-			EXPECT_EQ(out[1]->data(), 2);
-			EXPECT_EQ(out[1]->path().str(), "/a/b1/");
-			EXPECT_EQ(out[1]->parent(), gtn);
+	gtn->clear();
 
-			gtn->clear();
-
-			EXPECT_EQ(gtn->totalChildren(), 0);
-			EXPECT_EQ(gtn->key(), "");
-			EXPECT_EQ(gtn->parent(), nullptr);
-		*/
+	EXPECT_EQ(gtn->totalChildren(), 0);
+	EXPECT_EQ(gtn->key(), "");
+	EXPECT_EQ(gtn->parent(), nullptr);
 };
 
-/*
 TEST_F(TestGeneralTreeNode, Constructors) {
 	std::shared_ptr<ds::GeneralTreeNode<int>> gtn1 =
 		std::make_shared<ds::GeneralTreeNode<int>>("a", 42, "a\\");
@@ -142,9 +138,11 @@ TEST_F(TestGeneralTreeNode, NoChildren) {
 	EXPECT_EQ(gtn->parent().use_count(), 0);
 
 	EXPECT_EQ(gtn->totalChildren(), 0);
-	// EXPECT_THROW(gtn->getChild(0), std::out_of_range);
+	EXPECT_THROW(gtn->getChild(0), std::out_of_range);
+	EXPECT_THROW(gtn->getChild("zz"), std::runtime_error);
 }
 
+/*
 TEST_F(TestGeneralTreeNode, Comparisons) {
 	ds::GeneralTreeNode<int> gtn1("a", 1, "a");
 	ds::GeneralTreeNode<int> gtn2("b", 2, "b");

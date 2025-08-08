@@ -1004,7 +1004,7 @@ public:
 	 * @returns the data element located at the given index
 	 * @throws std::out_of_range error if an invalid index is requested
 	 */
-	T at(size_t index) override {
+	T &at(size_t index) override {
 		// Boundary check
 		if (index >= this->_size || this->_size == 0) {
 			throw std::out_of_range("Invalid tree position index requested");
@@ -1012,15 +1012,15 @@ public:
 
 		// Fast path for first element in inorder traversal
 		if (index == 0 && this->_front.lock()) {
-			return this->_front.lock()->getData();
+			return this->_front.lock()->data();
 		}
 
 		// Fast path for last element in inorder traversal
 		if (index == this->_size - 1 && this->_back.lock()) {
-			return this->_back.lock()->getData();
+			return this->_back.lock()->data();
 		}
 
-		T data;
+		TreeNode<T> retNode;
 		bool found {false};
 
 		// Choose optimal traversal direction based on which end is closer
@@ -1029,7 +1029,7 @@ public:
 			size_t currentPos = 0;
 			inorderDelegate(this->_root, [&](TreeNode<T> &node) -> bool {
 				if (currentPos == index) {
-					data = node.getData();
+					retNode = node;
 					found = true;
 					return true;  // Stop traversal
 				}
@@ -1041,7 +1041,7 @@ public:
 			size_t currentPos = this->_size - 1;
 			reverseorderDelegate(this->_root, [&](TreeNode<T> &node) -> bool {
 				if (currentPos == index) {
-					data = node.getData();
+					retNode = node;
 					found = true;
 					return true;  // Stop traversal
 				}
@@ -1055,7 +1055,7 @@ public:
 				"Element at index not found during traversal");
 		}
 
-		return data;
+		return retNode.data();
 	}
 
 	/**

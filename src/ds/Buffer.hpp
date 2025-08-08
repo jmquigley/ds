@@ -464,7 +464,7 @@ public:
 	 * @throws std::out_of_range if `index` is outside the valid data range `[0,
 	 * size-1]`.
 	 */
-	virtual char at(size_t index) override {
+	virtual char &at(size_t index) override {
 		std::stringstream ss;
 
 		if (index < 0 or

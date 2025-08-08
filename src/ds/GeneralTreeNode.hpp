@@ -261,7 +261,7 @@ public:
 	/**
 	 * @brief Retrieves a child node by its key
 	 * @param key The key of the child to retrieve
-	 * @return A shared pointer to the child node
+	 * @return A reference to the general tree node related to this key
 	 * @throws a std::runtime_error if the requested child doesn't exist
 	 */
 	GeneralTreeNode<T> &getChild(std::string key) {
@@ -273,22 +273,25 @@ public:
 		throw std::runtime_error("Invalid child name requested");
 	}
 
-	/*
-		std::shared_ptr<GeneralTreeNode<T>> getChild(size_t index) {
-			if (_children.size() == 0 || index >= _children.size()) {
-				throw std::out_of_range("Invalid child position index
-	   requested");
-			}
-
-			return _children[index];
+	/**
+	 * @brief Retrieves a child node by its index position
+	 * @param index the location within the list child nodes
+	 * @return A reference to the general tree node related to this index
+	 * @throws a std::out_of_range if the requested child doesn't exist
+	 */
+	GeneralTreeNode<T> &getChild(size_t index) {
+		if (_children.size() == 0 || index >= _children.size()) {
+			throw std::out_of_range("Invalid child position index requested");
 		}
-	*/
+
+		return _children[index];
+	}
 
 	/**
 	 * @brief Gets all children of this node
 	 * @return A vector containing shared pointers to all child nodes
 	 */
-	std::vector<GeneralTreeNode<T>> getChildren() {
+	std::vector<GeneralTreeNode<T>> getChildrenArray() {
 		std::vector<GeneralTreeNode<T>> out;
 
 		for (const auto &value: _children) {

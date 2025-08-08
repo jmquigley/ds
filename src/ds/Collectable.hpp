@@ -23,7 +23,7 @@ public:
 	 * @returns the data element located at the given index
 	 * @pure
 	 */
-	virtual T at(size_t index) = 0;
+	virtual T &at(size_t index) = 0;
 
 	/**
 	 * @brief Clears all elements from the collection, making it empty.
