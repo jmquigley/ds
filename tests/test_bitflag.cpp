@@ -42,32 +42,54 @@ TEST_F(TestBitFlag, Create) {
 };
 
 TEST_F(TestBitFlag, Constructors) {
+	// Copy constructor
 	ds::BitFlag bf1(123);  // 0111 1011
 	ds::BitFlag bf2(bf1);
 
 	EXPECT_TRUE(bf1 == bf2);
 	EXPECT_FALSE(bf1 != bf2);
 
+	// Parameterized constructor
 	ds::BitFlag bf3(128);  // 1000 0000
 
 	EXPECT_FALSE(bf1 == bf3);
 	EXPECT_TRUE(bf1 != bf3);
+
+	// Move constructor
+	ds::BitFlag bf4(std::move(bf3));
 };
 
-TEST_F(TestBitFlag, HasABit) {
-	ds::BitFlag bf(3);	// 0000 0011
+TEST_F(TestBitFlag, AssignmentOperators) {
+	// TODO: Assignment tests for TestBitFlag
+}
 
-	EXPECT_TRUE(bf.has(TestFlags::Color | TestFlags::State));
+TEST_F(TestBitFlag, LogicalOperator) {
+	// TODO: Logical tests for TestBitFlag.
+}
 
-	bf.reset();
+TEST_F(TestBitFlag, BitwiseOperators) {
+	ds::ByteFlag bf1(42);  // 0010 1010
+	ds::ByteFlag bf2(23);  // 0001 0111
+	ds::ByteFlag bf3;
 
-	EXPECT_FALSE(bf.has(TestFlags::Color | TestFlags::State));
+	bf3 = bf1 & bf2;  // 0000 0010 (2)
+	EXPECT_EQ(bf3.get(), 2);
 
-	bf.setValue(1);
+	bf3 = bf1 | bf2;  // 0011 1111 (63)
+	EXPECT_EQ(bf3.get(), 63);
 
-	EXPECT_TRUE(bf.has(TestFlags::Color));
-	EXPECT_FALSE(bf.has(TestFlags::State));
-};
+	bf3 = bf1 ^ bf2;  // 0011 1101 (61)
+	EXPECT_EQ(bf3.get(), 61);
+
+	bf3 = ~bf1;	 // 1101 0101 (213)
+	EXPECT_EQ(bf3.get(), 213);
+
+	bf3 = bf1 << 1;	 // 0101 0100 (84)
+	EXPECT_EQ(bf3.get(), 84);
+
+	bf3 = bf1 >> 1;	 // 0001 0101 (21)
+	EXPECT_EQ(bf3.get(), 21);
+}
 
 TEST_F(TestBitFlag, ToString) {
 	ds::ByteFlag bf1(123);	// 0111 1011
@@ -85,6 +107,18 @@ TEST_F(TestBitFlag, ToString) {
 		bf4.str(),
 		"0000000000000000000000000000000000000000000000000000000001111011");
 };
+
+TEST_F(TestBitFlag, Each) {
+	// TODO: Each test for TestBitFlag
+}
+
+TEST_F(TestBitFlag, Iterators) {
+	// TODO: Iterators test for TestBitFlag
+}
+
+TEST_F(TestBitFlag, Clear) {
+	// TODO: Clear test for TestBitFlag
+}
 
 TEST_F(TestBitFlag, BitAt) {
 	ds::BitFlag bf(123);  // 0111 1011
@@ -121,26 +155,21 @@ TEST_F(TestBitFlag, BitAt) {
 	EXPECT_EQ(bf2[31], 1);
 };
 
-TEST_F(TestBitFlag, BitwiseOperators) {
-	ds::ByteFlag bf1(42);  // 0010 1010
-	ds::ByteFlag bf2(23);  // 0001 0111
-	ds::ByteFlag bf3;
+TEST_F(TestBitFlag, HasABit) {
+	ds::BitFlag bf(3);	// 0000 0011
 
-	bf3 = bf1 & bf2;  // 0000 0010 (2)
-	EXPECT_EQ(bf3.get(), 2);
+	EXPECT_TRUE(bf.has(TestFlags::Color | TestFlags::State));
 
-	bf3 = bf1 | bf2;  // 0011 1111 (63)
-	EXPECT_EQ(bf3.get(), 63);
+	bf.reset();
 
-	bf3 = bf1 ^ bf2;  // 0011 1101 (61)
-	EXPECT_EQ(bf3.get(), 61);
+	EXPECT_FALSE(bf.has(TestFlags::Color | TestFlags::State));
 
-	bf3 = ~bf1;	 // 1101 0101 (213)
-	EXPECT_EQ(bf3.get(), 213);
+	bf.setValue(1);
 
-	bf3 = bf1 << 1;	 // 0101 0100 (84)
-	EXPECT_EQ(bf3.get(), 84);
+	EXPECT_TRUE(bf.has(TestFlags::Color));
+	EXPECT_FALSE(bf.has(TestFlags::State));
+};
 
-	bf3 = bf1 >> 1;	 // 0001 0101 (21)
-	EXPECT_EQ(bf3.get(), 21);
+TEST_F(TestBitFlag, Replicate) {
+	// TODO: Replicate test for TestBitFlag
 }

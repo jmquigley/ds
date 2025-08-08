@@ -997,7 +997,7 @@ public:
 	 * and NOT an indexed operation.  Just NOTE that this is not a fast lookup
 	 * index operation.
 	 *
-	 * TODO: investigate a caching solution for this method
+	 * NOTE: the reference returned can modify the data found at this location
 	 *
 	 * @param index (`size_t`) the index position within the tree, using inorder
 	 * traversal ordering

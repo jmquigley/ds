@@ -85,6 +85,7 @@ set(DS_INCLUDES
     SortedList.hpp
     Stack.hpp
     str.h
+    ThreadPool.hpp
     TreeNode.hpp
 )
 
@@ -164,6 +165,7 @@ set(TEST_SOURCES
   tests/test_sortedlist.cpp
   tests/test_stack.cpp
   tests/test_str.cpp
+  tests/test_threadpool.cpp
   tests/test_treenode.cpp
 )
 

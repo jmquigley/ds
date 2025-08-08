@@ -22,19 +22,15 @@ class BaseIterator {
 
 public:
 
-	BaseIterator() : BaseIterator(std::weak_ptr<C<T>>()) {};
+	constexpr BaseIterator() : BaseIterator(std::weak_ptr<C<T>>()) {};
 
 	/**
 	 * @brief Constructor that initializes the iterator with a node pointer.
 	 * @param lp Shared pointer to the starting node for iteration
 	 */
-	BaseIterator(std::weak_ptr<C<T>> lp) : _lp(lp) {}
+	constexpr BaseIterator(std::weak_ptr<C<T>> lp) : _lp(lp) {}
 
-	~BaseIterator() {
-		if (_lp.lock()) {
-			_lp.reset();
-		}
-	}
+	virtual ~BaseIterator() = default;
 
 	/**
 	 * @brief Pre-increment operator.
@@ -90,11 +86,8 @@ public:
 	 * @param rhs The right-hand side iterator to compare with
 	 * @return true if both iterators point to the same node, false otherwise
 	 */
-	bool operator==(const BaseIterator &rhs) const {
-		auto p = this->_lp.lock();
-		auto rp = rhs._lp.lock();
-
-		return p == rp;
+	constexpr bool operator==(const BaseIterator &rhs) const {
+		return this->_lp.lock() == rhs._lp.lock();
 	}
 
 	/**
@@ -105,11 +98,8 @@ public:
 	 * @param rhs The right-hand side iterator to compare with
 	 * @return true if the iterators point to different nodes, false otherwise
 	 */
-	bool operator!=(const BaseIterator &rhs) const {
-		auto p = this->_lp.lock();
-		auto rp = rhs._lp.lock();
-
-		return p != rp;
+	constexpr bool operator!=(const BaseIterator &rhs) const {
+		return this->_lp.lock() != rhs._lp.lock();
 	}
 
 	/**
@@ -124,7 +114,7 @@ public:
 		T nil {};
 
 		if (!_lp.expired()) {
-			return _lp.lock()->getData();
+			return _lp.lock()->data();
 		}
 
 		return nil;

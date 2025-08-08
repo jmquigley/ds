@@ -82,7 +82,7 @@ public:
 	 * Child nodes are not automatically deleted as they may be referenced
 	 * elsewhere.
 	 */
-	virtual ~Node() {}
+	virtual ~Node() = default;
 
 	/**
 	 * @brief Copy assignment operator

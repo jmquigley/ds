@@ -275,6 +275,8 @@ public:
 			this->_flags = std::move(other._flags);
 
 			// Reset the moved-from node
+			other._data = {};
+			other._flags = 0;
 			other._left = nullptr;
 			other._right = nullptr;
 		}
@@ -282,7 +284,7 @@ public:
 	}
 
 	/**
-	 * @brief Convenience function for setting teh color of a node based on
+	 * @brief Convenience function for setting the color of a node based on
 	 * the given enum.
 	 *
 	 * This function is a thin wrapper around the setRed/setBlack methods
