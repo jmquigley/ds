@@ -13,10 +13,16 @@ public:
 TEST_F(TestNode, Create) {
 	ds::Node<int> node(42);
 
-	EXPECT_EQ(node.getData(), 42);
+	EXPECT_EQ(node.data(), 42);
 	EXPECT_EQ(node.left(), nullptr);
 	EXPECT_EQ(node.right(), nullptr);
 	std::cout << "Node = " << node << std::endl;
+
+	int &x = node.data();
+	EXPECT_EQ(x, 42);
+	x = 24;
+	EXPECT_EQ(x, 24);
+	EXPECT_EQ(node.data(), 24);
 };
 
 TEST_F(TestNode, Constructors) {
@@ -27,13 +33,30 @@ TEST_F(TestNode, Constructors) {
 	EXPECT_EQ(node.getData(), 42);
 	EXPECT_EQ(node2.getData(), 42);
 
-	// std::shared_ptr<ds::Node<int>> p1 =
-	// std::make_shared<ds::Node<int>>(node);
 	std::shared_ptr<ds::Node<int>> left = std::make_shared<ds::Node<int>>(1);
 	std::shared_ptr<ds::Node<int>> right = std::make_shared<ds::Node<int>>(2);
 
-	ds::Node<int> node3(left, right, (ds::ByteFlag)0, 42);
-	EXPECT_EQ(node2.getData(), 42);
+	ds::Node<int> node3(left, right, (ds::ByteFlag)99, 42);
+
+	EXPECT_EQ(node3.data(), 42);
+	EXPECT_EQ(node3.flags(), (ds::ByteFlag)99);
+	EXPECT_EQ(node3.left(), left);
+	EXPECT_EQ(node3.right(), right);
+	EXPECT_EQ(node3.left()->data(), 1);
+	EXPECT_EQ(node3.right()->data(), 2);
+
+	// Move Constructor
+	ds::Node<int> node4(std::move(node3));
+
+	EXPECT_EQ(node4.data(), 42);
+	EXPECT_EQ(node4.flags(), (ds::ByteFlag)99);
+	EXPECT_EQ(node4.left(), left);
+	EXPECT_EQ(node4.right(), right);
+	EXPECT_EQ(node4.left()->data(), 1);
+	EXPECT_EQ(node4.right()->data(), 2);
+
+	EXPECT_EQ(node3.left(), nullptr);
+	EXPECT_EQ(node3.right(), nullptr);
 }
 
 TEST_F(TestNode, Builder) {

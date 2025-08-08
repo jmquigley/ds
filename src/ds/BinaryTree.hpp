@@ -1020,8 +1020,9 @@ public:
 			return this->_back.lock()->data();
 		}
 
-		TreeNode<T> retNode;
-		bool found {false};
+		// this holds a pointer to the node that was found in the following
+		// traversal
+		TreeNode<T> *retNode = nullptr;
 
 		// Choose optimal traversal direction based on which end is closer
 		if (index < this->_size / 2) {
@@ -1029,8 +1030,7 @@ public:
 			size_t currentPos = 0;
 			inorderDelegate(this->_root, [&](TreeNode<T> &node) -> bool {
 				if (currentPos == index) {
-					retNode = node;
-					found = true;
+					retNode = &node;
 					return true;  // Stop traversal
 				}
 				currentPos++;
@@ -1041,8 +1041,7 @@ public:
 			size_t currentPos = this->_size - 1;
 			reverseorderDelegate(this->_root, [&](TreeNode<T> &node) -> bool {
 				if (currentPos == index) {
-					retNode = node;
-					found = true;
+					retNode = &node;
 					return true;  // Stop traversal
 				}
 				currentPos--;
@@ -1050,12 +1049,12 @@ public:
 			});
 		}
 
-		if (!found) {
+		if (!retNode) {
 			throw std::runtime_error(
 				"Element at index not found during traversal");
 		}
 
-		return retNode.data();
+		return retNode->data();
 	}
 
 	/**
