@@ -19,10 +19,11 @@ AlignTrailingComments:
   Kind:            Always
   OverEmptyLines:  0
 AllowShortBlocksOnASingleLine: Empty
-# AllowShortCaseExpressionOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortCaseExpressionOnASingleLine: true
 AllowShortCompoundRequirementOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Empty
-# AllowShortIfStatementsOnASingleLine WithoutElse
+AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortLoopsOnASingleLine: true
 BraceWrapping:
   AfterCaseLabel:  false
@@ -59,7 +60,8 @@ EmptyLineAfterAccessModifier: Always
 EmptyLineBeforeAccessModifier: Always
 IncludeBlocks:   Regroup
 IndentAccessModifiers: false
-IndentCaseBlocks: false
+IndentCaseBlocks: true
+IndentCaseLabels: true
 IndentExternBlock: Indent
 IndentGotoLabels: true
 IndentWrappedFunctionNames: false

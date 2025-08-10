@@ -2,6 +2,7 @@
 
 #include <ds/BaseBitFlag.hpp>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 
 class TestBitFlag : public TestingBase {
@@ -60,7 +61,57 @@ TEST_F(TestBitFlag, Constructors) {
 };
 
 TEST_F(TestBitFlag, AssignmentOperators) {
-	// TODO: Assignment tests for TestBitFlag
+	// assignment by object
+	ds::BitFlag bf1(123);  // 0111 1011
+	ds::BitFlag bf2;
+	bf2 = bf1;
+
+	EXPECT_EQ(bf1.get(), 123);
+	EXPECT_EQ(bf2.get(), 123);
+
+	// assignment by primitive
+	ds::BitFlag bf3;
+	bf3 = static_cast<unsigned int>(42);
+	EXPECT_EQ(bf3.get(), 42);
+
+	// assignment by move
+	ds::BitFlag bf4;
+	bf4 = std::move(bf3);
+	EXPECT_EQ(bf3.get(), 0);
+	EXPECT_EQ(bf4.get(), 42);
+
+	// function operator
+	bf1(42);
+	EXPECT_EQ(bf1, 42);
+
+	bf1(24);
+	EXPECT_EQ(bf1, 24);
+}
+
+TEST_F(TestBitFlag, Replication) {
+	// deep copy
+	ds::BitFlag bf(42);
+	EXPECT_EQ(bf.get(), 42);
+
+	std::shared_ptr<ds::BitFlag> pbf = bf.deepcopy();
+	EXPECT_EQ(pbf->get(), 42);
+
+	// copy
+	ds::BitFlag bf1(42);
+	EXPECT_EQ(bf1, 42);
+
+	ds::BitFlag bf2;
+
+	bf2.copy(bf1);
+	EXPECT_EQ(bf1, 42);
+	EXPECT_EQ(bf2, 42);
+
+	// move
+	ds::BitFlag bf3;
+	bf3.move(std::move(bf2));
+
+	EXPECT_EQ(bf2, 0);
+	EXPECT_EQ(bf3, 42);
 }
 
 TEST_F(TestBitFlag, LogicalOperator) {
@@ -109,7 +160,20 @@ TEST_F(TestBitFlag, ToString) {
 };
 
 TEST_F(TestBitFlag, Each) {
-	// TODO: Each test for TestBitFlag
+	ds::ByteFlag bf(85);  // 0101 0101
+
+	bf.each([&](unsigned short int index, unsigned short int bit) {
+		switch (index) {
+			case 0: EXPECT_EQ(bit, 1); break;
+			case 1: EXPECT_EQ(bit, 0); break;
+			case 2: EXPECT_EQ(bit, 1); break;
+			case 3: EXPECT_EQ(bit, 0); break;
+			case 4: EXPECT_EQ(bit, 1); break;
+			case 5: EXPECT_EQ(bit, 0); break;
+			case 6: EXPECT_EQ(bit, 1); break;
+			case 7: EXPECT_EQ(bit, 0); break;
+		}
+	});
 }
 
 TEST_F(TestBitFlag, Iterators) {
@@ -120,7 +184,7 @@ TEST_F(TestBitFlag, Clear) {
 	// TODO: Clear test for TestBitFlag
 }
 
-TEST_F(TestBitFlag, BitAt) {
+TEST_F(TestBitFlag, At) {
 	ds::BitFlag bf(123);  // 0111 1011
 
 	EXPECT_EQ(bf.at(0), 1);
@@ -133,7 +197,6 @@ TEST_F(TestBitFlag, BitAt) {
 	EXPECT_EQ(bf.at(7), 0);
 	EXPECT_EQ(bf.at(8), 0);
 	EXPECT_EQ(bf.at(31), 0);
-	EXPECT_EQ(bf.at(999), 0);
 
 	EXPECT_EQ(bf[0], 1);
 	EXPECT_EQ(bf[1], 1);
@@ -145,7 +208,6 @@ TEST_F(TestBitFlag, BitAt) {
 	EXPECT_EQ(bf[7], 0);
 	EXPECT_EQ(bf[8], 0);
 	EXPECT_EQ(bf[31], 0);
-	EXPECT_EQ(bf[999], 0);
 
 	ds::BitFlag bf2(2147483648);  // 1000 0000 0000 0000 0000 0000 0000 0000
 
@@ -153,6 +215,9 @@ TEST_F(TestBitFlag, BitAt) {
 	EXPECT_EQ(bf2[0], 0);
 	EXPECT_EQ(bf2.at(31), 1);
 	EXPECT_EQ(bf2[31], 1);
+
+	EXPECT_THROW(bf.at(999), std::out_of_range);
+	EXPECT_THROW(bf[999], std::out_of_range);
 };
 
 TEST_F(TestBitFlag, HasABit) {
@@ -169,7 +234,3 @@ TEST_F(TestBitFlag, HasABit) {
 	EXPECT_TRUE(bf.has(TestFlags::Color));
 	EXPECT_FALSE(bf.has(TestFlags::State));
 };
-
-TEST_F(TestBitFlag, Replicate) {
-	// TODO: Replicate test for TestBitFlag
-}

@@ -14,13 +14,13 @@ tui disable
 
 # b /root/workspace/ds/src/ds/SortedList.hpp:128
 # b /root/workspace/ds/tests/test_sortedlist.cpp:192
-b /root/workspace/ds/tests/test_generaltreenode.cpp:16
-b /root/workspace/ds/src/ds/GeneralTreeNode.hpp:197
-b /root/workspace/ds/src/ds/List.hpp:410
+# b /root/workspace/ds/tests/test_generaltreenode.cpp:16
+# b /root/workspace/ds/src/ds/GeneralTreeNode.hpp:197
+# b /root/workspace/ds/src/ds/List.hpp:410
 # b /root/workspace/ds/src/ds/List.hpp:355
 # b /root/workspace/ds/src/ds/GeneralTree.hpp:insert
 # b /root/workspace/ds/src/ds/GeneralTree.hpp:breadth
-# b /root/workspace/ds/tests/test_list.cpp:34
+b /root/workspace/ds/tests/test_bitflag.cpp:63
 # b /root/workspace/ds/src/ds/GeneralTree.hpp:depth
 # b /root/workspace/ds/src/ds/BinaryTree.hpp:removeValue
 # b /root/workspace/ds/tests/test_binarytree.cpp:138

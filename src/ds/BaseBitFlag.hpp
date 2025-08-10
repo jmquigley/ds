@@ -6,6 +6,7 @@
 #include <ds/Replicate.hpp>
 #include <ds/constants.hpp>
 #include <ds/property.hpp>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 
@@ -76,7 +77,7 @@ public:
 	 * @brief Constructor with initial flag value
 	 * @param flag Initial flag value
 	 */
-	constexpr explicit BaseBitFlag(const T &flag) noexcept : _flag(flag) {}
+	constexpr BaseBitFlag(const T &flag) noexcept : _flag(flag) {}
 
 	/**
 	 * @brief Copy constructor for bit flags
@@ -126,10 +127,15 @@ public:
 	 * @return Reference to this object
 	 */
 	BaseBitFlag &operator=(BaseBitFlag<T> &&bitFlag) noexcept {
-		if (this != &bitFlag) {
-			this->_flag = std::move(bitFlag._flag);
-		}
-		return *this;
+		return this->move(std::move(bitFlag));
+	}
+
+	BaseBitFlag &operator()(const BaseBitFlag<T> &bitFlag) {
+		return operator=(bitFlag);
+	}
+
+	BaseBitFlag &operator()(const T &val) {
+		return operator=(val);
 	}
 
 	/**
@@ -162,6 +168,15 @@ public:
 	}
 
 	/**
+	 * @brief Checks if the contents of a bit flag and T value are equal
+	 * @param val (`T &`) the constang flag to compare against
+	 * @return true if both flags have the same values, otherwise false
+	 */
+	constexpr bool operator==(const T &val) const noexcept {
+		return this->_flag == val;
+	}
+
+	/**
 	 * @brief Checks if the contents of two given bit flags are NOT equal
 	 * @param bf (`BaseBitFlag<T> &`) the bit flag to compare against
 	 * @return true if both flags have different values, otherwise false
@@ -171,11 +186,20 @@ public:
 	}
 
 	/**
+	 * @brief Checks if the contents of a bit flag and T value are not equal
+	 * @param val (`T &`) the bit flag to compare against
+	 * @return true if both flags have different values, otherwise false
+	 */
+	constexpr bool operator!=(const T &val) const noexcept {
+		return this->_flag != val;
+	}
+
+	/**
 	 * @brief a convenience operator for the at().
 	 * @param index (`size_t`) the location of the bit within the number
 	 * @returns a 0 or 1 for the index position.
 	 */
-	unsigned char operator[](size_t index) const noexcept {
+	unsigned char operator[](size_t index) const {
 		return at(index);
 	}
 
@@ -295,9 +319,13 @@ public:
 	 * (0-based)
 	 * @returns a 0 or 1 for the index position.
 	 */
-	unsigned short int at(size_t index) const noexcept {
+	unsigned short int at(size_t index) const {
+		if (index >= numberOfBits()) {
+			throw std::out_of_range("Invalid index requested for bit flag");
+		}
+
 		index = std::min((sizeof(T) * constants::BYTESIZE) - 1, index);
-		return (unsigned short int)((this->_flag >> index) & 0x1);
+		return static_cast<unsigned short int>(this->_flag >> index) & 0x1;
 	}
 
 	/**
@@ -320,23 +348,32 @@ public:
 	}
 
 	/**
+	 * @brief Executes a callback function for each bit
+	 *
+	 * Iterates through all elements in the bitflag sequentially, calling the
+	 * provided callback function for each bit with its index and the bit
+	 *
+	 * @tparam Callback A callable type that accepts (size_t, T&) parameters
+	 * @param callback The function to execute for each element.
+	 *                 First argument is the element's index (0-based)
+	 *                 Second argument is the bit at that index
+	 *
+	 * NOTE: this moves from right to lefl within the number.
+	 */
+	template<typename Callback>
+	void each(Callback callback) {
+		for (unsigned short int i = 0; i < numberOfBits(); i++) {
+			callback(i,
+					 static_cast<unsigned short int>(this->_flag >> i) & 0x1);
+		}
+	}
+
+	/**
 	 * @brief Get the current flag value
 	 * @return Current flag value
 	 */
 	constexpr T get() const noexcept {
 		return _flag;
-	}
-
-	/**
-	 * @brief moves the resources from one object to another.
-	 * in this function it is effectively the same as the copy operation as
-	 * there are no memory resources to move.
-	 * @param other (`BaseBitFlag<T> &`) a reference to an object to move.
-	 * @return Referece to this object after the operation
-	 */
-	virtual BaseBitFlag<T> &move(BaseBitFlag<T> &&other) override {
-		this->_flag = other._flag;
-		return *this;
 	}
 
 	/**
@@ -355,6 +392,28 @@ public:
 	 */
 	constexpr bool hasAny(T mask) const noexcept {
 		return (this->_flag & mask) != 0;
+	}
+
+	/**
+	 * @brief moves the resources from one object to another.
+	 * in this function it is effectively the same as the copy operation as
+	 * there are no memory resources to move.
+	 * @param other (`BaseBitFlag<T> &`) a reference to an object to move.
+	 * @return Referece to this object after the operation
+	 */
+	virtual BaseBitFlag<T> &move(BaseBitFlag<T> &&other) override {
+		this->_flag = other._flag;
+		other._flag = 0;
+		return *this;
+	}
+
+	/**
+	 * @brief Retrieves the number of the bits based on the flag size
+	 * @returns the number of bits stored in this flag.
+	 */
+	inline constexpr unsigned short int numberOfBits() const noexcept {
+		return static_cast<unsigned short int>(sizeof(this->_flag) *
+											   constants::BYTESIZE);
 	}
 
 	/**
@@ -390,9 +449,7 @@ public:
 	 * @returns a std::string that represents the number in binary format
 	 */
 	std::string str() const {
-		const size_t totalBits = sizeof(this->_flag) * constants::BYTESIZE;
-
-		switch (totalBits) {
+		switch (numberOfBits()) {
 			case constants::BYTESIZE:
 				return std::bitset<8>(this->_flag).to_string();
 			case constants::BYTESIZE * 2:
