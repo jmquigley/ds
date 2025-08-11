@@ -50,14 +50,17 @@ function banner() {
 }
 
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
+BUILD_TYPE=Release
 CLANG_OPT=0
 CLEAN_OPT=0
+LLVM_VERSION=21
 MEMTEST_OPT=0
+NOCOVERAGE_OPT=0
 NODOCS_OPT=0
 NOINSTALL_OPT=0
 NOTEST_OPT=0
-BUILD_TYPE=Release
 PREFIX=${SCRIPT_DIR}
+TEST_EXE=./ds-unit-tests
 USE_CLANG=0
 export GTEST_SHUFFLE=1
 export FILTER='*'
@@ -116,6 +119,11 @@ while :; do
         # is very slow.
         --memtest|--memcheck)
             MEMTEST_OPT=1;
+            shift
+            ;;
+
+        --nocoverage)
+            NOCOVERAGE_OPT=1;
             shift
             ;;
 
@@ -212,30 +220,39 @@ exitOnError $? "Error building project, terminating"
 if [ "${USE_TESTING}" == "ON" ]; then
 
     banner "Testing"
-    MEMCHECK=''
     if [ ${MEMTEST_OPT} == 1 ]; then
-        MEMCHECK='-T memcheck'
+        cmake -E env FILTER=${FILTER} ctest -T memcheck --output-on-failure -j ${THREADS} --output-log ./log/unit-tests.log
+        rc=$?
+        if [ $rc -ne 0 ] && [ ${MEMTEST_OPT} == 1 ]; then
+            cat Testing/Temporary/MemoryChecker.*.log
+        fi
+        exitOnError $rc "Error executing unit tests, terminating"
     fi
 
-    cmake -E env FILTER=${FILTER} ctest ${MEMCHECK} --output-on-failure -j ${THREADS} --output-log ./log/unit-tests.log
-    rc=$?
-    if [ $rc -ne 0 ] && [ ${MEMTEST_OPT} == 1 ]; then
-        cat Testing/Temporary/MemoryChecker.*.log
-    fi
-    exitOnError $rc "Error executing unit tests, terminating"
-
+    eval ${TEST_EXE}
 fi
 
 #
 # Creating coverage information
 #
-
-if [ "${USE_TESTING}" == "ON" ]; then
+if [ "${USE_TESTING}" == "ON" ] && [ ${NOCOVERAGE_OPT} == 0 ]; then
     banner "Coverage"
-    lcov --capture --directory . --output-file coverage.info --ignore-errors mismatch,mismatch --ignore-errors gcov,gcov
-    lcov --quiet --remove coverage.info '/usr/*' --remove coverage.info '*test*' --output-file coverage.info
-    genhtml coverage.info -q --demangle-cpp --output-directory docs/html/coverage
+
+    if [ "${USE_CLANG}" == "OFF" ]; then
+        echo "Generating coverage for GCC"
+        lcov --capture --directory . --output-file coverage.info --ignore-errors mismatch,mismatch --ignore-errors gcov,gcov
+        lcov --quiet --remove coverage.info '/usr/*' --remove coverage.info '*test*' --output-file coverage.info
+        genhtml coverage.info -q --demangle-cpp --output-directory docs/html/coverage
+    else
+        echo "Generating coverage for CLANG"
+        SRC_FILES=`find ../src -type f -print0 | xargs -0 echo`
+
+        llvm-profdata-${LLVM_VERSION} merge -sparse default.profraw -o default.profdata
+        llvm-cov-${LLVM_VERSION} show ${TEST_EXE} -instr-profile=default.profdata ${SRC_FILES} --format html -output-dir=./docs/html/coverage
+        llvm-cov-${LLVM_VERSION} report ${TEST_EXE} -instr-profile=default.profdata
+    fi
 fi
+
 
 #
 # Installation
@@ -267,6 +284,7 @@ if [ "${USE_EXTRAS}" == "ON" ] && [ ${NODOCS_OPT} == 0 ]; then
 
     if [ -d /var/www/html ]; then
         yes | cp -rf docs/html/* /var/www/html/.
+        chmod -R 755 /var/www
     fi
 fi
 

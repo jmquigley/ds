@@ -111,11 +111,21 @@ target_compile_options(${PROJECT_NAME} PRIVATE
   $<$<CONFIG:Release>:-O3>
   $<$<CONFIG:Debug>:-O0>
   $<$<CONFIG:Debug>:-Wall>
-  $<$<CONFIG:Debug>:--coverage>
+
+   # GCC code coverage flags
+  $<$<AND:$<CONFIG:Debug>,$<NOT:$<BOOL:${DS_BUILD_CLANG}>>>:--coverage>
+
+  # Clang code coverage flags
+  $<$<AND:$<CONFIG:Debug>,$<BOOL:${DS_BUILD_CLANG}>>:-fprofile-instr-generate>
+  $<$<AND:$<CONFIG:Debug>,$<BOOL:${DS_BUILD_CLANG}>>:-fcoverage-mapping>
 )
 
 target_link_options(${PROJECT_NAME} PRIVATE
-  $<$<CONFIG:Debug>:--coverage>
+  # GCC code coverage flags
+  $<$<AND:$<CONFIG:Debug>,$<NOT:$<BOOL:${DS_BUILD_CLANG}>>>:--coverage>
+
+  # Clang code coverage flags
+  $<$<AND:$<CONFIG:Debug>,$<BOOL:${DS_BUILD_CLANG}>>:-fprofile-instr-generate>
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -177,13 +187,24 @@ add_executable(
 )
 
 target_compile_options(${TEST_EXE} PRIVATE
+  $<$<CONFIG:Release>:-O3>
   $<$<CONFIG:Debug>:-O0>
   $<$<CONFIG:Debug>:-Wall>
-  $<$<CONFIG:Debug>:-coverage>
+
+   # GCC code coverage flags
+  $<$<AND:$<CONFIG:Debug>,$<NOT:$<BOOL:${DS_BUILD_CLANG}>>>:--coverage>
+
+  # Clang code coverage flags
+  $<$<AND:$<CONFIG:Debug>,$<BOOL:${DS_BUILD_CLANG}>>:-fprofile-instr-generate>
+  $<$<AND:$<CONFIG:Debug>,$<BOOL:${DS_BUILD_CLANG}>>:-fcoverage-mapping>
 )
 
 target_link_options(${TEST_EXE} PRIVATE
-  $<$<CONFIG:Debug>:-coverage>
+  # GCC code coverage flags
+  $<$<AND:$<CONFIG:Debug>,$<NOT:$<BOOL:${DS_BUILD_CLANG}>>>:--coverage>
+
+  # Clang code coverage flags
+  $<$<AND:$<CONFIG:Debug>,$<BOOL:${DS_BUILD_CLANG}>>:-fprofile-instr-generate>
 )
 
 target_include_directories(${TEST_EXE}
