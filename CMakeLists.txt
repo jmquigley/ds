@@ -276,6 +276,13 @@ target_link_libraries(inherit
 target_include_directories(inherit PRIVATE ${PROJECT_NAME})
 
 
+add_executable(spaceship extras/spaceship.cpp)
+target_link_libraries(spaceship
+    PRIVATE ${PROJECT_NAME}
+)
+target_include_directories(spaceship PRIVATE ${PROJECT_NAME})
+
+
 add_executable(typesizes extras/typesizes.cpp)
 target_link_libraries(typesizes
     PRIVATE ${PROJECT_NAME}

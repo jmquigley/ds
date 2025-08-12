@@ -237,19 +237,37 @@ fi
 #
 if [ "${USE_TESTING}" == "ON" ] && [ ${NOCOVERAGE_OPT} == 0 ]; then
     banner "Coverage"
+    COVERAGE_OUTPUT=./docs/html/coverage
 
     if [ "${USE_CLANG}" == "OFF" ]; then
         echo "Generating coverage for GCC"
         lcov --capture --directory . --output-file coverage.info --ignore-errors mismatch,mismatch --ignore-errors gcov,gcov
         lcov --quiet --remove coverage.info '/usr/*' --remove coverage.info '*test*' --output-file coverage.info
-        genhtml coverage.info -q --demangle-cpp --output-directory docs/html/coverage
+        genhtml coverage.info -q --demangle-cpp --output-directory ${COVERAGE_OUTPUT}
     else
         echo "Generating coverage for CLANG"
         SRC_FILES=`find ../src -type f -print0 | xargs -0 echo`
+        IGNORE=-ignore-filename-regex='.*/tests/.*'
+        INSTFILE=-instr-profile=default.profdata
 
+        # Create profile data
         llvm-profdata-${LLVM_VERSION} merge -sparse default.profraw -o default.profdata
-        llvm-cov-${LLVM_VERSION} show ${TEST_EXE} -instr-profile=default.profdata ${SRC_FILES} --format html -output-dir=./docs/html/coverage
-        llvm-cov-${LLVM_VERSION} report ${TEST_EXE} -instr-profile=default.profdata
+
+        # Take all coverage data and export to a JSON file
+        llvm-cov-${LLVM_VERSION} export ${IGNORE} --format=text ${INSTFILE} ${TEST_EXE}  > coverage.json
+
+        if command -v jq &> /dev/null; then
+            # Parse the JSON coverage data and show all files that are used
+            # if the jq command is available
+            echo "Files included:"
+            jq -r '.data[0].files[].filename' coverage.json
+            echo ""
+        fi
+
+        # Create build output for display during the build and also create an
+        # output HTML site to include with documentation.
+        llvm-cov-${LLVM_VERSION} show ${IGNORE} ${TEST_EXE} ${INSTFILE} ${SRC_FILES} --format html -output-dir=${COVERAGE_OUTPUT}
+        llvm-cov-${LLVM_VERSION} report ${IGNORE} ${TEST_EXE} ${INSTFILE}
     fi
 fi
 
