@@ -51,7 +51,6 @@ public:
 	 *
 	 * @param other The object to compare with
 	 * @return bool True if this object is equal to other, false otherwise
-	 * @throws noexcept This function must not throw exceptions
 	 * @pure
 	 */
 	virtual bool operator==(const T &other) const noexcept = 0;
@@ -63,7 +62,6 @@ public:
 	 *
 	 * @param other The object to compare with
 	 * @return bool True if this object is not equal to other, false otherwise
-	 * @throws noexcept This function must not throw exceptions
 	 * @pure
 	 */
 	virtual bool operator!=(const T &other) const noexcept = 0;
@@ -76,7 +74,6 @@ public:
 	 *
 	 * @param other The object to compare with
 	 * @return bool True if this object is less than other, false otherwise
-	 * @throws noexcept This function must not throw exceptions
 	 * @pure
 	 */
 	virtual bool operator<(const T &other) const noexcept = 0;
@@ -90,7 +87,6 @@ public:
 	 * @param other The object to compare with
 	 * @return bool True if this object is less than or equal to other, false
 	 * otherwise
-	 * @throws noexcept This function must not throw exceptions
 	 * @pure
 	 */
 	virtual bool operator<=(const T &other) const noexcept = 0;
@@ -103,7 +99,6 @@ public:
 	 *
 	 * @param other The object to compare with
 	 * @return bool True if this object is greater than other, false otherwise
-	 * @throws noexcept This function must not throw exceptions
 	 * @pure
 	 */
 	virtual bool operator>(const T &other) const noexcept = 0;
@@ -117,7 +112,6 @@ public:
 	 * @param other The object to compare with
 	 * @return bool True if this object is greater than or equal to other, false
 	 * otherwise
-	 * @throws noexcept This function must not throw exceptions
 	 * @pure
 	 */
 	virtual bool operator>=(const T &other) const noexcept = 0;
@@ -147,7 +141,6 @@ public:
 	 *          - 0 if o1 and o2 are equal
 	 *          - 1 if o1 is greater than o2
 	 *          - -1 if o1 is less than o2
-	 * @throws noexcept This function must not throw exceptions
 	 */
 	virtual int compare(const T &o1, const T &o2) const noexcept {
 		if (o1 == o2) {

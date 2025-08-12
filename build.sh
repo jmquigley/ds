@@ -51,7 +51,6 @@ function banner() {
 
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 BUILD_TYPE=Release
-CLANG_OPT=0
 CLEAN_OPT=0
 LLVM_VERSION=21
 MEMTEST_OPT=0
@@ -72,11 +71,6 @@ while :; do
 
         -c|--clean)
             CLEAN_OPT=1
-            shift
-            ;;
-
-        --clang)
-            CLANG_OPT=1
             shift
             ;;
 
@@ -190,11 +184,6 @@ if [ ${NOINSTALL_OPT} == 1 ]; then
     USE_INSTALL=OFF
 fi
 
-USE_CLANG=OFF
-if [ ${CLANG_OPT} == 1 ]; then
-    USE_CLANG=ON
-fi
-
 banner ${BUILD_TYPE}
 
 if [ ${CLEAN_OPT} == 1 ] && [ -f "Makefile" ]; then
@@ -207,7 +196,7 @@ fi
 #
 
 banner "Building"
-cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDS_BUILD_EXTRAS=${USE_EXTRAS} -DDS_BUILD_TESTING=${USE_TESTING} -DDS_BUILD_INSTALL=${USE_INSTALL} -DDS_BUILD_CLANG=${USE_CLANG} -DBUILD_TESTING=${USE_TESTING} ..
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDS_BUILD_EXTRAS=${USE_EXTRAS} -DDS_BUILD_TESTING=${USE_TESTING} -DDS_BUILD_INSTALL=${USE_INSTALL} -DBUILD_TESTING=${USE_TESTING} ..
 exitOnError $? "Failed to create cmake build files!"
 
 cmake --build . -v -- -j ${THREADS}
@@ -226,49 +215,49 @@ if [ "${USE_TESTING}" == "ON" ]; then
         if [ $rc -ne 0 ] && [ ${MEMTEST_OPT} == 1 ]; then
             cat Testing/Temporary/MemoryChecker.*.log
         fi
-        exitOnError $rc "Error executing unit tests, terminating"
+
+    else
+        eval ${TEST_EXE}
+        rc=$?
     fi
 
-    eval ${TEST_EXE}
+    exitOnError $rc "Error executing unit tests, terminating"
 fi
 
 #
 # Creating coverage information
 #
+
 if [ "${USE_TESTING}" == "ON" ] && [ ${NOCOVERAGE_OPT} == 0 ]; then
+    # NOTE: this coverage only works correctly when the google test suite is
+    # is run outside of ctest.  If used with ctest, then only the last suite
+    # executed will be included in the coverage data
+
     banner "Coverage"
     COVERAGE_OUTPUT=./docs/html/coverage
 
-    if [ "${USE_CLANG}" == "OFF" ]; then
-        echo "Generating coverage for GCC"
-        lcov --capture --directory . --output-file coverage.info --ignore-errors mismatch,mismatch --ignore-errors gcov,gcov
-        lcov --quiet --remove coverage.info '/usr/*' --remove coverage.info '*test*' --output-file coverage.info
-        genhtml coverage.info -q --demangle-cpp --output-directory ${COVERAGE_OUTPUT}
-    else
-        echo "Generating coverage for CLANG"
-        SRC_FILES=`find ../src -type f -print0 | xargs -0 echo`
-        IGNORE=-ignore-filename-regex='.*/tests/.*'
-        INSTFILE=-instr-profile=default.profdata
+    SRC_FILES=`find ../src -type f -print0 | xargs -0 echo`
+    IGNORE=-ignore-filename-regex='.*/tests/.*'
+    INSTFILE=-instr-profile=default.profdata
 
-        # Create profile data
-        llvm-profdata-${LLVM_VERSION} merge -sparse default.profraw -o default.profdata
+    # Create profile data
+    llvm-profdata-${LLVM_VERSION} merge -sparse default.profraw -o default.profdata
 
-        # Take all coverage data and export to a JSON file
-        llvm-cov-${LLVM_VERSION} export ${IGNORE} --format=text ${INSTFILE} ${TEST_EXE}  > coverage.json
+    # Take all coverage data and export to a JSON file
+    llvm-cov-${LLVM_VERSION} export ${IGNORE} --format=text ${INSTFILE} ${TEST_EXE}  > coverage.json
 
-        if command -v jq &> /dev/null; then
-            # Parse the JSON coverage data and show all files that are used
-            # if the jq command is available
-            echo "Files included:"
-            jq -r '.data[0].files[].filename' coverage.json
-            echo ""
-        fi
-
-        # Create build output for display during the build and also create an
-        # output HTML site to include with documentation.
-        llvm-cov-${LLVM_VERSION} show ${IGNORE} ${TEST_EXE} ${INSTFILE} ${SRC_FILES} --format html -output-dir=${COVERAGE_OUTPUT}
-        llvm-cov-${LLVM_VERSION} report ${IGNORE} ${TEST_EXE} ${INSTFILE}
+    if command -v jq &> /dev/null; then
+        # Parse the JSON coverage data and show all files that are used
+        # if the jq command is available
+        echo "Files included:"
+        jq -r '.data[0].files[].filename' coverage.json
+        echo ""
     fi
+
+    # Create build output for display during the build and also create an
+    # output HTML site to include with documentation.
+    llvm-cov-${LLVM_VERSION} show ${IGNORE} ${TEST_EXE} ${INSTFILE} ${SRC_FILES} --format html -output-dir=${COVERAGE_OUTPUT}
+    llvm-cov-${LLVM_VERSION} report ${IGNORE} ${TEST_EXE} ${INSTFILE}
 fi
 
 
@@ -277,9 +266,9 @@ fi
 #
 
 if [ "${USE_INSTALL}" == "ON" ]; then
-banner "Installation"
-cmake --install . --prefix=${PREFIX}
-exitOnError $? "Error installing project, terminating"
+    banner "Installation"
+    cmake --install . --prefix=${PREFIX}
+    exitOnError $? "Error installing project, terminating"
 fi
 
 #

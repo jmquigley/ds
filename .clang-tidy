@@ -1,0 +1,5 @@
+---
+Checks: '-*,bugprone-*'
+HeaderFilterRegex: '.*/src/ds/.*'
+ExcludeHeaderFilterRegex: '.*/tests/.*|.*/_deps/.*'
+FormatStyle: file

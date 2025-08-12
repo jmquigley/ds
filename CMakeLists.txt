@@ -11,7 +11,6 @@ project(
 option(DS_BUILD_EXTRAS "Flag to build extra testing programs" OFF)
 option(DS_BUILD_TESTING "Flag to build and run unit testing" OFF)
 option(DS_BUILD_INSTALL "Flag that performs the install proces" ON)
-option(DS_BUILD_CLANG "Flag to turn on clang build process" OFF)
 
 # Setup memory testing parameters
 set(MEMORYCHECK_COMMAND_OPTIONS "")
@@ -30,14 +29,17 @@ set(CTEST_MEMORYCHECK_COMMAND valgrind)
 # Adds all 3rd party dependencies to the project
 include("CMakeLists.requirements.txt")
 
+set(LLVM_VER 21)
 set(CMAKE_CXX_STANDARD 20)
-if (DS_BUILD_CLANG)
-  set(CMAKE_C_COMPILER "/usr/bin/clang")
-  set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-endif(DS_BUILD_CLANG)
-set(HEADER_FILES /usr/include/c++/14 /usr/include/x86_64-linux-gnu/c++/14)
-set(ROOT_DIR CMAKE_SOURCE_DIR)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_C_COMPILER "/usr/bin/clang")
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+set(CMAKE_CXX_CLANG_TIDY clang-tidy-${LLVM_VER})
+
+# set(CMAKE_CXX_CLANG_TIDY "clang-tidy-${LLVM_VER};--enable-check-profile;--checks=-*,abseil-string-find-startswith,bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,google-*,hicpp-*,llvm-*,misc-*,modernize-*,-modernize-use-trailing-return-type,performance-*,readability-*,-readability-static-definition-in-anonymous-namespace,-readability-simplify-boolean-expr,portability-*${extra_clang_tidy_unchecks_for_tests_only}" CACHE INTERNAL "clang-tidy")
+
 set(TEST_FILTER $ENV{FILTER})
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
@@ -111,24 +113,16 @@ target_compile_options(${PROJECT_NAME} PRIVATE
   $<$<CONFIG:Release>:-O3>
   $<$<CONFIG:Debug>:-O0>
   $<$<CONFIG:Debug>:-Wall>
-
-   # GCC code coverage flags
-  $<$<AND:$<CONFIG:Debug>,$<NOT:$<BOOL:${DS_BUILD_CLANG}>>>:--coverage>
-
-  # Clang code coverage flags
-  $<$<AND:$<CONFIG:Debug>,$<BOOL:${DS_BUILD_CLANG}>>:-fprofile-instr-generate>
-  $<$<AND:$<CONFIG:Debug>,$<BOOL:${DS_BUILD_CLANG}>>:-fcoverage-mapping>
+  $<$<CONFIG:Debug>:-fprofile-instr-generate>
+  $<$<CONFIG:Debug>:-fcoverage-mapping>
 )
 
 target_link_options(${PROJECT_NAME} PRIVATE
-  # GCC code coverage flags
-  $<$<AND:$<CONFIG:Debug>,$<NOT:$<BOOL:${DS_BUILD_CLANG}>>>:--coverage>
-
-  # Clang code coverage flags
-  $<$<AND:$<CONFIG:Debug>,$<BOOL:${DS_BUILD_CLANG}>>:-fprofile-instr-generate>
+  $<$<CONFIG:Debug>:-fprofile-instr-generate>
 )
 
 target_include_directories(${PROJECT_NAME}
+   PRIVATE ${GLOBAL_HEADER_DIRS}
    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
    PUBLIC $<INSTALL_INTERFACE:include>
 )
@@ -190,25 +184,17 @@ target_compile_options(${TEST_EXE} PRIVATE
   $<$<CONFIG:Release>:-O3>
   $<$<CONFIG:Debug>:-O0>
   $<$<CONFIG:Debug>:-Wall>
-
-   # GCC code coverage flags
-  $<$<AND:$<CONFIG:Debug>,$<NOT:$<BOOL:${DS_BUILD_CLANG}>>>:--coverage>
-
-  # Clang code coverage flags
-  $<$<AND:$<CONFIG:Debug>,$<BOOL:${DS_BUILD_CLANG}>>:-fprofile-instr-generate>
-  $<$<AND:$<CONFIG:Debug>,$<BOOL:${DS_BUILD_CLANG}>>:-fcoverage-mapping>
+  $<$<CONFIG:Debug>:-fprofile-instr-generate>
+  $<$<CONFIG:Debug>:-fcoverage-mapping>
 )
 
 target_link_options(${TEST_EXE} PRIVATE
-  # GCC code coverage flags
-  $<$<AND:$<CONFIG:Debug>,$<NOT:$<BOOL:${DS_BUILD_CLANG}>>>:--coverage>
-
-  # Clang code coverage flags
-  $<$<AND:$<CONFIG:Debug>,$<BOOL:${DS_BUILD_CLANG}>>:-fprofile-instr-generate>
+  $<$<CONFIG:Debug>:-fprofile-instr-generate>
 )
 
 target_include_directories(${TEST_EXE}
   PRIVATE
+  ${GLOBAL_HEADERS}
   ${CMAKE_CURRENT_SOURCE_DIR}/tests
 )
 

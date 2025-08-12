@@ -27,11 +27,9 @@ A user implementation of some basic data structures including:
 The library was developed under Ubuntu linux in a Docker container.  It requires the following libraries and tools to be installed to build:
 
 - build-essential
-- g++-14
-- valgrind
-- clang
-- cmake
-- gdb
+- llvm-21 (clang++, lldb)
+- valgrind (3.25+, needed for clang dwarf-5)
+- cmake (3.30+)
 - figlet
 
 These tools are only needed if the documenation will be built:
@@ -39,10 +37,10 @@ These tools are only needed if the documenation will be built:
 - doxygen
 - graphviz
 - python3
-- lcov
 - miniconda
+- jq
 
-The library uses [CMake](https://cmake.org/) (version 3.28+) to build the library.  A bash wrapper script is available to create a single command build.  This is a wrapper around the cmake commands.  To build the code using BASH run:
+The library uses [CMake](https://cmake.org/) (version 3.31+) to build the library.  A bash wrapper script, named `build.sh`, is available to create a single command build.  This is a wrapper around the cmake commands.  To build the code using BASH run:
 
 ```bash
 ./build.sh
