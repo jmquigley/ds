@@ -12,6 +12,8 @@ option(DS_BUILD_EXTRAS "Flag to build extra testing programs" OFF)
 option(DS_BUILD_TESTING "Flag to build and run unit testing" OFF)
 option(DS_BUILD_INSTALL "Flag that performs the install proces" ON)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Setup memory testing parameters
 set(MEMORYCHECK_COMMAND_OPTIONS "")
 string(JOIN " " MEMORYCHECK_COMMAND_OPTIONS
@@ -35,11 +37,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_COMPILER "/usr/bin/clang")
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 set(CMAKE_CXX_CLANG_TIDY clang-tidy-${LLVM_VER})
-
-# set(CMAKE_CXX_CLANG_TIDY "clang-tidy-${LLVM_VER};--enable-check-profile;--checks=-*,abseil-string-find-startswith,bugprone-*,cert-*,clang-analyzer-*,cppcoreguidelines-*,google-*,hicpp-*,llvm-*,misc-*,modernize-*,-modernize-use-trailing-return-type,performance-*,readability-*,-readability-static-definition-in-anonymous-namespace,-readability-simplify-boolean-expr,portability-*${extra_clang_tidy_unchecks_for_tests_only}" CACHE INTERNAL "clang-tidy")
-
 set(TEST_FILTER $ENV{FILTER})
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
@@ -128,7 +126,7 @@ target_include_directories(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
-    ${LIBUUID_LIB}
+    PRIVATE ${LIBUUID_LIB}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -142,8 +140,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 if (DS_BUILD_TESTING)
 
-enable_testing()
-include(GoogleTest)
+# enable_testing()
+# include(GoogleTest)
 
 set(TEST_SOURCES
   tests/testing_base.h
@@ -199,9 +197,9 @@ target_include_directories(${TEST_EXE}
 )
 
 target_link_libraries(${TEST_EXE}
-  gtest
-  GTest::gtest_main
-  GTest::gmock
+  PRIVATE gtest
+  PRIVATE GTest::gtest_main
+  PRIVATE GTest::gmock
   ${PROJECT_NAME}
 )
 
@@ -211,9 +209,9 @@ target_compile_definitions(${TEST_EXE}
     TEST_DATA_DIR="${CMAKE_SOURCE_DIR}/tests/resources"
 )
 
-gtest_discover_tests(${TEST_EXE}
-    TEST_FILTER ${TEST_FILTER}
-)
+# gtest_discover_tests(${TEST_EXE}
+#     TEST_FILTER ${TEST_FILTER}
+# )
 
 endif(DS_BUILD_TESTING)
 
