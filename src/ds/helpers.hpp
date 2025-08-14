@@ -17,8 +17,8 @@ namespace ds {
  * @returns true if all values are valid, otherwise false
  */
 template<typename P, typename... Ptrs>
-[[nodiscard]] constexpr inline bool all(const P &p,
-										const Ptrs &...ptrs) noexcept {
+[[nodiscard]] constexpr auto all(const P &p, const Ptrs &...ptrs) noexcept
+	-> bool {
 	if (!bool(p)) {
 		return false;
 	}
@@ -35,8 +35,8 @@ template<typename P, typename... Ptrs>
  * @returns true if any pointer in the list is valid, otherwise false.
  */
 template<typename P, typename... Ptrs>
-[[nodiscard]] constexpr inline bool any(const P &p,
-										const Ptrs &...ptrs) noexcept {
+[[nodiscard]] constexpr auto any(const P &p, const Ptrs &...ptrs) noexcept
+	-> bool {
 	if (bool(p)) {
 		return true;
 	}
@@ -58,9 +58,9 @@ template<typename P, typename... Ptrs>
  * @return The integer representation of the enumeration value
  */
 template<typename Enumeration>
-auto as_integer(Enumeration const value) ->
-	typename std::underlying_type<Enumeration>::type {
-	return static_cast<typename std::underlying_type<Enumeration>::type>(value);
+auto as_integer(Enumeration const value)
+	-> std::underlying_type_t<Enumeration> {
+	return static_cast<std::underlying_type_t<Enumeration>>(value);
 };
 
 /**
@@ -81,7 +81,7 @@ auto as_integer(Enumeration const value) ->
  * @param str The input C-string to hash
  * @return A size_t hash value of the input string, or 0 if the input is NULL
  */
-size_t djb2(const char *str);
+auto djb2(const char *str) -> size_t;
 
 /**
  * @brief Converts a shared pointer to a string representation
@@ -95,7 +95,7 @@ size_t djb2(const char *str);
  * @return A string representation of the pointer's memory address
  */
 template<typename T>
-std::string pointerToString(std::shared_ptr<T> p) {
+auto pointerToString(const std::shared_ptr<T> &p) -> std::string {
 	std::stringstream ss;
 	void *rawAddress = static_cast<void *>(p.get());
 	ss << rawAddress;
@@ -103,7 +103,7 @@ std::string pointerToString(std::shared_ptr<T> p) {
 }
 
 template<typename T>
-std::weak_ptr<std::any> to_weak_any(std::shared_ptr<T> original) {
+auto to_weak_any(std::shared_ptr<T> original) -> std::weak_ptr<std::any> {
 	auto any_shared = std::make_shared<std::any>(*original);
 	return std::weak_ptr<std::any>(any_shared);
 }
@@ -122,8 +122,8 @@ std::weak_ptr<std::any> to_weak_any(std::shared_ptr<T> original) {
  * expired
  */
 template<typename T>
-std::string weakPointerToString(std::weak_ptr<T> wp,
-								std::string message = "invalid") {
+auto weakPointerToString(std::weak_ptr<T> wp, std::string message = "invalid")
+	-> std::string {
 	std::shared_ptr<T> p = wp.lock();
 
 	if (p) {

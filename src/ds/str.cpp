@@ -6,24 +6,21 @@
 
 namespace ds {
 
-bool containsAnySubstring(const std::string &input,
-						  const std::vector<std::string> &substrings) {
-	if (input == "" || substrings.size() == 0) {
+auto containsAnySubstring(const std::string &input,
+						  const std::vector<std::string> &substrings) -> bool {
+	if (input.empty() || substrings.empty()) {
 		// special case where input or vector is empty
 		return false;
 	}
 
-	for (const auto &substring: substrings) {
-		if (input.find(substring) != std::string::npos) {
-			return true;
-		}
-	}
-
-	return false;
+	return std::ranges::any_of(substrings,
+							   [&input](const auto &substring) -> auto {
+		return input.find(substring) != std::string::npos;
+	});
 }
 
-std::string join(const std::vector<std::string> &strings,
-				 const std::string &delimiter, bool start, bool end) {
+auto join(const std::vector<std::string> &strings, const std::string &delimiter,
+		  bool start, bool end) -> std::string {
 	if (strings.empty()) {
 		return "";
 	}
@@ -47,16 +44,16 @@ std::string join(const std::vector<std::string> &strings,
 	return ss.str();
 }
 
-std::string join(const std::vector<std::string> &strings, const char delimiter,
-				 bool start, bool end) {
+auto join(const std::vector<std::string> &strings, char delimiter, bool start,
+		  bool end) -> std::string {
 	std::string s {delimiter};
 	return join(strings, s, start, end);
 }
 
-void removeFirstOccurrence(std::vector<std::string> &v,
-						   const std::string &target) {
+auto removeFirstOccurrence(std::vector<std::string> &v,
+						   const std::string &target) -> void {
 	// Find the first occurrence of target in the vector
-	auto it = std::find(v.begin(), v.end(), target);
+	auto it = std::ranges::find(v, target);
 
 	// If found, remove it and return
 	if (it != v.end()) {
@@ -65,67 +62,67 @@ void removeFirstOccurrence(std::vector<std::string> &v,
 	}
 }
 
-std::vector<std::string> splitStringOnDelimiters(
-	const std::string &str, const std::vector<std::string> &delimiters,
-	bool keepEmpty) {
+auto splitStringOnDelimiters(const std::string &str,
+							 const std::vector<std::string> &delimiters,
+							 bool keepEmpty) -> std::vector<std::string> {
+	// Constants to avoid magic numbers
+	constexpr size_t npos = std::string::npos;
+	constexpr size_t avg_token_size = 5;  // Average expected token size
+
 	std::vector<std::string> result;
 
-	// Early return for empty input
+	// Handle empty cases
 	if (str.empty()) {
 		return result;
 	}
-
-	// Handle case with no delimiters
 	if (delimiters.empty()) {
 		result.push_back(str);
 		return result;
 	}
 
-	// Pre-calculate delimiter lengths to avoid repeated length calculations
-	std::vector<size_t> delimiterLengths;
-	delimiterLengths.reserve(delimiters.size());
-	for (const auto &delimiter: delimiters) {
-		delimiterLengths.push_back(delimiter.length());
+	// Pre-calculate delimiter lengths
+	std::vector<size_t> delimLengths;
+	delimLengths.reserve(delimiters.size());
+	for (const auto &delim: delimiters) {
+		delimLengths.push_back(delim.length());
 	}
 
-	// Reserve space for result to avoid repeated reallocations
-	// Estimate capacity based on average delimiter size
-	size_t estimatedParts = str.length() / 8 + 1;  // Heuristic estimate
-	result.reserve(estimatedParts);
+	// Reserve space for result (rough estimate)
+	result.reserve((str.length() / avg_token_size) + 1);
 
 	size_t start = 0;
-	while (start <= str.length()) {
-		// Find the first occurrence of any delimiter
-		size_t smallest_pos = std::string::npos;
-		size_t delimiter_index = 0;
+	bool continue_processing = true;
+
+	while (start <= str.length() && continue_processing) {
+		// Find earliest delimiter
+		size_t pos = npos;
+		size_t delimIdx = 0;
 
 		for (size_t i = 0; i < delimiters.size(); ++i) {
-			const auto &delimiter = delimiters[i];
-			if (delimiter.empty()) {
-				continue;  // Skip empty delimiters
+			if (delimiters[i].empty()) {
+				continue;
 			}
 
-			size_t pos = str.find(delimiter, start);
-			if (pos != std::string::npos &&
-				(pos < smallest_pos || smallest_pos == std::string::npos)) {
-				smallest_pos = pos;
-				delimiter_index = i;
+			size_t currentPos = str.find(delimiters[i], start);
+			if (currentPos != npos && (currentPos < pos || pos == npos)) {
+				pos = currentPos;
+				delimIdx = i;
 			}
 		}
 
-		// Process the substring
-		if (smallest_pos == std::string::npos) {
-			// No more delimiters found - add the last substring
+		// No more delimiters
+		if (pos == npos) {
 			if (start < str.length() || keepEmpty) {
 				result.push_back(str.substr(start));
 			}
-			break;
+			continue_processing = false;
 		} else {
-			// Found a delimiter - add the substring before it
-			if (smallest_pos > start || keepEmpty) {
-				result.push_back(str.substr(start, smallest_pos - start));
+			// Add substring before delimiter
+			if (pos > start || keepEmpty) {
+				result.push_back(str.substr(start, pos - start));
 			}
-			start = smallest_pos + delimiterLengths[delimiter_index];
+
+			start = pos + delimLengths[delimIdx];
 		}
 	}
 

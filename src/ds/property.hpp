@@ -6,37 +6,37 @@
 #pragma once
 
 // Creates a getter function for the given variable
-#define ACCESSOR(variable, fn)      \
-                                    \
-public:                             \
-                                    \
-	auto get##fn() const noexcept { \
-		return this->_##variable;   \
-	}                               \
-                                    \
-	auto &variable() const {        \
-		return this->_##variable;   \
+#define ACCESSOR(variable, fn, dtype)        \
+                                             \
+public:                                      \
+                                             \
+	auto get##fn() const noexcept -> dtype { \
+		return this->_##variable;            \
+	}                                        \
+                                             \
+	auto &variable() const {                 \
+		return this->_##variable;            \
 	}
 
-#define ACCESSOR_NO_CONST(variable, fn) \
-                                        \
-public:                                 \
-                                        \
-	auto get##fn() noexcept {           \
-		return this->_##variable;       \
-	}                                   \
-                                        \
-	auto &variable() noexcept {         \
-		return this->_##variable;       \
+#define ACCESSOR_NO_CONST(variable, fn, dtype) \
+                                               \
+public:                                        \
+                                               \
+	auto get##fn() noexcept -> dtype {         \
+		return this->_##variable;              \
+	}                                          \
+                                               \
+	auto &variable() noexcept {                \
+		return this->_##variable;              \
 	}
 
 // Creates a setter function for the given variable
-#define MUTATOR(variable, fn, dtype)     \
-                                         \
-public:                                  \
-                                         \
-	void set##fn(dtype value) noexcept { \
-		this->_##variable = value;       \
+#define MUTATOR(variable, fn, dtype)             \
+                                                 \
+public:                                          \
+                                                 \
+	auto set##fn(dtype value) noexcept -> void { \
+		this->_##variable = value;               \
 	};
 
 /**
@@ -86,12 +86,12 @@ public:                                  \
  */
 #define PROPERTY_SCOPED_WITH_DEFAULT(variable, fn, dtype, scope, def) \
 	scope dtype _##variable def;                                      \
-	ACCESSOR(variable, fn);                                           \
+	ACCESSOR(variable, fn, dtype);                                    \
 	MUTATOR(variable, fn, dtype);
 
 #define PROPERTY_SCOPED_WITH_DEFAULT_NO_CONST(variable, fn, dtype, scope, def) \
 	scope dtype _##variable def;                                               \
-	ACCESSOR_NO_CONST(variable, fn);                                           \
+	ACCESSOR_NO_CONST(variable, fn, dtype);                                    \
 	MUTATOR(variable, fn, dtype);
 
 #define PROPERTY_SCOPED(variable, fn, dtype, scope) \
@@ -117,7 +117,7 @@ public:                                  \
 private:                                                         \
                                                                  \
 	dtype _##variable def;                                       \
-	ACCESSOR(variable, fn);
+	ACCESSOR(variable, fn, dtype);
 
 #define PROPERTY_READONLY(variable, fn, dtype) \
 	PROPERTY_READONLY_WITH_DEFAULT(variable, fn, dtype, );

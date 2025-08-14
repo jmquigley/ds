@@ -21,8 +21,8 @@ namespace ds {
  * @return true If any substring from the list is found in the input string
  * @return false If none of the substrings are found in the input string
  */
-bool containsAnySubstring(const std::string &input,
-						  const std::vector<std::string> &substrings);
+auto containsAnySubstring(const std::string &input,
+						  const std::vector<std::string> &substrings) -> bool;
 
 /**
  * @brief Joins a vector of strings with a specified delimiter
@@ -42,9 +42,9 @@ bool containsAnySubstring(const std::string &input,
  * delimiter.  If false (default) no end delimiter will be used.
  * @return std::string The joined string
  */
-std::string join(const std::vector<std::string> &strings,
-				 const std::string &delimiter = "", bool start = true,
-				 bool end = false);
+auto join(const std::vector<std::string> &strings,
+		  const std::string &delimiter = "", bool start = true,
+		  bool end = false) -> std::string;
 
 /**
  * @brief Joins a vector of strings with a character delimiter
@@ -62,8 +62,8 @@ std::string join(const std::vector<std::string> &strings,
  * delimiter.  If false (default) no end delimiter will be used.
  * @return std::string The joined string
  */
-std::string join(const std::vector<std::string> &strings, const char delimiter,
-				 bool start = true, bool end = false);
+auto join(const std::vector<std::string> &strings, char delimiter,
+		  bool start = true, bool end = false) -> std::string;
 
 /**
  * @brief Removes the first occurrence of a string from a vector
@@ -74,8 +74,8 @@ std::string join(const std::vector<std::string> &strings, const char delimiter,
  * @param v The vector of strings to search in
  * @param target The string to find and remove
  */
-void removeFirstOccurrence(std::vector<std::string> &v,
-						   const std::string &target);
+auto removeFirstOccurrence(std::vector<std::string> &v,
+						   const std::string &target) -> void;
 
 /**
  * @brief Splits a string into substrings based on a list of delimiter
@@ -90,8 +90,9 @@ void removeFirstOccurrence(std::vector<std::string> &v,
  * false)
  * @return Vector of substring components
  */
-std::vector<std::string> splitStringOnDelimiters(
-	const std::string &str, const std::vector<std::string> &delimiters,
-	bool keepEmpty = false);
+auto splitStringOnDelimiters(const std::string &str,
+							 const std::vector<std::string> &delimiters,
+							 bool keepEmpty = false)
+	-> std::vector<std::string>;
 
 }  // namespace ds

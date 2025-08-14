@@ -59,7 +59,7 @@ namespace ds {
 template<typename T>
 class BaseBitFlag : public Replicate<T, BaseBitFlag<T>> {
 	// Static assertion to ensure T is an integral type
-	static_assert(std::is_integral<T>::value, "T must be an integral type");
+	static_assert(std::is_integral_v<T>, "T must be an integral type");
 
 	/**
 	 * @brief the underlying flag storage

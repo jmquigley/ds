@@ -1,6 +1,0 @@
----
-Checks: '-*,bugprone-*,modernize-*,readability-*,cppcoreguidelines-*'
-HeaderFilterRegex: '.*/ds/src/.*'
-# ExcludeHeaderFilterRegex: '.*/ds/tests/.*|.*_deps/.*'
-ExcludeHeaderFilterRegex: '.*/tests/.*|.*/build/_deps/.*|.*gtest.h.*|.*gmock.h.*'
-FormatStyle: file
