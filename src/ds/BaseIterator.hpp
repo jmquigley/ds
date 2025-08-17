@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ds/Replicate.hpp>
 #include <ds/property.hpp>
 #include <memory>
 
@@ -16,7 +17,7 @@ namespace ds {
  * @tparam T The type of data stored in the nodes being iterated
  */
 template<typename T, template<class> class C>
-class BaseIterator {
+class BaseIterator : public Replicate<T, BaseIterator<T, C>> {
 	/// @brief an internal pointer to the object that will be iterated
 	PROPERTY(lp, Lp, std::weak_ptr<C<T>>);
 
@@ -30,7 +31,49 @@ public:
 	 */
 	constexpr BaseIterator(std::weak_ptr<C<T>> lp) : _lp(lp) {}
 
-	virtual ~BaseIterator() = default;
+	/**
+	 * @brief Copy constructor
+	 * @param iterator The source iterator to copy from
+	 * @details Creates a new iterator with the same internal state as the
+	 * source
+	 */
+	constexpr BaseIterator(const BaseIterator &iterator) {
+		this->copy(iterator);
+	}
+
+	/**
+	 * @brief Move constructor
+	 * @param iterator The source iterator to move from
+	 * @details Creates a new iterator by transferring ownership from the source
+	 */
+	constexpr BaseIterator(BaseIterator &&iterator) noexcept {
+		this->move(std::move(iterator));
+	}
+
+	~BaseIterator() override = default;
+
+	/**
+	 * @brief Copy assignment operator
+	 * @param iterator The source iterator to copy from
+	 * @return Reference to this iterator after assignment
+	 * @details Assigns this iterator's state to be the same as the source
+	 */
+	auto operator=(const BaseIterator &iterator) -> BaseIterator & {
+		this->copy(iterator);
+		return *this;
+	}
+
+	/**
+	 * @brief Move assignment operator
+	 * @param iterator The source iterator to move from
+	 * @return Reference to this iterator after assignment
+	 * @details Transfers ownership of resources from the source iterator to
+	 * this one
+	 */
+	auto operator=(BaseIterator &&iterator) noexcept -> BaseIterator & {
+		this->move(std::move(iterator));
+		return *this;
+	}
 
 	/**
 	 * @brief Pre-increment operator.
@@ -39,7 +82,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	BaseIterator &operator++() {
+	auto operator++() -> BaseIterator & {
 		return this->next();
 	}
 
@@ -51,7 +94,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	BaseIterator &operator++(int) {
+	auto operator++(int) -> BaseIterator & {
 		return this->next();
 	}
 
@@ -62,7 +105,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	BaseIterator &operator--() {
+	auto operator--() -> BaseIterator & {
 		return this->previous();
 	}
 
@@ -74,7 +117,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	BaseIterator &operator--(int) {
+	auto operator--(int) -> BaseIterator & {
 		return this->previous();
 	}
 
@@ -86,7 +129,7 @@ public:
 	 * @param rhs The right-hand side iterator to compare with
 	 * @return true if both iterators point to the same node, false otherwise
 	 */
-	constexpr bool operator==(const BaseIterator &rhs) const {
+	constexpr auto operator==(const BaseIterator &rhs) const -> bool {
 		return this->_lp.lock() == rhs._lp.lock();
 	}
 
@@ -98,7 +141,7 @@ public:
 	 * @param rhs The right-hand side iterator to compare with
 	 * @return true if the iterators point to different nodes, false otherwise
 	 */
-	constexpr bool operator!=(const BaseIterator &rhs) const {
+	constexpr auto operator!=(const BaseIterator &rhs) const -> bool {
 		return this->_lp.lock() != rhs._lp.lock();
 	}
 
@@ -110,7 +153,7 @@ public:
 	 *
 	 * @return The data of the current node, or a default T value if no node
 	 */
-	T operator*() {
+	auto operator*() -> T {
 		T nil {};
 
 		if (!_lp.expired()) {
@@ -129,8 +172,53 @@ public:
 	 * @param it The iterator to output
 	 * @return Reference to the output stream after writing
 	 */
-	friend std::ostream &operator<<(std::ostream &st, const BaseIterator &it) {
+	friend auto operator<<(std::ostream &st, const BaseIterator &it)
+		-> std::ostream & {
 		return st << it._lp.lock();
+	}
+
+	/**
+	 * @brief Creates a copy from another iterator
+	 * @param other The source iterator to copy from
+	 * @return Reference to this iterator after copying
+	 * @details Copies the internal pointer state from the other iterator
+	 */
+	auto copy(const BaseIterator<T, C> &other)
+		-> BaseIterator<T, C> & override {
+		this->_lp = other._lp;
+		return *this;
+	}
+
+	/**
+	 * @brief Creates a deep copy of the iterator
+	 * @return Shared pointer to a new iterator instance
+	 * @details Allocates a new iterator with the same internal state
+	 */
+	auto deepcopy() -> std::shared_ptr<BaseIterator<T, C>> override {
+		return std::make_shared<BaseIterator<T, C>>(this->_lp);
+	}
+
+	/**
+	 * @brief retrieves a reference to the shared pointer contained in the
+	 * iterator.
+	 * @returns a `std::shared_ptr` to the iterators current node pointer
+	 */
+	auto get() -> std::shared_ptr<C<T>> {
+		return _lp.lock();
+	}
+
+	/**
+	 * @brief Moves resources from another iterator
+	 * @param other The source iterator to move from
+	 * @return Reference to this iterator after moving
+	 * @details Transfers ownership of the internal pointer and resets the
+	 * source
+	 */
+	// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
+	auto move(BaseIterator<T, C> &&other) -> BaseIterator<T, C> & override {
+		this->_lp = std::move(other._lp);
+		other._lp.reset();
+		return *this;
 	}
 
 	/**
@@ -142,7 +230,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	BaseIterator &next() {
+	auto next() -> BaseIterator & {
 		auto p = this->_lp.lock();
 
 		if (p) {
@@ -150,15 +238,6 @@ public:
 		}
 
 		return *this;
-	}
-
-	/**
-	 * @brief retrieves a reference to the shared pointer contained in the
-	 * iterator.
-	 * @returns a `std::shared_ptr` to the iterators current node pointer
-	 */
-	std::shared_ptr<C<T>> get() {
-		return _lp.lock();
 	}
 
 	/**
@@ -170,7 +249,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	BaseIterator &previous() {
+	auto previous() -> BaseIterator & {
 		auto p = this->_lp.lock();
 
 		if (p) {

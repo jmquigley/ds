@@ -1,0 +1,15 @@
+---
+Checks: '-*,
+         bugprone-*,
+         modernize-*,
+         readability-*,
+         cppcoreguidelines-*,
+         -bugprone-easily-swappable-parameters,
+         -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+         -modernize-use-nodiscard,
+         -readability-function-cognitive-complexity,
+         -readability-identifier-length'
+HeaderFilterRegex: '.*/ds/src/.*'
+# ExcludeHeaderFilterRegex: '.*/ds/tests/.*|.*_deps/.*'
+ExcludeHeaderFilterRegex: '.*/tests/.*|.*/build/_deps/.*|.*gtest.h.*|.*gmock.h.*'
+FormatStyle: file

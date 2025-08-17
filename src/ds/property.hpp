@@ -14,7 +14,7 @@ public:                                      \
 		return this->_##variable;            \
 	}                                        \
                                              \
-	auto &variable() const {                 \
+	auto variable() const -> const dtype & { \
 		return this->_##variable;            \
 	}
 
@@ -26,7 +26,7 @@ public:                                        \
 		return this->_##variable;              \
 	}                                          \
                                                \
-	auto &variable() noexcept {                \
+	auto variable() noexcept -> dtype & {      \
 		return this->_##variable;              \
 	}
 

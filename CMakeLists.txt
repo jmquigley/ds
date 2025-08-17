@@ -11,8 +11,10 @@ project(
 option(DS_BUILD_EXTRAS "Flag to build extra testing programs" OFF)
 option(DS_BUILD_TESTING "Flag to build and run unit testing" OFF)
 option(DS_BUILD_INSTALL "Flag that performs the install proces" ON)
+option(DS_BUILD_LINT "Flag that turns on the lint processing" OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(LLVM_VER 21)
 
 # Setup memory testing parameters
 set(MEMORYCHECK_COMMAND_OPTIONS "")
@@ -31,12 +33,10 @@ set(CTEST_MEMORYCHECK_COMMAND valgrind)
 # Adds all 3rd party dependencies to the project
 include("CMakeLists.requirements.txt")
 
-set(LLVM_VER 21)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_COMPILER "/usr/bin/clang")
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-# set(CMAKE_CXX_CLANG_TIDY clang-tidy-${LLVM_VER})
 set(TEST_FILTER $ENV{FILTER})
 
 message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")

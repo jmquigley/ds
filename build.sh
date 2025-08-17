@@ -52,6 +52,7 @@ function banner() {
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 BUILD_TYPE=Release
 CLEAN_OPT=0
+LINT_OPT=0
 LLVM_VERSION=21
 MEMTEST_OPT=0
 NOCOVERAGE_OPT=0
@@ -106,6 +107,11 @@ while :; do
 
         --jobs=?*)
             THREADS=${1#*=}
+            shift
+            ;;
+
+        --lint)
+            LINT_OPT=1
             shift
             ;;
 
@@ -176,6 +182,10 @@ else
         USE_TESTING=ON
     fi
 
+    if [ ${LINT_OPT} == 1 ]; then
+        USE_LINT=ON
+    fi
+
     USE_EXTRAS=ON
 fi
 
@@ -196,7 +206,7 @@ fi
 #
 
 banner "Building"
-cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDS_BUILD_EXTRAS=${USE_EXTRAS} -DDS_BUILD_TESTING=${USE_TESTING} -DDS_BUILD_INSTALL=${USE_INSTALL} -DBUILD_TESTING=${USE_TESTING} ..
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDS_BUILD_EXTRAS=${USE_EXTRAS} -DDS_BUILD_TESTING=${USE_TESTING} -DDS_BUILD_INSTALL=${USE_INSTALL} -DDS_BUILD_LINT=${USE_LINT} -DBUILD_TESTING=${USE_TESTING} ..
 exitOnError $? "Failed to create cmake build files!"
 
 cmake --build . -v -- -j ${THREADS}

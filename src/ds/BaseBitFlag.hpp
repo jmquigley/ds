@@ -69,6 +69,35 @@ class BaseBitFlag : public Replicate<T, BaseBitFlag<T>> {
 public:
 
 	/**
+	 * @brief Number of bits in a byte (8)
+	 * @details Represents the bit count of a single byte based on system
+	 * constants
+	 */
+	static const size_t BYTE_BIT_COUNT =
+		static_cast<size_t>(constants::BYTESIZE);
+
+	/**
+	 * @brief Number of bits in a short (16)
+	 * @details Represents the bit count of a short integer (2 bytes)
+	 */
+	static const size_t SHORT_BIT_COUNT =
+		static_cast<size_t>(constants::BYTESIZE * 2);
+
+	/**
+	 * @brief Number of bits in a word (32)
+	 * @details Represents the bit count of a word (4 bytes)
+	 */
+	static const size_t WORD_BIT_COUNT =
+		static_cast<size_t>(constants::BYTESIZE * 4);
+
+	/**
+	 * @brief Number of bits in a double word (64)
+	 * @details Represents the bit count of a double word (8 bytes)
+	 */
+	static const size_t DWORD_BIT_COUNT =
+		static_cast<size_t>(constants::BYTESIZE * 8);
+
+	/**
 	 * @brief Default constructor, initializes flag to 0
 	 */
 	constexpr BaseBitFlag() noexcept : _flag(0) {}
@@ -99,14 +128,14 @@ public:
 	 * Properly cleans up resources associated with this bitflag.  It uses
 	 * the default destructor.
 	 */
-	virtual ~BaseBitFlag() = default;
+	~BaseBitFlag() override = default;
 
 	/**
 	 * @brief Copy assignment operator
 	 * @param bitFlag BitFlag to copy from
 	 * @return Reference to this object
 	 */
-	BaseBitFlag &operator=(const BaseBitFlag<T> &bitFlag) noexcept {
+	auto operator=(const BaseBitFlag<T> &bitFlag) noexcept -> BaseBitFlag & {
 		this->_flag = bitFlag._flag;
 		return *this;
 	}
@@ -116,7 +145,7 @@ public:
 	 * @param bitFlag `T` value to copy from
 	 * @return Reference to this object
 	 */
-	BaseBitFlag &operator=(const T &bitFlag) noexcept {
+	auto operator=(const T &bitFlag) noexcept -> BaseBitFlag & {
 		this->_flag = bitFlag;
 		return *this;
 	}
@@ -126,15 +155,30 @@ public:
 	 * @param bitFlag BitFlag to move from
 	 * @return Reference to this object
 	 */
-	BaseBitFlag &operator=(BaseBitFlag<T> &&bitFlag) noexcept {
-		return this->move(std::move(bitFlag));
+	auto operator=(BaseBitFlag<T> &&bitFlag) noexcept -> BaseBitFlag & {
+		this->move(std::move(bitFlag));
+		return *this;
 	}
 
-	BaseBitFlag &operator()(const BaseBitFlag<T> &bitFlag) {
+	/**
+	 * @brief Function call operator for BaseBitFlag objects
+	 * @param bitFlag The BaseBitFlag object to assign from
+	 * @return Reference to this BaseBitFlag after assignment
+	 * @details Provides alternative syntax for assignment using function call
+	 * notation
+	 */
+	auto operator()(const BaseBitFlag<T> &bitFlag) -> BaseBitFlag & {
 		return operator=(bitFlag);
 	}
 
-	BaseBitFlag &operator()(const T &val) {
+	/**
+	 * @brief Function call operator for raw flag values
+	 * @param val The raw value to assign to this flag
+	 * @return Reference to this BaseBitFlag after assignment
+	 * @details Allows direct assignment of underlying value types using
+	 * function call notation
+	 */
+	auto operator()(const T &val) -> BaseBitFlag & {
 		return operator=(val);
 	}
 
@@ -153,8 +197,8 @@ public:
 	 * @param bf (`BaseBitFlag<T> &`) the BaseBitFlag object to print
 	 * @returns a reference to the `std::ostream` object
 	 */
-	friend std::ostream &operator<<(std::ostream &st,
-									const BaseBitFlag<T> &bf) {
+	friend auto operator<<(std::ostream &st, const BaseBitFlag<T> &bf)
+		-> std::ostream & {
 		return st << bf.str();
 	}
 
@@ -163,7 +207,7 @@ public:
 	 * @param bf (`BaseBitFlag<T> &`) the bit flag to compare against
 	 * @return true if both flags have the same values, otherwise false
 	 */
-	constexpr bool operator==(const BaseBitFlag<T> &bf) const noexcept {
+	constexpr auto operator==(const BaseBitFlag<T> &bf) const noexcept -> bool {
 		return this->_flag == bf._flag;
 	}
 
@@ -172,7 +216,7 @@ public:
 	 * @param val (`T &`) the constang flag to compare against
 	 * @return true if both flags have the same values, otherwise false
 	 */
-	constexpr bool operator==(const T &val) const noexcept {
+	constexpr auto operator==(const T &val) const noexcept -> bool {
 		return this->_flag == val;
 	}
 
@@ -181,7 +225,7 @@ public:
 	 * @param bf (`BaseBitFlag<T> &`) the bit flag to compare against
 	 * @return true if both flags have different values, otherwise false
 	 */
-	constexpr bool operator!=(const BaseBitFlag<T> &bf) const noexcept {
+	constexpr auto operator!=(const BaseBitFlag<T> &bf) const noexcept -> bool {
 		return this->_flag != bf._flag;
 	}
 
@@ -190,7 +234,7 @@ public:
 	 * @param val (`T &`) the bit flag to compare against
 	 * @return true if both flags have different values, otherwise false
 	 */
-	constexpr bool operator!=(const T &val) const noexcept {
+	constexpr auto operator!=(const T &val) const noexcept -> bool {
 		return this->_flag != val;
 	}
 
@@ -199,8 +243,8 @@ public:
 	 * @param index (`size_t`) the location of the bit within the number
 	 * @returns a 0 or 1 for the index position.
 	 */
-	unsigned char operator[](size_t index) const {
-		return at(index);
+	auto operator[](size_t index) const -> unsigned char {
+		return static_cast<unsigned char>(this->at(index));
 	}
 
 	/**
@@ -208,8 +252,8 @@ public:
 	 * @param bf The BitFlag to AND with
 	 * @return A new BitFlag containing the result of the AND operation
 	 */
-	constexpr BaseBitFlag<T> operator&(
-		const BaseBitFlag<T> &bf) const noexcept {
+	constexpr auto operator&(const BaseBitFlag<T> &bf) const noexcept
+		-> BaseBitFlag<T> {
 		return BaseBitFlag<T>(this->_flag & bf._flag);
 	}
 
@@ -218,7 +262,7 @@ public:
 	 * @param bf The BitFlag to AND with
 	 * @return Reference to this object after the operation
 	 */
-	BaseBitFlag<T> &operator&=(const BaseBitFlag<T> &bf) noexcept {
+	auto operator&=(const BaseBitFlag<T> &bf) noexcept -> BaseBitFlag<T> & {
 		this->_flag &= bf._flag;
 		return *this;
 	}
@@ -228,8 +272,8 @@ public:
 	 * @param bf The BitFlag to OR with
 	 * @return A new BitFlag containing the result of the OR operation
 	 */
-	constexpr BaseBitFlag<T> operator|(
-		const BaseBitFlag<T> &bf) const noexcept {
+	constexpr auto operator|(const BaseBitFlag<T> &bf) const noexcept
+		-> BaseBitFlag<T> {
 		return BaseBitFlag<T>(this->_flag | bf._flag);
 	}
 
@@ -238,7 +282,7 @@ public:
 	 * @param bf The BitFlag to OR with
 	 * @return Reference to this object after the operation
 	 */
-	BaseBitFlag<T> &operator|=(const BaseBitFlag<T> &bf) noexcept {
+	auto operator|=(const BaseBitFlag<T> &bf) noexcept -> BaseBitFlag<T> & {
 		this->_flag |= bf._flag;
 		return *this;
 	}
@@ -248,8 +292,8 @@ public:
 	 * @param bf The BitFlag to XOR with
 	 * @return A new BitFlag containing the result of the XOR operation
 	 */
-	constexpr BaseBitFlag<T> operator^(
-		const BaseBitFlag<T> &bf) const noexcept {
+	constexpr auto operator^(const BaseBitFlag<T> &bf) const noexcept
+		-> BaseBitFlag<T> {
 		return BaseBitFlag<T>(this->_flag ^ bf._flag);
 	}
 
@@ -258,7 +302,7 @@ public:
 	 * @param bf The BitFlag to XOR with
 	 * @return Reference to this object after the operation
 	 */
-	BaseBitFlag<T> &operator^=(const BaseBitFlag<T> &bf) noexcept {
+	auto operator^=(const BaseBitFlag<T> &bf) noexcept -> BaseBitFlag<T> & {
 		this->_flag ^= bf._flag;
 		return *this;
 	}
@@ -267,7 +311,7 @@ public:
 	 * @brief Performs a bitwise NOT operation on this BitFlag
 	 * @return A new BitFlag containing the result of the NOT operation
 	 */
-	constexpr BaseBitFlag<T> operator~() const noexcept {
+	constexpr auto operator~() const noexcept -> BaseBitFlag<T> {
 		return BaseBitFlag<T>(~this->_flag);
 	}
 
@@ -276,7 +320,7 @@ public:
 	 * @param places Number of positions to shift left
 	 * @return A new BitFlag with the bits shifted left
 	 */
-	constexpr BaseBitFlag<T> operator<<(size_t places) const noexcept {
+	constexpr auto operator<<(size_t places) const noexcept -> BaseBitFlag<T> {
 		return BaseBitFlag<T>(this->_flag << places);
 	}
 
@@ -285,7 +329,7 @@ public:
 	 * @param places Number of positions to shift left
 	 * @return Reference to this object after the operation
 	 */
-	BaseBitFlag<T> &operator<<=(size_t places) noexcept {
+	auto operator<<=(size_t places) noexcept -> BaseBitFlag<T> & {
 		this->_flag <<= places;
 		return *this;
 	}
@@ -295,7 +339,7 @@ public:
 	 * @param places Number of positions to shift right
 	 * @return A new BitFlag with the bits shifted right
 	 */
-	constexpr BaseBitFlag<T> operator>>(size_t places) const noexcept {
+	constexpr auto operator>>(size_t places) const noexcept -> BaseBitFlag<T> {
 		return BaseBitFlag<T>(this->_flag >> places);
 	}
 
@@ -304,7 +348,7 @@ public:
 	 * @param places Number of positions to shift right
 	 * @return Reference to this object after the operation
 	 */
-	BaseBitFlag<T> &operator>>=(size_t places) noexcept {
+	auto operator>>=(size_t places) noexcept -> BaseBitFlag<T> & {
 		this->_flag >>= places;
 		return *this;
 	}
@@ -319,13 +363,13 @@ public:
 	 * (0-based)
 	 * @returns a 0 or 1 for the index position.
 	 */
-	unsigned short int at(size_t index) const {
-		if (index >= numberOfBits()) {
+	auto at(size_t index) const -> unsigned short int {
+		if (index >= this->numberOfBits()) {
 			throw std::out_of_range("Invalid index requested for bit flag");
 		}
 
 		index = std::min((sizeof(T) * constants::BYTESIZE) - 1, index);
-		return static_cast<unsigned short int>(this->_flag >> index) & 0x1;
+		return static_cast<unsigned short int>(this->_flag >> index & 0x1);
 	}
 
 	/**
@@ -334,7 +378,7 @@ public:
 	 * copy
 	 * @return Referece to this object after the operation
 	 */
-	virtual BaseBitFlag<T> &copy(const BaseBitFlag<T> &other) override {
+	auto copy(const BaseBitFlag<T> &other) -> BaseBitFlag<T> & override {
 		this->_flag = other._flag;
 		return *this;
 	}
@@ -343,7 +387,7 @@ public:
 	 * @brief Creates a deep copy of the bit flag object
 	 * @return std::shared_ptr<BaseBitFlag<T>> A shared pointer to the new copy
 	 */
-	virtual std::shared_ptr<BaseBitFlag<T>> deepcopy() override {
+	auto deepcopy() -> std::shared_ptr<BaseBitFlag<T>> override {
 		return std::make_shared<BaseBitFlag<T>>(this->_flag);
 	}
 
@@ -361,7 +405,7 @@ public:
 	 * NOTE: this moves from right to lefl within the number.
 	 */
 	template<typename Callback>
-	void each(Callback callback) {
+	auto each(Callback callback) -> void {
 		for (unsigned short int i = 0; i < numberOfBits(); i++) {
 			callback(i,
 					 static_cast<unsigned short int>(this->_flag >> i) & 0x1);
@@ -372,7 +416,7 @@ public:
 	 * @brief Get the current flag value
 	 * @return Current flag value
 	 */
-	constexpr T get() const noexcept {
+	constexpr auto get() const noexcept -> T {
 		return _flag;
 	}
 
@@ -381,7 +425,7 @@ public:
 	 * @param mask Bits to check
 	 * @return true if all specified bits are set, false otherwise
 	 */
-	constexpr bool has(T mask) const noexcept {
+	constexpr auto has(T mask) const noexcept -> bool {
 		return (this->_flag & mask) == mask;
 	}
 
@@ -390,7 +434,7 @@ public:
 	 * @param mask Bits to check
 	 * @return true if any of the specified bits are set, false otherwise
 	 */
-	constexpr bool hasAny(T mask) const noexcept {
+	constexpr auto hasAny(T mask) const noexcept -> bool {
 		return (this->_flag & mask) != 0;
 	}
 
@@ -401,7 +445,8 @@ public:
 	 * @param other (`BaseBitFlag<T> &`) a reference to an object to move.
 	 * @return Referece to this object after the operation
 	 */
-	virtual BaseBitFlag<T> &move(BaseBitFlag<T> &&other) override {
+	// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
+	auto move(BaseBitFlag<T> &&other) -> BaseBitFlag<T> & override {
 		this->_flag = other._flag;
 		other._flag = 0;
 		return *this;
@@ -411,7 +456,7 @@ public:
 	 * @brief Retrieves the number of the bits based on the flag size
 	 * @returns the number of bits stored in this flag.
 	 */
-	inline constexpr unsigned short int numberOfBits() const noexcept {
+	constexpr auto numberOfBits() const noexcept -> unsigned short int {
 		return static_cast<unsigned short int>(sizeof(this->_flag) *
 											   constants::BYTESIZE);
 	}
@@ -419,7 +464,7 @@ public:
 	/**
 	 * @brief resets the bit flag to all zeroes
 	 */
-	void reset() noexcept {
+	auto reset() noexcept -> void {
 		this->_flag = 0;
 	}
 
@@ -428,7 +473,7 @@ public:
 	 * @param mask Bits to set
 	 * @returns the new flag value set within the object
 	 */
-	T set(T mask) noexcept {
+	auto set(T mask) noexcept -> T {
 		this->_flag |= mask;
 		return this->_flag;
 	}
@@ -438,7 +483,7 @@ public:
 	 * @param value The value to set the flag to
 	 * @return A reference to this object
 	 */
-	BaseBitFlag &setValue(T value) noexcept {
+	auto setValue(T value) noexcept -> BaseBitFlag & {
 		this->_flag = value;
 		return *this;
 	}
@@ -448,19 +493,19 @@ public:
 	 * of the flag.
 	 * @returns a std::string that represents the number in binary format
 	 */
-	std::string str() const {
+	auto str() const -> std::string {
 		switch (numberOfBits()) {
-			case constants::BYTESIZE:
-				return std::bitset<8>(this->_flag).to_string();
-			case constants::BYTESIZE * 2:
-				return std::bitset<16>(this->_flag).to_string();
-			case constants::BYTESIZE * 4:
-				return std::bitset<32>(this->_flag).to_string();
-			case constants::BYTESIZE * 8:
-				return std::bitset<64>(this->_flag).to_string();
+			case BYTE_BIT_COUNT:
+				return std::bitset<BYTE_BIT_COUNT>(this->_flag).to_string();
+			case SHORT_BIT_COUNT:
+				return std::bitset<SHORT_BIT_COUNT>(this->_flag).to_string();
+			case WORD_BIT_COUNT:
+				return std::bitset<WORD_BIT_COUNT>(this->_flag).to_string();
+			case DWORD_BIT_COUNT:
+				return std::bitset<DWORD_BIT_COUNT>(this->_flag).to_string();
 			default:
 				// For any non-standard size, use a 64-bit representation
-				return std::bitset<64>(this->_flag).to_string();
+				return std::bitset<DWORD_BIT_COUNT>(this->_flag).to_string();
 		}
 	}
 
@@ -469,7 +514,7 @@ public:
 	 * @param mask Bits to toggle
 	 * @returns the new overall bit flag value
 	 */
-	T toggle(T mask) noexcept {
+	auto toggle(T mask) noexcept -> T {
 		this->_flag ^= mask;
 		return this->_flag;
 	}
@@ -479,7 +524,7 @@ public:
 	 * @param mask Bits to clear
 	 * @returns the new overall bit flag value
 	 */
-	T unset(T mask) noexcept {
+	auto unset(T mask) noexcept -> T {
 		this->_flag &= ~mask;
 		return this->_flag;
 	}

@@ -60,7 +60,8 @@ class BaseNode : private Replicate<T, C<T>> {
 	PROPERTY_SCOPED_WITH_DEFAULT_NO_CONST(data, Data, T, protected:, {});
 
 	/// @brief flags used to determine bit properties in a node
-	PROPERTY_SCOPED_WITH_DEFAULT(flags, Flags, ByteFlag, protected:, {0});
+	PROPERTY_SCOPED_WITH_DEFAULT_NO_CONST(flags, Flags, ByteFlag, protected:,
+										  {0});
 
 	/// @brief A shared pointer to the left child node.
 	PROPERTY_SCOPED(left, Left, std::shared_ptr<C<T>>, protected:);
