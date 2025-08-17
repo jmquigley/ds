@@ -214,7 +214,6 @@ public:
 	 * @details Transfers ownership of the internal pointer and resets the
 	 * source
 	 */
-	// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 	auto move(BaseIterator<T, C> &&other) -> BaseIterator<T, C> & override {
 		this->_lp = std::move(other._lp);
 		other._lp.reset();

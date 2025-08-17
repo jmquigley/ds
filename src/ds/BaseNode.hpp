@@ -55,6 +55,7 @@ enum class NodeColor { Red = 0, Black = 1 };
  * @tparam T The type of data stored within the node.
  */
 template<typename T, template<class> class C>
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 class BaseNode : private Replicate<T, C<T>> {
 	/// @brief The data payload of the node.
 	PROPERTY_SCOPED_WITH_DEFAULT_NO_CONST(data, Data, T, protected:, {});
@@ -76,7 +77,7 @@ public:
 	 *
 	 * Initializes the flags, and left, and right to nullptr,
 	 */
-	BaseNode() : _data {}, _flags(0), _left(nullptr), _right(nullptr) {}
+	BaseNode() : _left(nullptr), _right(nullptr) {}
 
 	/**
 	 * @brief Constructor for Node with initial data.
@@ -96,9 +97,12 @@ public:
 	 * @param flags initial internal flag settings for the new node
 	 * @param data The data to be stored in the node.
 	 */
-	BaseNode(const std::shared_ptr<C<T>> &left,
-			 const std::shared_ptr<C<T>> &right, ByteFlag flags, T data)
-		: _data(data), _flags(flags), _left(left), _right(right) {}
+	BaseNode(std::shared_ptr<C<T>> left, std::shared_ptr<C<T>> right,
+			 ByteFlag flags, T data)
+		: _data(data),
+		  _flags(std::move(flags)),
+		  _left(std::move(left)),
+		  _right(std::move(right)) {}
 
 	/**
 	 * @brief Copy constructor for Node.
@@ -109,7 +113,7 @@ public:
 	 *
 	 * @param other The source Node object to move resources from
 	 */
-	BaseNode(const C<T> &other) : BaseNode() {
+	BaseNode(const C<T> &other) {
 		this->copy(other);
 	}
 
@@ -124,7 +128,7 @@ public:
 	 * @param other (`Node<T>`) The Node object to move from (will be left in a
 	 * valid but unspecified state)
 	 */
-	BaseNode(C<T> &&other) noexcept : BaseNode() {
+	BaseNode(C<T> &&other) {
 		this->move(std::move(other));
 	}
 
@@ -146,7 +150,8 @@ public:
 	 * @param node The Node object to print.
 	 * @return A reference to the output stream.
 	 */
-	friend std::ostream &operator<<(std::ostream &st, const C<T> &node) {
+	friend auto operator<<(std::ostream &st, const C<T> &node)
+		-> std::ostream & {
 		return st << node.str();
 	}
 
@@ -161,8 +166,9 @@ public:
 	 * @param other The right-hand side Node object to copy from
 	 * @return Reference to this node after the assignment
 	 */
-	C<T> &operator=(const C<T> &other) {
-		return this->copy(other);
+	auto operator=(const C<T> &other) -> BaseNode & {
+		this->copy(other);
+		return *this;
 	}
 
 	/**
@@ -176,8 +182,9 @@ public:
 	 * @param other The right-hand side Node object to move resources from
 	 * @return Reference to this node after the assignment
 	 */
-	C<T> &operator=(C<T> &&other) noexcept {
-		return this->move(std::move(other));
+	auto operator=(C<T> &&other) noexcept -> BaseNode & {
+		this->move(std::move(other));
+		return *this;
 	}
 
 	/**
@@ -185,7 +192,7 @@ public:
 	 * the node
 	 * @returns The `T` data that is associated with this node.
 	 */
-	T &operator*() {
+	auto operator*() -> T & {
 		return this->_data;
 	}
 
@@ -195,7 +202,7 @@ public:
 	 *
 	 * Sets right, left to nullptr,
 	 */
-	void clear() {
+	auto clear() -> void {
 		this->_right.reset();
 		this->_left.reset();
 	}
@@ -205,7 +212,7 @@ public:
 	 * @param other The source node to copy from
 	 * @return C<T>& Reference to this node after copying
 	 */
-	virtual C<T> &copy(const C<T> &other) override {
+	auto copy(const C<T> &other) -> C<T> & override {
 		if (this != &other) {
 			this->_data = other._data;
 			this->_right = other._right;
@@ -219,7 +226,7 @@ public:
 	 * @brief Creates a deep copy of the node and its subtree
 	 * @return std::shared_ptr<C<T>> A shared pointer to the new copy
 	 */
-	virtual std::shared_ptr<C<T>> deepcopy() override {
+	auto deepcopy() -> std::shared_ptr<C<T>> override {
 		// Create a shared_ptr to a new node copy
 		auto copy = std::make_shared<C<T>>(this->_data);
 
@@ -243,7 +250,7 @@ public:
 	 * @brief Returns the current color enumeration setting for this node
 	 * @returns a `NodeColor` enum reference to Red or Black
 	 */
-	NodeColor getColor() {
+	auto getColor() -> NodeColor {
 		return this->isRed() ? NodeColor::Red : NodeColor::Black;
 	}
 
@@ -251,7 +258,7 @@ public:
 	 * Checks if this node is black.
 	 * @return true if the node is black, false otherwise
 	 */
-	inline bool isBlack() const {
+	auto isBlack() const -> bool {
 		return _flags[0] == 1;
 	}
 
@@ -259,7 +266,7 @@ public:
 	 * Checks if this node is red.
 	 * @return true if the node is red, false otherwise
 	 */
-	inline bool isRed() const {
+	auto isRed() const -> bool {
 		return _flags[0] == 0;
 	}
 
@@ -268,7 +275,7 @@ public:
 	 * @param other The source node to move from
 	 * @return C<T>& Reference to this node after moving
 	 */
-	virtual C<T> &move(C<T> &&other) noexcept override {
+	auto move(C<T> &&other) noexcept -> C<T> & override {
 		if (this != &other) {
 			this->_data = std::move(other._data);
 			this->_right = std::move(other._right);
@@ -294,7 +301,7 @@ public:
 	 *
 	 * @param color (`NodeColor`) the color value to set.
 	 */
-	void setColor(NodeColor color) {
+	auto setColor(NodeColor color) -> void {
 		if (color == NodeColor::Red) {
 			this->setRed();
 		} else {
@@ -306,7 +313,7 @@ public:
 	 * Sets this node's color to red.
 	 * In the Red-Black tree, red is represented by unsetting the Color flag.
 	 */
-	inline void setRed() {
+	auto setRed() -> void {
 		this->_flags.unset(static_cast<BYTE>(NodeFlag::Color));
 	}
 
@@ -314,7 +321,7 @@ public:
 	 * Sets this node's color to black.
 	 * In the Red-Black tree, black is represented by setting the Color flag.
 	 */
-	inline void setBlack() {
+	auto setBlack() -> void {
 		this->_flags.set(static_cast<BYTE>(NodeFlag::Color));
 	}
 
@@ -324,7 +331,7 @@ public:
 	 * Currently, it formats the node's data into a simple JSON-like string.
 	 * @return A string representing the node's content.
 	 */
-	inline std::string str() const {
+	auto str() const -> std::string {
 		std::stringstream ss;
 
 		ss << "{";

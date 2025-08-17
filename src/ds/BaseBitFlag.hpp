@@ -445,7 +445,6 @@ public:
 	 * @param other (`BaseBitFlag<T> &`) a reference to an object to move.
 	 * @return Referece to this object after the operation
 	 */
-	// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 	auto move(BaseBitFlag<T> &&other) -> BaseBitFlag<T> & override {
 		this->_flag = other._flag;
 		other._flag = 0;
