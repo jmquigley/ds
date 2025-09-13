@@ -52,6 +52,7 @@ function banner() {
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 BUILD_TYPE=Release
 CLEAN_OPT=0
+FILTER='*'
 LINT_OPT=0
 LLVM_VERSION=21
 MEMTEST_OPT=0
@@ -61,10 +62,9 @@ NOINSTALL_OPT=0
 NOTEST_OPT=0
 PREFIX=${SCRIPT_DIR}
 TEST_EXE=./ds-unit-tests
+THREADS=10
 USE_CLANG=0
-export GTEST_SHUFFLE=1
-export FILTER='*'
-export THREADS=10
+
 
 while :; do
     echo "Processing parameters: $1"
@@ -173,6 +173,7 @@ if [[ "${BUILD_TYPE}" == "Release" ]]; then
     BUILD_TYPE=Release
     USE_TESTING=OFF
     USE_EXTRAS=OFF
+    USE_MEMTEST=OFF
 else
     BUILD_TYPE=Debug
 
@@ -182,8 +183,14 @@ else
         USE_TESTING=ON
     fi
 
+    USE_LINT=OFF
     if [ ${LINT_OPT} == 1 ]; then
         USE_LINT=ON
+    fi
+
+    USE_MEMTEST=OFF
+    if [ ${MEMTEST_OPT} == 1 ]; then
+        USE_MEMTEST=ON
     fi
 
     USE_EXTRAS=ON
@@ -206,7 +213,7 @@ fi
 #
 
 banner "Building"
-cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDS_BUILD_EXTRAS=${USE_EXTRAS} -DDS_BUILD_TESTING=${USE_TESTING} -DDS_BUILD_INSTALL=${USE_INSTALL} -DDS_BUILD_LINT=${USE_LINT} -DBUILD_TESTING=${USE_TESTING} ..
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDS_BUILD_EXTRAS=${USE_EXTRAS} -DDS_BUILD_TESTING=${USE_TESTING} -DDS_BUILD_ASAN=${USE_MEMTEST} -DDS_BUILD_INSTALL=${USE_INSTALL} -DDS_BUILD_LINT=${USE_LINT} -DBUILD_TESTING=${USE_TESTING} ..
 exitOnError $? "Failed to create cmake build files!"
 
 cmake --build . -v -- -j ${THREADS}
@@ -217,20 +224,9 @@ exitOnError $? "Error building project, terminating"
 #
 
 if [ "${USE_TESTING}" == "ON" ]; then
-
     banner "Testing"
-    if [ ${MEMTEST_OPT} == 1 ]; then
-        cmake -E env FILTER=${FILTER} ctest -T memcheck --output-on-failure -j ${THREADS} --output-log ./log/unit-tests.log
-        rc=$?
-        if [ $rc -ne 0 ] && [ ${MEMTEST_OPT} == 1 ]; then
-            cat Testing/Temporary/MemoryChecker.*.log
-        fi
-
-    else
-        eval ${TEST_EXE}
-        rc=$?
-    fi
-
+    eval "${TEST_EXE} --gtest_filter='${FILTER}' --gtest_shuffle --gtest_color=yes"
+    rc=$?
     exitOnError $rc "Error executing unit tests, terminating"
 fi
 
@@ -267,7 +263,7 @@ if [ "${USE_TESTING}" == "ON" ] && [ ${NOCOVERAGE_OPT} == 0 ]; then
     # Create build output for display during the build and also create an
     # output HTML site to include with documentation.
     llvm-cov-${LLVM_VERSION} show ${IGNORE} ${TEST_EXE} ${INSTFILE} ${SRC_FILES} --format html -output-dir=${COVERAGE_OUTPUT}
-    llvm-cov-${LLVM_VERSION} report ${IGNORE} ${TEST_EXE} ${INSTFILE}
+    llvm-cov-${LLVM_VERSION} report -use-color ${IGNORE} ${TEST_EXE} ${INSTFILE}
 fi
 
 

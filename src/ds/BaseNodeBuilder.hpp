@@ -46,7 +46,7 @@ protected:
 	std::shared_ptr<C<T>> nodePtr;
 
 	/// @brief Helper to cast to the derived builder type
-	inline B &derived() {
+	B &derived() {
 		return *static_cast<B *>(this);
 	}
 

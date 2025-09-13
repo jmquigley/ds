@@ -9,6 +9,7 @@ Checks: '-*,
          -cppcoreguidelines-pro-bounds-pointer-arithmetic,
          -cppcoreguidelines-rvalue-reference-param-not-moved,
          -modernize-use-nodiscard,
+         -modernize-use-trailing-return-type,
          -readability-function-cognitive-complexity,
          -readability-identifier-length'
 HeaderFilterRegex: '.*/ds/src/.*'

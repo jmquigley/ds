@@ -31,10 +31,12 @@ auto join(const std::vector<std::string> &strings, const std::string &delimiter,
 		ss << delimiter;
 	}
 
-	ss << strings[0];
+	auto it = strings.begin();
+	ss << *it;
+	++it;
 
-	for (size_t i = 1; i < strings.size(); ++i) {
-		ss << delimiter << strings[i];
+	for (; it != strings.end(); ++it) {
+		ss << delimiter << *it;
 	}
 
 	if (end) {

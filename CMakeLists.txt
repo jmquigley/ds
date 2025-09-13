@@ -12,23 +12,10 @@ option(DS_BUILD_EXTRAS "Flag to build extra testing programs" OFF)
 option(DS_BUILD_TESTING "Flag to build and run unit testing" OFF)
 option(DS_BUILD_INSTALL "Flag that performs the install proces" ON)
 option(DS_BUILD_LINT "Flag that turns on the lint processing" OFF)
+option(DS_BUILD_ASAN "Flag that enables Address Sanitizer" OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(LLVM_VER 21)
-
-# Setup memory testing parameters
-set(MEMORYCHECK_COMMAND_OPTIONS "")
-string(JOIN " " MEMORYCHECK_COMMAND_OPTIONS
-    "--tool=memcheck"
-    "--error-exitcode=1"
-    "--leak-check=full"
-    "--errors-for-leak-kinds=definite"
-    "--show-leak-kinds=definite"
-)
-message(STATUS "MEMORYCHECK_COMMAND_OPTIONS: " ${MEMORYCHECK_COMMAND_OPTIONS})
-
-set(CTEST_MEMORYCHECK_TYPE Valgrind)
-set(CTEST_MEMORYCHECK_COMMAND valgrind)
+set(LLVM_VER 22)
 
 # Adds all 3rd party dependencies to the project
 include("CMakeLists.requirements.txt")
@@ -45,6 +32,7 @@ message(STATUS "CMAKE_INSTALL_INCLUDEDIR: ${CMAKE_INSTALL_INCLUDEDIR}")
 message(STATUS "BUILD_TESTING: ${BUILD_TESTING}")
 message(STATUS "DS_BUILD_EXTRAS: ${DS_BUILD_EXTRAS}")
 message(STATUS "DS_BUILD_INSTALL: ${DS_BUILD_INSTALL}")
+message(STATUS "DS_BUILD_LINT: ${DS_BUILD_LINT}")
 message(STATUS "DS_BUILD_TESTING: ${DS_BUILD_TESTING}")
 message(STATUS "PROJECT_BINARY_DIR: ${PROJECT_BINARY_DIR}")
 message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")

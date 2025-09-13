@@ -21,11 +21,11 @@ class BaseTree : public Collection<T, C>, Searchable<T, C> {
 protected:
 
 	/// @brief the computed height for this tree
-	size_t _height;
+	size_t _height {0};
 
 public:
 
-	BaseTree() : Collection<T, C>(), _height(0) {}
+	BaseTree() : Collection<T, C>() {}
 
 	virtual ~BaseTree() = default;
 

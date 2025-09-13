@@ -75,3 +75,17 @@ if (BUILD_TESTING)
 
   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 endif(BUILD_TESTING)
+
+if(DS_BUILD_ASAN)
+  # Set sanitizer flags correctly - these need to be separate
+  add_compile_options(-fsanitize=address)
+  add_compile_options(-fno-omit-frame-pointer)
+
+  # Link options need the sanitizer flag only
+  add_link_options(-fsanitize=address)
+
+  # Set environment variable to help with ASAN reporting
+  set(ENV{ASAN_OPTIONS} "detect_leaks=1:symbolize=1:detect_container_overflow=1")
+
+  message(STATUS "AddressSanitizer enabled")
+endif(DS_BUILD_ASAN)
