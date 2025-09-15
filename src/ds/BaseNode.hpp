@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstddef>
 #include <ds/BaseBitFlag.hpp>
 #include <ds/BaseNodeBuilder.hpp>
 #include <ds/Replicate.hpp>
@@ -12,7 +11,6 @@
 #include <sstream>
 #include <string>
 #include <utility>
-#include <vector>
 
 namespace ds {
 
@@ -134,12 +132,17 @@ public:
 
 	/**
 	 * @brief Destructor for Node.
-	 *
-	 * Currently empty, but can be extended for cleanup if needed.
 	 */
 	virtual ~BaseNode() {
 		this->clear();
 	}
+
+	/**
+	 * @brief Spaceship operator for the BaseNode
+	 * @param other (`BaseNode &`) the other object to compare
+	 * @return an ordering class for the comparison
+	 */
+	auto operator<=>(const BaseNode &other) const = default;
 
 	/**
 	 * @brief Overloads the stream insertion operator for Node objects.
@@ -259,7 +262,7 @@ public:
 	 * @return true if the node is black, false otherwise
 	 */
 	auto isBlack() const -> bool {
-		return _flags[0] == 1;
+		return _flags.at(0) == 1;
 	}
 
 	/**
@@ -267,7 +270,7 @@ public:
 	 * @return true if the node is red, false otherwise
 	 */
 	auto isRed() const -> bool {
-		return _flags[0] == 0;
+		return _flags.at(0) == 0;
 	}
 
 	/**

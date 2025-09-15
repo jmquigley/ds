@@ -9,9 +9,7 @@
 #include <ds/Searchable.hpp>
 #include <ds/helpers.hpp>
 #include <ds/property.hpp>
-#include <exception>
 #include <initializer_list>
-#include <limits>
 #include <random>
 #include <sstream>
 #include <string>
@@ -241,7 +239,7 @@ public:
 	 * @param data (`T`) the data element to insert into the list
 	 * @returns a reference to the List
 	 */
-	virtual List<T> &operator+=(const T data) override {
+	List<T> &operator+=(const T data) override {
 		this->insert(data);
 		return *this;
 	}
@@ -296,7 +294,7 @@ public:
 	 * @brief copies the current list into an array vector and returns it.
 	 * @returns a `vector<T>` collection that contains each element of the list
 	 */
-	std::vector<T> array(void) {
+	std::vector<T> array() {
 		std::shared_ptr<Node<T>> nodeptr = this->_root;
 		std::shared_ptr<Node<T>> next;
 		std::vector<T> v;
@@ -314,7 +312,7 @@ public:
 	 * @brief Retrieves an iterator to the front of the list
 	 * @returns A new Iterator object that points to the front of the list
 	 */
-	inline Iterator begin() const {
+	Iterator begin() const {
 		return Iterator(this->_front);
 	}
 
@@ -322,7 +320,7 @@ public:
 	 * @brief Retrieves an iterator to the back of the list
 	 * @returns A new Iterator object that points to the back of the list
 	 */
-	inline Iterator rbegin() const {
+	Iterator rbegin() const {
 		return Iterator(this->_back);
 	}
 
@@ -330,7 +328,7 @@ public:
 	 * @brief deletes everything from the current list and resets it to its
 	 * initialized state.
 	 */
-	virtual void clear() override {
+	void clear() override {
 		std::shared_ptr<Node<T>> nodeptr = this->_root;
 		std::shared_ptr<Node<T>> next;
 
@@ -362,7 +360,7 @@ public:
 	 * @param other (`List<T>`) the list to copy
 	 * @returns a reference to the this pointer for the object
 	 */
-	virtual List<T> &copy(const List<T> &other) override {
+	List<T> &copy(const List<T> &other) override {
 		this->clear();
 
 		for (const auto &it: other) {
@@ -376,7 +374,7 @@ public:
 	 * @brief makes a new copy of the current list and returns it
 	 * @returns a `shared_ptr<List<T>>` to the newly created list
 	 */
-	virtual std::shared_ptr<List<T>> deepcopy() override {
+	std::shared_ptr<List<T>> deepcopy() override {
 		auto copy = std::make_shared<List<T>>();
 
 		for (const auto &it: *this) {
@@ -417,7 +415,7 @@ public:
 	 * @brief Retrieves an iterator to the back of the list
 	 * @returns A new Iterator object that points to the end of the list
 	 */
-	inline Iterator end() const {
+	Iterator end() const {
 		return Iterator();
 	}
 
@@ -425,7 +423,7 @@ public:
 	 * @brief Retrieves an iterator to the front of the list
 	 * @returns A new Iterator object that points to the front of the list
 	 */
-	inline Iterator rend() const {
+	Iterator rend() const {
 		return Iterator();
 	}
 
@@ -435,7 +433,7 @@ public:
 	 * @returns a `Match<T>` object that contains information about the `Node`
 	 * that was found in the search.
 	 */
-	virtual Match<T, Node> find(T data) override {
+	Match<T, Node> find(T data) override {
 		std::shared_ptr<Node<T>> nodeptr = this->_root;
 		Match<T, Node> match {};
 		std::shared_ptr<Node<T>> next {};
@@ -466,7 +464,7 @@ public:
 	 * @brief Insert the given data into a collection at back of the collection
 	 * @param data The element to insert
 	 */
-	virtual void insert(const T &data) override {
+	void insert(const T &data) override {
 		this->insert(data, Position::BACK);
 	}
 
@@ -532,7 +530,7 @@ public:
 	 * @param other (`List<T> &&`) rvalue reference to the list to copy
 	 * @returns a reference to the list that contains the moved resources
 	 */
-	virtual List<T> &move(List<T> &&other) noexcept override {
+	List<T> &move(List<T> &&other) noexcept override {
 		if (this != &other) {
 			this->_root = std::move(other._root);
 			this->_front = std::move(other._front);

@@ -4,7 +4,6 @@
 #include <ds/Path.hpp>
 #include <ds/constants.hpp>
 #include <memory>
-#include <vector>
 
 namespace ds {
 
@@ -56,11 +55,6 @@ public:
 	 * @brief Default constructor that initializes an empty node.
 	 */
 	BaseNodeBuilder() : nodePtr(std::make_shared<C<T>>()) {}
-
-	/**
-	 * @brief Virtual destructor for proper inheritance
-	 */
-	virtual ~BaseNodeBuilder() = default;
 
 	/**
 	 * @brief Sets the red flag on the node

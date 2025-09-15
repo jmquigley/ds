@@ -20,6 +20,10 @@
 #
 #     ./build.sh --debug --nodocs --noinstall
 #
+# To build a debug version that performs memory checks use:
+#
+#     ./build.sh --debug --memtest
+#
 # To change the number of parallel jobs used to build the project use:
 #
 #     ./build.sh --jobs=15
@@ -111,6 +115,7 @@ while :; do
             ;;
 
         --lint)
+            CLEAN_OPT=1
             LINT_OPT=1
             shift
             ;;

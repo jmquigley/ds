@@ -101,11 +101,11 @@ auto splitStringOnDelimiters(const std::string &str,
 		size_t delimIdx = 0;
 
 		for (size_t i = 0; i < delimiters.size(); ++i) {
-			if (delimiters[i].empty()) {
+			if (delimiters.at(i).empty()) {
 				continue;
 			}
 
-			size_t currentPos = str.find(delimiters[i], start);
+			size_t currentPos = str.find(delimiters.at(i), start);
 			if (currentPos != npos && (currentPos < pos || pos == npos)) {
 				pos = currentPos;
 				delimIdx = i;
@@ -124,7 +124,7 @@ auto splitStringOnDelimiters(const std::string &str,
 				result.push_back(str.substr(start, pos - start));
 			}
 
-			start = pos + delimLengths[delimIdx];
+			start = pos + delimLengths.at(delimIdx);
 		}
 	}
 

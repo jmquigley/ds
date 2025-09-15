@@ -10,10 +10,7 @@
 #include <ds/TreeNode.hpp>
 #include <ds/helpers.hpp>
 #include <ds/property.hpp>
-#include <format>
-#include <functional>
 #include <initializer_list>
-#include <limits>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -167,7 +164,7 @@ private:
 	 * @return The height of the subtree as a signed integer (or -1 for empty
 	 * trees)
 	 */
-	ssize_t findHeight(std::shared_ptr<TreeNode<T>> node) {
+	ssize_t findHeight(std::shared_ptr<TreeNode<T>> node) const {
 		if (node == nullptr) {
 			return -1;
 		}
@@ -1049,7 +1046,7 @@ public:
 			});
 		}
 
-		if (!retNode) {
+		if (retNode == nullptr) {
 			throw std::runtime_error(
 				"Element at index not found during traversal");
 		}
@@ -1139,7 +1136,7 @@ public:
 	/**
 	 * Removes all nodes from the current tree.
 	 */
-	virtual void clear() override {
+	void clear() override {
 		clearDelegate(this->_root);
 
 		if (this->_root) {
@@ -1155,10 +1152,20 @@ public:
 	 * @brief Checks if a `T` data element exists within the binary tree
 	 * @returns true if the data element exists in the list, otherwise false.
 	 */
-	inline virtual bool contains(T data) override {
+	bool contains(T data) override {
 		Match<T, TreeNode> match = find(data);
 		return match.found();
 	}
+
+	/*
+		BinaryTree<T> &copy(const BinaryTree<T> &other) override {
+			this->clear();
+
+			other.inorder([&](auto &node) { other.insert(node.getData()); });
+
+			return *this;
+		}
+	*/
 
 	/**
 	 * @brief Visits each of the nodes in the tree inorder.
@@ -1187,7 +1194,7 @@ public:
 	 * @param data The value to search for
 	 * @return Match object containing the result of the search
 	 */
-	virtual Match<T, TreeNode> find(T data) override {
+	Match<T, TreeNode> find(T data) override {
 		std::shared_ptr<TreeNode<T>> tnode = this->_root;
 		Match<T, TreeNode> match;
 
@@ -1234,8 +1241,8 @@ public:
 	 *
 	 * @return The height of the tree as a non-negative integer
 	 */
-	size_t height() override {
-		ssize_t n;
+	size_t height() const override {
+		ssize_t n {0};
 		n = this->findHeight(this->root());
 		return n <= 0 ? 0 : n;
 	}
@@ -1260,7 +1267,7 @@ public:
 	 * @brief Inserts a new element into the binary tree
 	 * @param data The data to insert into the tree
 	 */
-	virtual void insert(const T &data) override {
+	void insert(const T &data) override {
 		std::shared_ptr<TreeNode<T>> tnode;
 		std::shared_ptr<TreeNode<T>> snode;
 
@@ -1309,7 +1316,7 @@ public:
 	 * @param index (`size_t`) the location within the tree to remove
 	 * @returns the `T` value that was removed from the tree.
 	 */
-	virtual T removeAt(size_t index) override {
+	T removeAt(size_t index) override {
 		return this->removeAt(index, nullptr);
 	}
 
@@ -1356,7 +1363,7 @@ public:
 	 * @param value (`T`) a data value to find and remove from the tree.
 	 * @returns the T value that was removed from the tree
 	 */
-	virtual T removeValue(T value) override {
+	T removeValue(T value) override {
 		std::shared_ptr<TreeNode<T>> znode;
 		Match<T, TreeNode> match = find(value);
 
@@ -1469,14 +1476,14 @@ public:
 	 */
 	std::string str() const override {
 		std::stringstream ss;
-		ss << "BinaryTree[size=" << this->_size
-		   << ", height=" << const_cast<BinaryTree<T> *>(this)->height() << "]";
+		ss << "BinaryTree[size=" << this->_size << ", height=" << this->height()
+		   << "]";
 
 		// Add tree structure visualization
 		if (this->_root) {
 			ss << " {";
 			bool first = true;
-			const_cast<BinaryTree<T> *>(this)->inorder([&](TreeNode<T> &node) {
+			this->inorder([&](TreeNode<T> &node) {
 				if (!first) {
 					ss << ", ";
 				}

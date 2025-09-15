@@ -7,10 +7,10 @@
 class TestNode : public TestingBase {
 public:
 
-	TestNode() : TestingBase() {}
+	TestNode() = default;
 };
 
-TEST_F(TestNode, Create) {
+TEST_F(TestNode, Create) {	// NOLINT(readability-magic-numbers)
 	ds::Node<int> node(42);
 
 	EXPECT_EQ(node.data(), 42);
@@ -25,7 +25,7 @@ TEST_F(TestNode, Create) {
 	EXPECT_EQ(node.data(), 24);
 };
 
-TEST_F(TestNode, Constructors) {
+TEST_F(TestNode, Constructors) {  // NOLINT(*magic-numbers)
 	// Copy Constructor
 	ds::Node<int> node(42);
 	ds::Node<int> node2(node);

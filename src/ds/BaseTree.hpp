@@ -5,8 +5,6 @@
 #include <ds/Searchable.hpp>
 #include <ds/TreeNode.hpp>
 #include <ds/property.hpp>
-#include <limits>
-#include <vector>
 
 namespace ds {
 
@@ -16,7 +14,9 @@ namespace ds {
  *
  * @tparam T The type of data stored within the queue.
  */
+
 template<typename T, template<class> class C>
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 class BaseTree : public Collection<T, C>, Searchable<T, C> {
 protected:
 
@@ -50,7 +50,7 @@ public:
 	 * @return The height of the tree as a non-negative integer
 	 * @pure
 	 */
-	virtual size_t height() = 0;
+	virtual size_t height() const = 0;
 };
 
 }  // namespace ds
