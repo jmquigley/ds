@@ -12,6 +12,7 @@ namespace ds {
  * @tparam Derived The actual derived class implementing the interface
  */
 template<typename T, typename Derived>
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 class Replicate {
 protected:
 

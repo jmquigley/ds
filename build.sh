@@ -115,6 +115,7 @@ while :; do
             ;;
 
         --lint)
+            BUILD_TYPE=Debug
             CLEAN_OPT=1
             LINT_OPT=1
             shift

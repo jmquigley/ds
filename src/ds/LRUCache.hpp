@@ -225,8 +225,8 @@ private:
 			return;
 		}
 
-		size_t minSize = static_cast<size_t>(_collectionSize * _minPercentage);
-		size_t maxSize = static_cast<size_t>(_collectionSize * _maxPercentage);
+		auto minSize = static_cast<size_t>(_collectionSize * _minPercentage);
+	    auto maxSize = static_cast<size_t>(_collectionSize * _maxPercentage);
 
 		newCapacity = std::clamp(newCapacity, std::max(minSize, _minCapacity),
 								 std::min(maxSize, _maxCapacity));
@@ -267,9 +267,7 @@ public:
 	inline static const size_t MAX_CAPACITY {
 		std::numeric_limits<std::size_t>::max()};
 
-	LRUCache() {
-		this->clear();
-	}
+    LRUCache() = default;
 
 	/**
 	 * @brief Constructs an LRUCache with the specified capacity
@@ -277,8 +275,7 @@ public:
 	 * @param initialCapacity Maximum number of items the cache can hold
 	 * @note If capacity is less than 1, it will default to 10
 	 */
-	LRUCache(size_t initialCapacity) : LRUCache() {
-		this->_capacity = initialCapacity;
+	LRUCache(size_t initialCapacity) : _capacity {initialCapacity} {
 		if (this->_capacity == 0) {
 			this->_capacity = LRUCache::MIN_CAPACITY;
 		}
@@ -323,7 +320,7 @@ public:
 	 * @param key The key to check
 	 * @return true if the key exists in the cache, false otherwise
 	 */
-	inline bool contains(const K &key) const {
+	bool contains(const K &key) const {
 		return kvm.find(key) != kvm.end();
 	}
 
@@ -387,7 +384,7 @@ public:
 	 *
 	 * @return true if the cache contains no items, false otherwise
 	 */
-	inline bool empty() const {
+	bool empty() const {
 		return kvm.empty();
 	}
 
@@ -488,7 +485,7 @@ public:
 	 *
 	 * @return The number of items currently stored
 	 */
-	inline size_t size() const {
+	size_t size() const {
 		return kvm.size();
 	}
 

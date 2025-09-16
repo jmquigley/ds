@@ -7,6 +7,7 @@
 #include <ds/Match.hpp>
 #include <ds/Node.hpp>
 #include <ds/Queue.hpp>
+#include <ds/Replicate.hpp>
 #include <ds/TreeNode.hpp>
 #include <ds/helpers.hpp>
 #include <ds/property.hpp>
@@ -63,7 +64,7 @@ namespace ds {
  * @endcode
  */
 template<typename T>
-class BinaryTree : public BaseTree<T, TreeNode> {
+class BinaryTree : public BaseTree<T, TreeNode>, public Replicate<T, BinaryTree<T>> {
 private:
 
 	/**
@@ -1157,16 +1158,18 @@ public:
 		return match.found();
 	}
 
-	/*
-		BinaryTree<T> &copy(const BinaryTree<T> &other) override {
-			this->clear();
+    BinaryTree<T> &copy(const BinaryTree<T> &other) override {
+		this->clear();
+		other.inorder([&](auto &node) { this->insert(node.getData()); });
+		return *this;
+	}
 
-			other.inorder([&](auto &node) { other.insert(node.getData()); });
-
-			return *this;
-		}
-	*/
-
+	std::shared_ptr<BinaryTree<T>> deepcopy() override {
+        auto copy = std::make_shared<BinaryTree<T>>();
+		this->inorder([&](auto &node) { copy->insert(node.getData()); });
+		return copy;        
+	}
+	
 	/**
 	 * @brief Visits each of the nodes in the tree inorder.
 	 *
@@ -1279,6 +1282,28 @@ public:
 		}
 	}
 
+	BinaryTree<T> &move(BinaryTree<T> &&other) override {
+        if (this != &other) {
+			this->_root = std::move(other._root);
+			this->_front = std::move(other._front);
+			this->_back = std::move(other._back);
+			this->_cache = std::move(other._cache);
+			this->_latestNode = std::move(other._latestNode);
+            this->_height = other._height;
+			this->_size = other._size;
+
+            other._height = 0;
+			other._size = 0;
+			other._root = nullptr;
+            other._cache.clear();
+			other._front.reset();
+			other._back.reset();
+		}
+
+		return *this;
+		
+	}
+	
 	/**
 	 * @brief Performs a post-order traversal of the tree
 	 *
