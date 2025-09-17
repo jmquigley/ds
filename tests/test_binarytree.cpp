@@ -8,12 +8,15 @@
 #include <string>
 #include <vector>
 
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
+// NOLINTBEGIN(readability-magic-numbers)
+
 class TestBinaryTree : public TestingBase {
 public:
 
-	TestBinaryTree() : TestingBase() {}
+	TestBinaryTree() = default;
 
-	void showInorder(ds::BinaryTree<int> &bt) {
+	static void showInorder(ds::BinaryTree<int> &bt) {
 		std::vector<int> out;
 		std::string comma;
 
@@ -48,15 +51,41 @@ TEST_F(TestBinaryTree, CreateBinaryTree) {
 	EXPECT_EQ(bt.size(), 7);
 }
 
-TEST_F(TestBinaryTree, CopyConstructor) {
-	ds::BinaryTree<int> bt1 {1, 2, 3, 4, 5, 6, 7};
+TEST_F(TestBinaryTree, Constructors) {
+	std::vector<int> out;
+
+	// Initialization list constructor
+	ds::BinaryTree<int> bt1 {1, 3, 2, 5, 4, 6, 7};
 
 	EXPECT_EQ(bt1.size(), 7);
 	EXPECT_EQ(bt1.height(), 3);
 	EXPECT_FALSE(bt1.empty());
+	EXPECT_EQ(**bt1.front().lock(), 1);
+	EXPECT_EQ(bt1.minimum(), 1);
+	EXPECT_EQ(**bt1.back().lock(), 7);
+	EXPECT_EQ(bt1.maximum(), 7);
 
+	bt1.array(out);
+	EXPECT_EQ(out.size(), 7);
+	EXPECT_EQ(out[0], 1);
+	EXPECT_EQ(out[1], 2);
+	EXPECT_EQ(out[2], 3);
+	EXPECT_EQ(out[3], 4);
+	EXPECT_EQ(out[4], 5);
+	EXPECT_EQ(out[5], 6);
+	EXPECT_EQ(out[6], 7);
+	out.clear();
+
+	// Copy constructor
 	ds::BinaryTree<int> bt2(bt1);
-	std::vector<int> out;
+
+	EXPECT_EQ(bt2.size(), 7);
+	EXPECT_EQ(bt2.height(), 3);
+	EXPECT_FALSE(bt2.empty());
+	EXPECT_EQ(**bt2.front().lock(), 1);
+	EXPECT_EQ(bt2.minimum(), 1);
+	EXPECT_EQ(**bt2.back().lock(), 7);
+	EXPECT_EQ(bt2.maximum(), 7);
 
 	bt2.array(out);
 	EXPECT_EQ(out.size(), 7);
@@ -67,10 +96,19 @@ TEST_F(TestBinaryTree, CopyConstructor) {
 	EXPECT_EQ(out[4], 5);
 	EXPECT_EQ(out[5], 6);
 	EXPECT_EQ(out[6], 7);
+	out.clear();
 
+	// Assignment copy constructor
 	ds::BinaryTree<int> bt3 = bt2;
 
-	out.clear();
+	EXPECT_EQ(bt3.size(), 7);
+	EXPECT_EQ(bt3.height(), 3);
+	EXPECT_FALSE(bt3.empty());
+	EXPECT_EQ(**bt3.front().lock(), 1);
+	EXPECT_EQ(bt3.minimum(), 1);
+	EXPECT_EQ(**bt3.back().lock(), 7);
+	EXPECT_EQ(bt3.maximum(), 7);
+
 	bt3.array(out);
 	EXPECT_EQ(out.size(), 7);
 	EXPECT_EQ(out[0], 1);
@@ -80,6 +118,33 @@ TEST_F(TestBinaryTree, CopyConstructor) {
 	EXPECT_EQ(out[4], 5);
 	EXPECT_EQ(out[5], 6);
 	EXPECT_EQ(out[6], 7);
+	out.clear();
+
+	// Move constructor
+	ds::BinaryTree<int> bt4(std::move(bt3));
+
+	EXPECT_EQ(bt4.size(), 7);
+	EXPECT_EQ(bt4.height(), 3);
+	EXPECT_FALSE(bt4.empty());
+	EXPECT_EQ(**bt4.front().lock(), 1);
+	EXPECT_EQ(bt4.minimum(), 1);
+	EXPECT_EQ(**bt4.back().lock(), 7);
+	EXPECT_EQ(bt4.maximum(), 7);
+
+	bt4.array(out);
+	EXPECT_EQ(out.size(), 7);
+	EXPECT_EQ(out[0], 1);
+	EXPECT_EQ(out[1], 2);
+	EXPECT_EQ(out[2], 3);
+	EXPECT_EQ(out[3], 4);
+	EXPECT_EQ(out[4], 5);
+	EXPECT_EQ(out[5], 6);
+	EXPECT_EQ(out[6], 7);
+
+	EXPECT_EQ(bt3.size(), 0);
+	EXPECT_EQ(bt3.height(), 0);
+	EXPECT_TRUE(bt3.empty());
+	EXPECT_FALSE(bt4.empty());
 }
 
 TEST_F(TestBinaryTree, Traversals) {
@@ -396,7 +461,7 @@ TEST_F(TestBinaryTree, RemoveValue) {
 	EXPECT_EQ(bt.size(), 7);
 
 	bt.removeValue(7);
-	showInorder(bt);
+	TestBinaryTree::showInorder(bt);
 
 	EXPECT_EQ(bt.height(), 3);
 	EXPECT_EQ(bt.size(), 6);
@@ -508,7 +573,7 @@ TEST_F(TestBinaryTree, RemoveAt) {
 	EXPECT_EQ(bt.size(), 7);
 
 	bt.removeAt(6);
-	showInorder(bt);
+	TestBinaryTree::showInorder(bt);
 
 	EXPECT_EQ(bt.height(), 3);
 	EXPECT_EQ(bt.size(), 6);
@@ -593,3 +658,6 @@ TEST_F(TestBinaryTree, AIComprehensiveTest) {
 	tree.removeValue(65);
 	tree.removeValue(80);  // Last node in tree
 }
+
+// NOLINTEND(readability-magic-numbers)
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers)

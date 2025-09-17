@@ -212,6 +212,7 @@ public:
 	 */
 	List<T> &operator=(List<T> &&other) noexcept {
 		this->move(std::move(other));
+		return *this;
 	}
 
 	/**
@@ -357,7 +358,7 @@ public:
 
 	/**
 	 * @brief Takes the given list and copies it into this list.  This is a
-     * is a deep copy of the list.
+	 * is a deep copy of the list.
 	 * @param other (`List<T>`) the list to copy
 	 * @returns a reference to the this pointer for the object
 	 */
@@ -536,9 +537,9 @@ public:
 			this->_root = std::move(other._root);
 			this->_front = std::move(other._front);
 			this->_back = std::move(other._back);
-            this->_cache = std::move(other._cache);
+			this->_cache = std::move(other._cache);
 			this->_size = other._size;
-			
+
 			other._size = 0;
 			other._root = nullptr;
 			other._front.reset();

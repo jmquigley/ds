@@ -64,7 +64,9 @@ namespace ds {
  * @endcode
  */
 template<typename T>
-class BinaryTree : public BaseTree<T, TreeNode>, public Replicate<T, BinaryTree<T>> {
+class BinaryTree :
+	public BaseTree<T, TreeNode>,
+	public Replicate<T, BinaryTree<T>> {
 private:
 
 	/**
@@ -892,7 +894,15 @@ public:
 	 * @param bt (`BinaryTree<T>`) the binary tree to copy
 	 */
 	BinaryTree(BinaryTree<T> &bt) : BaseTree<T, TreeNode>() {
-		this->operator=(bt);
+		this->copy(bt);
+	}
+
+	/**
+	 * @brief a move constructor for the BinaryTree
+	 * @param bt (`BinaryTree<T>`) the binary tree to move
+	 */
+	BinaryTree(BinaryTree<T> &&bt) noexcept : BaseTree<T, TreeNode>() {
+		this->move(std::move(bt));
 	}
 
 	/**
@@ -917,12 +927,16 @@ public:
 	 * @returns a reference to this binary tree
 	 */
 	BinaryTree<T> &operator=(const BinaryTree<T> &bt) {
-		this->clear();
-		bt.inorder([&](auto &node) {
-			T data = node.getData();
-			this->insert(data);
-		});
+		this->copy(bt);
+		return *this;
+	}
 
+	/**
+	 * @brief a move assignment operator for the BinaryTree
+	 * @param bt (`BinaryTree<T>`) the binary tree to move
+	 */
+	BinaryTree<T> &operator=(BinaryTree<T> &&bt) noexcept {
+		this->move(std::move(bt));
 		return *this;
 	}
 
@@ -1158,18 +1172,54 @@ public:
 		return match.found();
 	}
 
-    BinaryTree<T> &copy(const BinaryTree<T> &other) override {
+	/**
+	 * @brief Copies content from another binary tree into this tree
+	 *
+	 * This method clears the current tree and then performs an in-order
+	 * traversal of the source tree, inserting each element into this tree. This
+	 * creates a logical copy while maintaining proper red-black tree balance
+	 * properties.
+	 *
+	 * @param other The source binary tree to copy from
+	 * @return A reference to this tree after copying
+	 *
+	 * @note This performs a deep copy of the data elements but creates a new
+	 *       tree structure rather than duplicating the exact node structure.
+	 *
+	 * @par Complexity:
+	 *      Time: O(n log n) where n is the number of nodes (n traversal
+	 * operations with log n insertion) Space: O(log n) for the recursion stack
+	 * during traversal
+	 */
+	BinaryTree<T> &copy(const BinaryTree<T> &other) override {
 		this->clear();
 		other.inorder([&](auto &node) { this->insert(node.getData()); });
 		return *this;
 	}
 
+	/**
+	 * @brief Creates a completely new binary tree with the same content
+	 *
+	 * Unlike copy() which modifies the current tree, this method creates a new
+	 * tree instance with the same data. It performs an in-order traversal of
+	 * this tree and inserts each element into the new tree.
+	 *
+	 * @return A shared pointer to a new binary tree containing the same
+	 * elements
+	 *
+	 * @note The returned tree is independent from the original - changes to one
+	 *       will not affect the other.
+	 *
+	 * @par Complexity:
+	 *      Time: O(n log n) where n is the number of nodes
+	 *      Space: O(log n) for the recursion stack during traversal
+	 */
 	std::shared_ptr<BinaryTree<T>> deepcopy() override {
-        auto copy = std::make_shared<BinaryTree<T>>();
+		auto copy = std::make_shared<BinaryTree<T>>();
 		this->inorder([&](auto &node) { copy->insert(node.getData()); });
-		return copy;        
+		return copy;
 	}
-	
+
 	/**
 	 * @brief Visits each of the nodes in the tree inorder.
 	 *
@@ -1282,28 +1332,44 @@ public:
 		}
 	}
 
+	/**
+	 * @brief Moves the content from another binary tree into this one
+	 *
+	 * This method efficiently transfers ownership of all resources from the
+	 * other tree to this tree without deep copying. After the operation, the
+	 * source tree is left in a valid but empty state.
+	 *
+	 * @param other The source binary tree to move from (an rvalue reference)
+	 * @return A reference to this tree after moving
+	 *
+	 * @note This is much more efficient than copying for large trees as it
+	 *       simply transfers pointer ownership rather than recreating the tree.
+	 *
+	 * @par Complexity:
+	 *      Time: O(1) - constant time operation
+	 *      Space: O(1) - uses constant extra space
+	 */
 	BinaryTree<T> &move(BinaryTree<T> &&other) override {
-        if (this != &other) {
+		if (this != &other) {
 			this->_root = std::move(other._root);
 			this->_front = std::move(other._front);
 			this->_back = std::move(other._back);
 			this->_cache = std::move(other._cache);
 			this->_latestNode = std::move(other._latestNode);
-            this->_height = other._height;
+			this->_height = other._height;
 			this->_size = other._size;
 
-            other._height = 0;
+			other._height = 0;
 			other._size = 0;
 			other._root = nullptr;
-            other._cache.clear();
+			other._cache.clear();
 			other._front.reset();
 			other._back.reset();
 		}
 
 		return *this;
-		
 	}
-	
+
 	/**
 	 * @brief Performs a post-order traversal of the tree
 	 *

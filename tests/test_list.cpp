@@ -9,10 +9,13 @@
 #include <utility>
 #include <vector>
 
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
+// NOLINTBEGIN(readability-magic-numbers)
+
 class TestList : public TestingBase {
 public:
 
-	TestList() : TestingBase() {}
+	TestList() = default;
 };
 
 TEST_F(TestList, Create) {
@@ -860,3 +863,6 @@ TEST_F(TestList, EmptyEach) {
 	list.each([&](size_t index, auto &x) { x *= 2; });
 	EXPECT_EQ(list.size(), 0);
 }
+
+// NOLINTEND(readability-magic-numbers)
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers)

@@ -57,6 +57,9 @@ enum class Position : size_t {
  *     // Implementation of all required virtual methods
  * };
  * @endcode
+ *
+ * NOLINTBEGIN(cppcoreguidelines-special-member-functions)
+ *
  */
 template<typename T, template<class> class C>
 class Collection : public Collectable<T> {
@@ -95,7 +98,7 @@ public:
 	 * @brief Virtual destructor for Collection.
 	 * Ensures proper cleanup of derived classes.
 	 */
-	virtual ~Collection() {}
+	virtual ~Collection() = default;
 
 	/**
 	 * @brief Array subscript operator for accessing elements by index.
@@ -167,7 +170,7 @@ public:
 	 * @brief Check if the collection is empty
 	 * @return true if the colleciton is empty, otherwise false
 	 */
-	virtual inline bool empty() const {
+	virtual bool empty() const {
 		return this->_size == 0;
 	}
 
@@ -186,7 +189,7 @@ public:
 	 * @return a `T` data element
 	 * @throws std::bad_weak_ptr if the requested back pointer is not available
 	 */
-	virtual inline T maximum() const {
+	virtual T maximum() const {
 		return this->_back.lock()->getData();
 	}
 
@@ -194,8 +197,11 @@ public:
 	 * @brief retrieves the element at the front of the collection
 	 * @return a `T` data element
 	 */
-	virtual inline T minimum() const {
+	virtual T minimum() const {
 		return this->_front.lock()->getData();
 	}
 };
+
+// NOLINTEND(cppcoreguidelines-special-member-functions)
+
 }  // namespace ds

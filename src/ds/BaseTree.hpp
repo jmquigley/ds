@@ -13,10 +13,11 @@ namespace ds {
  * @brief Abstract interface for tree structures
  *
  * @tparam T The type of data stored within the queue.
+ *
+ * NOLINTBEGIN(cppcoreguidelines-special-member-functions)
+ *
  */
-
 template<typename T, template<class> class C>
-// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 class BaseTree : public Collection<T, C>, Searchable<T, C> {
 protected:
 
@@ -52,5 +53,7 @@ public:
 	 */
 	virtual size_t height() const = 0;
 };
+
+// NOLINTEND(cppcoreguidelines-special-member-functions)
 
 }  // namespace ds

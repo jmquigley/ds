@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstring>
 #include <ds/Collectable.hpp>
+#include <ds/Replicate.hpp>
 #include <ds/constants.hpp>
 #include <ds/property.hpp>
 #include <sstream>
@@ -220,7 +221,7 @@ public:
 	 * Frees the dynamically allocated memory for the internal buffer if it
 	 * exists.
 	 */
-	virtual ~Buffer() {
+	~Buffer() {
 		if (this->buffer) {
 			free(this->buffer);
 			this->buffer = nullptr;
