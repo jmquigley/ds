@@ -3,12 +3,14 @@
 #include <ds/BaseBitFlag.hpp>
 #include <iostream>
 #include <stdexcept>
-#include <string>
+
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
+// NOLINTBEGIN(readability-magic-numbers)
 
 class TestBitFlag : public TestingBase {
 public:
 
-	TestBitFlag() : TestingBase() {}
+	TestBitFlag() = default;
 };
 
 enum TestFlags : size_t {
@@ -42,22 +44,24 @@ TEST_F(TestBitFlag, Create) {
 	EXPECT_EQ(flag.get(), 0);
 };
 
-TEST_F(TestBitFlag, Constructors) {
+TEST_F(TestBitFlag, CopyConstrutor) {
 	// Copy constructor
 	ds::BitFlag bf1(123);  // 0111 1011
 	ds::BitFlag bf2(bf1);
 
 	EXPECT_TRUE(bf1 == bf2);
 	EXPECT_FALSE(bf1 != bf2);
+}
 
+TEST_F(TestBitFlag, ParameterizedConstructor) {
 	// Parameterized constructor
-	ds::BitFlag bf3(128);  // 1000 0000
+	ds::BitFlag bf(128);  // 1000 0000
+	EXPECT_TRUE(bf.get() == 128);
+}
 
-	EXPECT_FALSE(bf1 == bf3);
-	EXPECT_TRUE(bf1 != bf3);
-
-	// Move constructor
-	ds::BitFlag bf4(std::move(bf3));
+TEST_F(TestBitFlag, MoveConstructor) {
+	ds::BitFlag bf1(123);  // 0111 1011
+	ds::BitFlag bf2(std::move(bf1));
 };
 
 TEST_F(TestBitFlag, AssignmentOperators) {
@@ -114,10 +118,6 @@ TEST_F(TestBitFlag, Replication) {
 	EXPECT_EQ(bf3, 42);
 }
 
-TEST_F(TestBitFlag, LogicalOperator) {
-	// TODO: Logical tests for TestBitFlag.
-}
-
 TEST_F(TestBitFlag, BitwiseOperators) {
 	ds::ByteFlag bf1(42);  // 0010 1010
 	ds::ByteFlag bf2(23);  // 0001 0111
@@ -144,18 +144,18 @@ TEST_F(TestBitFlag, BitwiseOperators) {
 
 TEST_F(TestBitFlag, ToString) {
 	ds::ByteFlag bf1(123);	// 0111 1011
-	EXPECT_EQ(bf1.str(), "01111011");
+	EXPECT_EQ(bf1.toString(), "01111011");
 	std::cout << bf1 << std::endl;
 
 	ds::ShortFlag bf2(123);	 // 0111 1011
-	EXPECT_EQ(bf2.str(), "0000000001111011");
+	EXPECT_EQ(bf2.toString(), "0000000001111011");
 
 	ds::BitFlag bf3(123);  // 0111 1011
-	EXPECT_EQ(bf3.str(), "00000000000000000000000001111011");
+	EXPECT_EQ(bf3.toString(), "00000000000000000000000001111011");
 
 	ds::WideFlag bf4(123);	// 0111 1011
 	EXPECT_EQ(
-		bf4.str(),
+		bf4.toString(),
 		"0000000000000000000000000000000000000000000000000000000001111011");
 };
 
@@ -172,16 +172,21 @@ TEST_F(TestBitFlag, Each) {
 			case 5: EXPECT_EQ(bit, 0); break;
 			case 6: EXPECT_EQ(bit, 1); break;
 			case 7: EXPECT_EQ(bit, 0); break;
+			default:
+				throw std::runtime_error("invalid test condition in byte flag");
 		}
 	});
 }
 
-TEST_F(TestBitFlag, Iterators) {
-	// TODO: Iterators test for TestBitFlag
-}
-
 TEST_F(TestBitFlag, Clear) {
-	// TODO: Clear test for TestBitFlag
+	ds::ByteFlag bf(42);
+	EXPECT_EQ(bf.get(), 42);  // 0010 1010
+	bf.clear();
+	EXPECT_EQ(bf.get(), 0);
+	bf(42);
+	EXPECT_EQ(bf.get(), 42);  // 0010 1010
+	bf.reset();
+	EXPECT_EQ(bf.get(), 0);
 }
 
 TEST_F(TestBitFlag, At) {
@@ -234,3 +239,6 @@ TEST_F(TestBitFlag, HasABit) {
 	EXPECT_TRUE(bf.has(TestFlags::Color));
 	EXPECT_FALSE(bf.has(TestFlags::State));
 };
+
+// NOLINTEND(readability-magic-numbers)
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers)

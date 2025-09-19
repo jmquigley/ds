@@ -199,7 +199,7 @@ public:
 	 */
 	friend auto operator<<(std::ostream &st, const BaseBitFlag<T> &bf)
 		-> std::ostream & {
-		return st << bf.str();
+		return st << bf.toString();
 	}
 
 	/**
@@ -373,6 +373,13 @@ public:
 	}
 
 	/**
+	 * @brief resets the bit flag back to an empty state
+	 */
+	auto clear() -> void {
+		this->_flag = 0;
+	}
+
+	/**
 	 * @brief Copies the given bit flag structure into this one
 	 * @param other (`BaseBitFlag<T> &`) reference to the bit flag object to
 	 * copy
@@ -464,7 +471,7 @@ public:
 	 * @brief resets the bit flag to all zeroes
 	 */
 	auto reset() noexcept -> void {
-		this->_flag = 0;
+		this->clear();
 	}
 
 	/**
@@ -492,7 +499,7 @@ public:
 	 * of the flag.
 	 * @returns a std::string that represents the number in binary format
 	 */
-	auto str() const -> std::string {
+	auto toString() const -> std::string {
 		switch (numberOfBits()) {
 			case BYTE_BIT_COUNT:
 				return std::bitset<BYTE_BIT_COUNT>(this->_flag).to_string();
