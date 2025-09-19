@@ -3,7 +3,9 @@
 #include <ds/BaseIterator.hpp>
 #include <ds/Node.hpp>
 #include <iostream>
-#include <string>
+
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
+// NOLINTBEGIN(readability-magic-numbers)
 
 class TestIterator : public TestingBase {
 protected:
@@ -35,7 +37,7 @@ protected:
 
 public:
 
-	TestIterator() : TestingBase() {};
+	TestIterator() = default;
 };
 
 class LocalIterator : public ds::BaseIterator<int, ds::Node> {
@@ -44,7 +46,7 @@ public:
 	LocalIterator(std::weak_ptr<ds::Node<int>> lp)
 		: ds::BaseIterator<int, ds::Node>(lp) {}
 
-	LocalIterator() : ds::BaseIterator<int, ds::Node>() {}
+	LocalIterator() = default;
 };
 
 TEST_F(TestIterator, CreateIterator) {
@@ -106,3 +108,6 @@ TEST_F(TestIterator, Empty) {
 	LocalIterator it;
 	EXPECT_EQ(*it, 0);
 }
+
+// NOLINTEND(readability-magic-numbers)
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers)

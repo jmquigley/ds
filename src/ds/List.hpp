@@ -44,7 +44,7 @@ protected:
 	 * @brief adds a new node to the end of the list
 	 * @param node (`std::shared_ptr<Node<T>>`) the node to add to the end
 	 */
-	void addBack(std::shared_ptr<Node<T>> node) {
+	auto addBack(std::shared_ptr<Node<T>> node) -> void {
 		// add a new element to the end of the list
 		node->setLeft(this->_back.lock());
 		this->_back.lock()->setRight(node);
@@ -55,7 +55,7 @@ protected:
 	 * @brief adds a new node to the front of the list
 	 * @param node (`std::shared_ptr<Node<T>>`) the node to add to the front
 	 */
-	void addFront(std::shared_ptr<Node<T>> node) {
+	auto addFront(std::shared_ptr<Node<T>> node) -> void {
 		// add a new element to the front of the list
 		node->setRight(this->_root);
 		this->_root->setLeft(node);
@@ -70,8 +70,8 @@ protected:
 	 * @return std::shared_ptr<Node<T>> Pointer to the node at the specified
 	 * index
 	 */
-	std::shared_ptr<Node<T>> getNodeByIndex(size_t index) {
-		std::shared_ptr<Node<T>> tnode;
+	auto getNodeByIndex(size_t index) -> std::shared_ptr<Node<T>> {
+		std::shared_ptr<Node<T>> tnode = nullptr;
 
 		// Optimize traversal direction based on which end is closer
 		if (index < (this->_size / 2)) {
@@ -102,7 +102,7 @@ protected:
 	 * @return std::shared_ptr<Node<T>> Pointer to the node containing the
 	 * value, or nullptr if no node contains the value
 	 */
-	std::shared_ptr<Node<T>> getNodeByValue(const T &value) {
+	auto getNodeByValue(const T &value) -> std::shared_ptr<Node<T>> {
 		// Check if the value is in the cache first
 		std::shared_ptr<Node<T>> result;
 		if (this->_cache.get(value, result)) {
@@ -156,13 +156,13 @@ public:
 	/**
 	 * @brief Default constructor that initializes an empty list.
 	 */
-	List() : Collection<T, Node>() {}
+	constexpr List() : Collection<T, Node>() {}
 
 	/**
 	 * @brief a List copy constructor
 	 * @param list (`List<T> &`) the list object to copy
 	 */
-	List(const List<T> &list) : Collection<T, Node>() {
+	constexpr List(const List<T> &list) : Collection<T, Node>() {
 		this->copy(list);
 	}
 
@@ -170,7 +170,7 @@ public:
 	 * @brief a List move constructor
 	 * @param list (`List<T> &&`) an rvalue list reference to copy
 	 */
-	List(List<T> &&list) noexcept : Collection<T, Node>() {
+	constexpr List(List<T> &&list) noexcept : Collection<T, Node>() {
 		this->move(std::move(list));
 	}
 
@@ -180,7 +180,7 @@ public:
 	 *
 	 * @param il (`std::initializer_list`) a list of values to seed the list
 	 */
-	List(const std::initializer_list<T> &il) : Collection<T, Node>() {
+	constexpr List(const std::initializer_list<T> &il) : Collection<T, Node>() {
 		operator=(il);
 	}
 
@@ -196,7 +196,7 @@ public:
 	 * @param other (`List<T>`) a reference to the list to copy
 	 * @returns a reference to the this pointer for the object
 	 */
-	List<T> &operator=(const List<T> &other) {
+	auto operator=(const List<T> &other) -> List<T> & {
 		this->clear();
 		this->copy(other);
 		return *this;
@@ -210,7 +210,7 @@ public:
 	 * @param other The List to move resources from
 	 * @returns Reference to this List after assignment
 	 */
-	List<T> &operator=(List<T> &&other) noexcept {
+	auto operator=(List<T> &&other) noexcept -> List<T> & {
 		this->move(std::move(other));
 		return *this;
 	}
@@ -222,7 +222,7 @@ public:
 	 * @param il (`std::initializer_list`) a list of values to seedthe list
 	 * @returns a reference to the list that was initilaized.
 	 */
-	List<T> &operator=(const std::initializer_list<T> &il) {
+	auto operator=(const std::initializer_list<T> &il) -> List<T> & {
 		this->clear();
 
 		for (const auto &it: il) {
@@ -240,7 +240,7 @@ public:
 	 * @param data (`T`) the data element to insert into the list
 	 * @returns a reference to the List
 	 */
-	List<T> &operator+=(const T data) override {
+	auto operator+=(const T data) -> List<T> & override {
 		this->insert(data);
 		return *this;
 	}
@@ -255,7 +255,8 @@ public:
 	 * @param list (`List<T> &`) the List object to print
 	 * @returns a reference to the `std::ostream` object
 	 */
-	friend std::ostream &operator<<(std::ostream &st, const List<T> &list) {
+	friend auto operator<<(std::ostream &st, const List<T> &list)
+		-> std::ostream & {
 		return st << list.str();
 	}
 
@@ -266,7 +267,7 @@ public:
 	 * @returns the data element located at the given index
 	 * @throws std::out_of_range error if an invalid index is requested
 	 */
-	T &at(size_t index) override {
+	auto at(size_t index) -> T & override {
 		if (index >= this->_size) {
 			throw std::out_of_range("Invalid list position index requested");
 		}
@@ -295,7 +296,7 @@ public:
 	 * @brief copies the current list into an array vector and returns it.
 	 * @returns a `vector<T>` collection that contains each element of the list
 	 */
-	std::vector<T> array() {
+	auto array() -> std::vector<T> {
 		std::shared_ptr<Node<T>> nodeptr = this->_root;
 		std::shared_ptr<Node<T>> next;
 		std::vector<T> v;
@@ -313,7 +314,7 @@ public:
 	 * @brief Retrieves an iterator to the front of the list
 	 * @returns A new Iterator object that points to the front of the list
 	 */
-	Iterator begin() const {
+	auto begin() const -> Iterator {
 		return Iterator(this->_front);
 	}
 
@@ -321,7 +322,7 @@ public:
 	 * @brief Retrieves an iterator to the back of the list
 	 * @returns A new Iterator object that points to the back of the list
 	 */
-	Iterator rbegin() const {
+	auto rbegin() const -> Iterator {
 		return Iterator(this->_back);
 	}
 
@@ -329,7 +330,7 @@ public:
 	 * @brief deletes everything from the current list and resets it to its
 	 * initialized state.
 	 */
-	void clear() override {
+	auto clear() -> void override {
 		std::shared_ptr<Node<T>> nodeptr = this->_root;
 		std::shared_ptr<Node<T>> next;
 
@@ -350,7 +351,7 @@ public:
 	 * @brief Checks if a `T` data element exists within the list
 	 * @returns true if the data element exists in the list, otherwise false.
 	 */
-	bool contains(T data) override {
+	auto contains(T data) -> bool override {
 		Match<T, Node> match {};
 		match = find(data);
 		return match.found();
@@ -362,7 +363,7 @@ public:
 	 * @param other (`List<T>`) the list to copy
 	 * @returns a reference to the this pointer for the object
 	 */
-	List<T> &copy(const List<T> &other) override {
+	auto copy(const List<T> &other) -> List<T> & override {
 		this->clear();
 
 		for (const auto &it: other) {
@@ -376,7 +377,7 @@ public:
 	 * @brief makes a new copy of the current list and returns it
 	 * @returns a `shared_ptr<List<T>>` to the newly created list
 	 */
-	std::shared_ptr<List<T>> deepcopy() override {
+	auto deepcopy() -> std::shared_ptr<List<T>> override {
 		auto copy = std::make_shared<List<T>>();
 
 		for (const auto &it: *this) {
@@ -402,7 +403,7 @@ public:
 	 *       to the data will affect the list contents.
 	 */
 	template<typename Callback>
-	void each(Callback callback) {
+	auto each(Callback callback) -> void {
 		std::shared_ptr<Node<T>> nodeptr = this->_root;
 		std::shared_ptr<Node<T>> next {};
 		size_t index = 0;
@@ -417,16 +418,18 @@ public:
 	 * @brief Retrieves an iterator to the back of the list
 	 * @returns A new Iterator object that points to the end of the list
 	 */
-	Iterator end() const {
-		return Iterator();
+	auto end() const -> Iterator {
+		Iterator it;
+		return it;
 	}
 
 	/**
 	 * @brief Retrieves an iterator to the front of the list
 	 * @returns A new Iterator object that points to the front of the list
 	 */
-	Iterator rend() const {
-		return Iterator();
+	auto rend() const -> Iterator {
+		Iterator it;
+		return it;
 	}
 
 	/**
@@ -435,7 +438,7 @@ public:
 	 * @returns a `Match<T>` object that contains information about the `Node`
 	 * that was found in the search.
 	 */
-	Match<T, Node> find(T data) override {
+	auto find(T data) -> Match<T, Node> override {
 		std::shared_ptr<Node<T>> nodeptr = this->_root;
 		Match<T, Node> match {};
 		std::shared_ptr<Node<T>> next {};
@@ -466,7 +469,7 @@ public:
 	 * @brief Insert the given data into a collection at back of the collection
 	 * @param data The element to insert
 	 */
-	void insert(const T &data) override {
+	auto insert(const T &data) -> void override {
 		this->insert(data, Position::BACK);
 	}
 
@@ -476,7 +479,7 @@ public:
 	 * @param data The element to insert
 	 * @param position The position to insert at (default is BACK)
 	 */
-	void insert(const T &data, Position position) {
+	auto insert(const T &data, Position position) -> void {
 		if (position == Position::BACK) {
 			this->insert(data, this->_size);
 		} else if (position == Position::FRONT) {
@@ -497,7 +500,7 @@ public:
 	 * - If index == 0: Adds element to the beginning
 	 * - Otherwise: Inserts element at the specified position
 	 */
-	void insert(const T &data, size_t index) {
+	auto insert(const T &data, size_t index) -> void {
 		std::shared_ptr<Node<T>> node = std::make_shared<Node<T>>(data);
 
 		if (this->_root == nullptr) {
@@ -532,7 +535,7 @@ public:
 	 * @param other (`List<T> &&`) rvalue reference to the list to copy
 	 * @returns a reference to the list that contains the moved resources
 	 */
-	List<T> &move(List<T> &&other) noexcept override {
+	auto move(List<T> &&other) noexcept -> List<T> & override {
 		if (this != &other) {
 			this->_root = std::move(other._root);
 			this->_front = std::move(other._front);
@@ -555,8 +558,9 @@ public:
 	 * @returns the T value that was removed from the list
 	 * @throws an out_of_range exception if the requested index is invalid
 	 */
-	T removeAt(size_t index) override {
-		return this->removeAt(index, nullptr);
+	auto removeAt(size_t index) -> T override {
+		T ret = this->removeAt(index, nullptr);
+		return ret;
 	}
 
 	/**
@@ -568,7 +572,7 @@ public:
 	 * @returns the T value that was removed from the list
 	 * @throws an out_of_range exception if the requested index is invalid
 	 */
-	virtual T removeAt(size_t index, std::shared_ptr<Node<T>> tnode) {
+	virtual auto removeAt(size_t index, std::shared_ptr<Node<T>> tnode) -> T {
 		if (this->_size == 0) {
 			throw std::out_of_range("Cannot remove item from an empty list");
 		}
@@ -616,7 +620,7 @@ public:
 	 * @returns The removed value
 	 * @throws std::range_error If the value is not found in the list
 	 */
-	virtual T removeValue(T value) override {
+	auto removeValue(T value) -> T override {
 		if (this->_size == 0) {
 			throw std::out_of_range("Cannot remove item from an empty list");
 		}
@@ -667,7 +671,7 @@ public:
 	 * @return std::vector<T> A vector containing copies of all elements in
 	 * reverse order
 	 */
-	std::vector<T> reverse() {
+	auto reverse() -> std::vector<T> {
 		std::shared_ptr<Node<T>> nodeptr = this->_back.lock();
 		std::shared_ptr<Node<T>> previous;
 		std::vector<T> v;
@@ -690,7 +694,7 @@ public:
 	 *
 	 * @throws std::runtime_error If the list is empty
 	 */
-	void shuffle() {
+	auto shuffle() -> void {
 		// Check if list is empty
 		if (this->_size == 0) {
 			throw std::runtime_error("Cannot shuffle an empty list");
@@ -716,11 +720,11 @@ public:
 	 * @brief Converts the list to a string representation.
 	 * @return std::string String representation of the list
 	 */
-	virtual std::string str() const override {
+	auto str() const -> std::string override {
 		std::stringstream ss;
 		std::shared_ptr<Node<T>> lp = this->_root;
 		std::shared_ptr<Node<T>> next;
-		std::string comma = "";
+		std::string comma;
 
 		ss << "[";
 
@@ -748,7 +752,7 @@ public:
 	 * @throws std::out_of_range If either position is invalid or if the list is
 	 * empty
 	 */
-	void swap(size_t pos1, size_t pos2) {
+	auto swap(size_t pos1, size_t pos2) -> void {
 		// Check if list is empty
 		if (this->_size == 0) {
 			throw std::out_of_range("Cannot swap nodes in an empty list");

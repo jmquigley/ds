@@ -52,6 +52,8 @@ public:
 
 	~BaseIterator() override = default;
 
+	auto operator<=>(const BaseIterator &iterator) const = default;
+
 	/**
 	 * @brief Copy assignment operator
 	 * @param iterator The source iterator to copy from
@@ -82,7 +84,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	auto operator++() -> BaseIterator & {
+	constexpr auto operator++() -> BaseIterator & {
 		return this->next();
 	}
 
@@ -94,7 +96,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	auto operator++(int) -> BaseIterator & {
+	constexpr auto operator++(int) -> BaseIterator & {
 		return this->next();
 	}
 
@@ -105,7 +107,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	auto operator--() -> BaseIterator & {
+	constexpr auto operator--() -> BaseIterator & {
 		return this->previous();
 	}
 
@@ -117,7 +119,7 @@ public:
 	 *
 	 * @return Reference to this iterator after advancing
 	 */
-	auto operator--(int) -> BaseIterator & {
+	constexpr auto operator--(int) -> BaseIterator & {
 		return this->previous();
 	}
 
