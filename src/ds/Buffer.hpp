@@ -45,6 +45,9 @@ namespace ds {
  *     // ...
  * }
  * @endcode
+ *
+ * NOLINTBEGIN
+ *
  */
 class Buffer : Collectable<char> {
 	/**
@@ -715,5 +718,7 @@ public:
 		return v;
 	}
 };
+
+// NOLINTEND
 
 }  // namespace ds

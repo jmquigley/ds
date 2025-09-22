@@ -39,6 +39,9 @@ namespace ds {
  *
  * @tparam T The type of objects that can be compared with instances of the
  * implementing class
+ *
+ * NOLINTBEGIN(cppcoreguidelines-special-member-functions)
+ *
  */
 template<typename T>
 class Comparable {
@@ -165,7 +168,9 @@ public:
 	 * Ensures proper cleanup of derived class resources when objects are
 	 * destroyed through a pointer to the base class.
 	 */
-	virtual ~Comparable() {}
+	virtual ~Comparable() = default;
 };
+
+// NOLINTEND(cppcoreguidelines-special-member-functions)
 
 }  // namespace ds

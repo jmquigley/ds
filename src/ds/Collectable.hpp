@@ -12,10 +12,16 @@ namespace ds {
  * This class is the minimum contract required for all Collection objects.
  *
  * @tparam T the data type that will be used while manipulating the class.
+ *
+ * NOLINTBEGIN(cppcoreguidelines-special-member-functions)
+ *
  */
 template<typename T>
 class Collectable {
 public:
+
+	Collectable() = default;
+	virtual ~Collectable() = default;
 
 	/**
 	 * @brief Retrieves teh data from the collection at the given index position
@@ -99,5 +105,7 @@ public:
 	 */
 	virtual std::string str() const = 0;
 };
+
+// NOLINTEND(cppcoreguidelines-special-member-functions)
 
 }  // namespace ds
