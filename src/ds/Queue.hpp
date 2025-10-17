@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ds/List.hpp>
+#include <ds/Replicate.hpp>
 #include <vector>
 
 namespace ds {
@@ -33,6 +34,14 @@ public:
 	}
 
 	/**
+	 * @brief a Queue move constructor
+	 * @param q (`Queue<T> &&`) an rvalue queue reference to copy
+	 */
+	constexpr Queue(Queue<T> &&q) noexcept : Queue() {
+		this->move(std::move(q));
+	}
+
+	/**
 	 * @brief Constructor that takes an initializer_list to insert values into
 	 * the queue.
 	 * @param il (`std::initializer_list`) a list of values to seed the queue
@@ -51,8 +60,21 @@ public:
 	 * @param q (`Queue<T> &`) a reference to teh queue to copy
 	 * @returns a reference to the this pointer for the object
 	 */
-	Queue<T> &operator=(Queue<T> &q) {
+	Queue<T> &operator=(const Queue<T> &q) {
 		List<T>::operator=(q);
+		return *this;
+	}
+
+	/**
+	 * @brief Move assignment operator for Queue
+	 *
+	 * Transfers ownership of resources from another Queue to this Queue
+	 *
+	 * @param other The Queue to move resources from
+	 * @returns Reference to this Queue after assignment
+	 */
+	Queue<T> &operator=(Queue<T> &&q) noexcept {
+		this->move(std::move(q));
 		return *this;
 	}
 
@@ -79,7 +101,7 @@ public:
 	 * @param data (`T`) the data element to add to the queue
 	 * @return a reference to the Queue
 	 */
-	virtual Queue<T> &operator+=(const T data) override {
+	Queue<T> &operator+=(const T data) override {
 		this->enqueue(data);
 		return *this;
 	}
@@ -96,7 +118,7 @@ public:
 	 * @brief deletes everything from the current queue and resets it to its
 	 * initialized state.
 	 */
-	virtual void clear() override {
+	void clear() override {
 		List<T>::clear();
 	}
 
@@ -104,7 +126,7 @@ public:
 	 * @brief Checks if an element exists in the Queue
 	 * @returns true if the item is in the Queue otherwise false
 	 */
-	inline bool contains(T data) override {
+	bool contains(T data) override {
 		return List<T>::contains(data);
 	}
 
@@ -151,7 +173,7 @@ public:
 	 * @brief Check if the queue is empty
 	 * @return true if the queue is empty, otherwise false
 	 */
-	virtual inline bool empty() const override {
+	bool empty() const override {
 		return List<T>::empty();
 	}
 
@@ -186,7 +208,7 @@ public:
 	 * @brief returns the item at the front of the queue
 	 * @returns a `T` object at the front of the queue
 	 */
-	inline T maximum() const override {
+	T maximum() const override {
 		return List<T>::maximum();
 	}
 
@@ -194,7 +216,7 @@ public:
 	 * @brief returns the item at the end of the queue
 	 * @returns a `T` object at the back of the queue
 	 */
-	inline T minimum() const override {
+	T minimum() const override {
 		return List<T>::minimum();
 	}
 
@@ -202,7 +224,7 @@ public:
 	 * @brief the number of elements in the queue
 	 * @returns a `size_t` of the number of elements in the queue
 	 */
-	inline size_t size() const {
+	size_t size() const {
 		return List<T>::size();
 	}
 

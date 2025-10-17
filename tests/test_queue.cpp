@@ -1,18 +1,19 @@
 #include <testing_base.h>
 
 #include <ds/Queue.hpp>
-#include <exception>
-#include <iostream>
 #include <string>
 #include <vector>
+
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
+// NOLINTBEGIN(readability-magic-numbers)
 
 class TestQueue : public TestingBase {
 public:
 
-	TestQueue() : TestingBase() {}
+	TestQueue() = default;
 };
 
-TEST_F(TestQueue, CreateQueue) {
+TEST_F(TestQueue, Create) {
 	ds::Queue<int> q;
 
 	EXPECT_EQ(q.size(), 0);
@@ -216,3 +217,6 @@ TEST_F(TestQueue, EmptyEach) {
 	q.each([&](size_t index, auto &x) { x *= 2; });
 	EXPECT_EQ(q.size(), 0);
 }
+
+// NOLINTEND(readability-magic-numbers)
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers)

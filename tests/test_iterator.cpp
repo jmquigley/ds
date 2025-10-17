@@ -15,7 +15,7 @@ protected:
 	std::shared_ptr<ds::Node<int>> n2;
 	std::shared_ptr<ds::Node<int>> n3;
 
-	void SetUp() override {
+	auto SetUp() -> void override {
 		n1 = std::make_shared<ds::Node<int>>(1);
 		n2 = std::make_shared<ds::Node<int>>(2);
 		n3 = std::make_shared<ds::Node<int>>(3);
@@ -35,6 +35,17 @@ protected:
 		root.reset();
 	}
 
+	static void validateRootIterator(ds::BaseIterator<int, ds::Node> &it) {
+		std::cout << "it(1): " << *it << std::endl;
+		EXPECT_EQ(*it, 1);
+		it.next();
+		std::cout << "it(2): " << *it << std::endl;
+		EXPECT_EQ(*it, 2);
+		it.next();
+		std::cout << "it(3): " << *it << std::endl;
+		EXPECT_EQ(*it, 3);
+	}
+
 public:
 
 	TestIterator() = default;
@@ -49,18 +60,20 @@ public:
 	LocalIterator() = default;
 };
 
-TEST_F(TestIterator, CreateIterator) {
+TEST_F(TestIterator, Create) {
 	LocalIterator it(root);
-
-	std::cout << "(1): " << *it << std::endl;
-	EXPECT_EQ(*it, 1);
-	it.next();
-	std::cout << "(2): " << *it << std::endl;
-	EXPECT_EQ(*it, 2);
-	it.next();
-	std::cout << "(3): " << *it << std::endl;
-	EXPECT_EQ(*it, 3);
+	validateRootIterator(it);
 };
+
+TEST_F(TestIterator, CopyConstructor) {
+	LocalIterator it1(root);
+	LocalIterator it2(it1);
+
+	EXPECT_TRUE(it1 == it2);
+
+	validateRootIterator(it1);
+	validateRootIterator(it2);
+}
 
 TEST_F(TestIterator, CompareIterators) {
 	LocalIterator it1(root);

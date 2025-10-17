@@ -37,41 +37,41 @@ protected:
  *
  */
 class TestSearchClass : public ds::Comparable<TestSearchClass> {
-	PROPERTY(data, Data, std::string);
+	PROPERTY_WITH_DEFAULT(data, Data, std::string, {});
 
 public:
 
-	TestSearchClass() : _data("") {}
+	TestSearchClass() = default;
 
 	TestSearchClass(const std::string &data) : _data(data) {}
 
-	virtual ~TestSearchClass() = default;
+	~TestSearchClass() override = default;
 
-	virtual bool operator==(const TestSearchClass &other) const noexcept {
+	auto operator==(const TestSearchClass &other) const noexcept -> bool override {
 		return this->_data == other._data;
 	}
 
-	virtual bool operator!=(const TestSearchClass &other) const noexcept {
+	auto operator!=(const TestSearchClass &other) const noexcept -> bool override {
 		return this->_data != other._data;
 	}
 
-	virtual bool operator<(const TestSearchClass &other) const noexcept {
+	auto operator<(const TestSearchClass &other) const noexcept -> bool override {
 		return this->_data < other._data;
 	}
 
-	virtual bool operator>(const TestSearchClass &other) const noexcept {
+	auto operator>(const TestSearchClass &other) const noexcept -> bool override {
 		return this->_data > other._data;
 	}
 
-	virtual bool operator<=(const TestSearchClass &other) const noexcept {
+	auto operator<=(const TestSearchClass &other) const noexcept -> bool override {
 		return this->_data <= other._data;
 	}
 
-	virtual bool operator>=(const TestSearchClass &other) const noexcept {
+	auto operator>=(const TestSearchClass &other) const noexcept -> bool override {
 		return this->_data >= other._data;
 	}
 
-	virtual void print(std::ostream &os) const {
+	auto print(std::ostream &os) const ->void override {
 		os << this->_data;
 	}
 };

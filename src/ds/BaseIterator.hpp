@@ -52,8 +52,6 @@ public:
 
 	~BaseIterator() override = default;
 
-	auto operator<=>(const BaseIterator &iterator) const = default;
-
 	/**
 	 * @brief Copy assignment operator
 	 * @param iterator The source iterator to copy from
