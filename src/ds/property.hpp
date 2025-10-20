@@ -74,6 +74,10 @@ public:                                          \
  *        PROPERTY_SCOPED(foo, Foo, unsigned int, properties:);
  *    }
  *
+ *   In the example above, the variable `_bar` is created.
+ *   There are two getter functions created: `getBar()` and `bar()`
+ *   There is one setter function created: `setBar({value})`
+ *
  * Parameters:
  *     - variable (`string`) -- the name of the variable to create
  *     - fn (`string`) -- the Pascal case function name of the get/set function

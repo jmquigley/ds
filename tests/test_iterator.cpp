@@ -75,6 +75,28 @@ TEST_F(TestIterator, CopyConstructor) {
 	validateRootIterator(it2);
 }
 
+TEST_F(TestIterator, MoveConstructor) {
+	LocalIterator it1(root);
+	LocalIterator it2(std::move(it1));
+	validateRootIterator(it2);
+	EXPECT_TRUE(it1.lp().expired());
+}
+
+TEST_F(TestIterator, AssignmentOperators) {
+	// Assignment operator
+	LocalIterator it1(root);
+	LocalIterator it2;
+
+	it2 = it1;
+	validateRootIterator(it2);
+
+	// Move assignment operator
+	LocalIterator it3(root);
+	it2 = std::move(it3);
+	validateRootIterator(it2);
+	EXPECT_TRUE(it3.lp().expired());
+}
+
 TEST_F(TestIterator, CompareIterators) {
 	LocalIterator it1(root);
 	LocalIterator it2(root);

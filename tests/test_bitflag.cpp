@@ -62,6 +62,7 @@ TEST_F(TestBitFlag, ParameterizedConstructor) {
 TEST_F(TestBitFlag, MoveConstructor) {
 	ds::BitFlag bf1(123);  // 0111 1011
 	ds::BitFlag bf2(std::move(bf1));
+	EXPECT_TRUE(bf2.get() == 123);
 };
 
 TEST_F(TestBitFlag, AssignmentOperators) {

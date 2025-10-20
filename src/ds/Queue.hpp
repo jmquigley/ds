@@ -70,7 +70,7 @@ public:
 	 *
 	 * Transfers ownership of resources from another Queue to this Queue
 	 *
-	 * @param other The Queue to move resources from
+	 * @param q The Queue to move resources from
 	 * @returns Reference to this Queue after assignment
 	 */
 	Queue<T> &operator=(Queue<T> &&q) noexcept {
