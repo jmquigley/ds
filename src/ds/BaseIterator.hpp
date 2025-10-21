@@ -2,7 +2,9 @@
 
 #include <ds/Replicate.hpp>
 #include <ds/property.hpp>
+#include <iostream>
 #include <memory>
+#include <stdexcept>
 
 namespace ds {
 
@@ -51,6 +53,18 @@ public:
 	}
 
 	~BaseIterator() override = default;
+
+	/**
+	 * @brief Call operator to reassign the iterator to a new node by shared
+	 * pointer
+	 * @param other The shared pointer to the node to assign to this iterator
+	 * @return Reference to this iterator after assignment
+	 * @details Updates the iterator to point to the provided node pointer
+	 */
+	constexpr auto operator()(std::shared_ptr<C<T>> other) {
+		this->_lp = other;
+		return *this;
+	}
 
 	/**
 	 * @brief Copy assignment operator
@@ -146,6 +160,17 @@ public:
 	}
 
 	/**
+	 * @brief Boolean conversion operator
+	 * @return true if the iterator points to a valid node, false otherwise
+	 * @details Checks if the weak pointer to the current node has not expired,
+	 *          allowing the iterator to be used in boolean expressions to
+	 * verify validity
+	 */
+	constexpr explicit operator bool() const {
+		return !this->_lp.expired();
+	}
+
+	/**
 	 * @brief Dereference operator.
 	 *
 	 * Retrieves the data from the node pointed to by the iterator.
@@ -154,13 +179,11 @@ public:
 	 * @return The data of the current node, or a default T value if no node
 	 */
 	auto operator*() -> T {
-		T nil {};
-
 		if (!_lp.expired()) {
 			return _lp.lock()->data();
 		}
 
-		return nil;
+		throw std::runtime_error("Error dereferencing invalid iterator");
 	}
 
 	/**
@@ -190,12 +213,35 @@ public:
 	}
 
 	/**
-	 * @brief Creates a deep copy of the iterator
-	 * @return Shared pointer to a new iterator instance
-	 * @details Allocates a new iterator with the same internal state
+	 * @brief Creates a deep copy of the iterator.
+	 * @details Allocates a new iterator with the same internal state via a
+	 * shared pointer
+	 * @return a shared pointer to a new iterator instance
 	 */
 	auto deepcopy() -> std::shared_ptr<BaseIterator<T, C>> override {
 		return std::make_shared<BaseIterator<T, C>>(this->_lp);
+	}
+
+	/**
+	 * @brief Iterates through the linked structure applying a callback to each
+	 * node
+	 * @details Traverses the structure starting from the current node and
+	 * moving right, invoking the callback with the node's index and a reference
+	 * to the node
+	 *
+	 * @tparam Callback Callable type that accepts an index and a node reference
+	 * @param callback Function to call for each node in the sequence
+	 */
+	template<typename Callback>
+	auto each(Callback callback) -> void {
+		std::shared_ptr<C<T>> nodeptr = _lp.lock();
+		size_t index = 0;
+
+		while (nodeptr) {
+			// Invoke callback with current index and node
+			callback(index++, *nodeptr);
+			nodeptr = nodeptr->getRight();
+		}
 	}
 
 	/**
@@ -230,6 +276,10 @@ public:
 	 * @return Reference to this iterator after advancing
 	 */
 	auto next() -> BaseIterator & {
+		if (this->_lp.expired()) {
+			throw std::runtime_error("The iterator is expired");
+		}
+
 		auto p = this->_lp.lock();
 
 		if (p) {
@@ -249,6 +299,10 @@ public:
 	 * @return Reference to this iterator after advancing
 	 */
 	auto previous() -> BaseIterator & {
+		if (this->_lp.expired()) {
+			throw std::runtime_error("The iterator is expired");
+		}
+
 		auto p = this->_lp.lock();
 
 		if (p) {

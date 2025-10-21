@@ -93,6 +93,16 @@ TEST_F(TestBitFlag, AssignmentOperators) {
 	EXPECT_EQ(bf1, 24);
 }
 
+TEST_F(TestBitFlag, Boolean) {
+	ds::BitFlag bf1(42);
+	EXPECT_TRUE(bf1);
+	bf1.clear();
+	EXPECT_FALSE(bf1);
+
+	ds::BitFlag bf2;
+	EXPECT_FALSE(bf2);
+}
+
 TEST_F(TestBitFlag, Replication) {
 	// deep copy
 	ds::BitFlag bf(42);

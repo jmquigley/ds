@@ -239,6 +239,14 @@ public:
 	}
 
 	/**
+	 * @brief Boolean conversion operator
+	 * @return true if the bitflag has a value > 0
+	 */
+	constexpr explicit operator bool() const {
+		return this->_flag > 0;
+	}
+
+	/**
 	 * @brief a convenience operator for the at().
 	 * @param index (`size_t`) the location of the bit within the number
 	 * @returns a 0 or 1 for the index position.

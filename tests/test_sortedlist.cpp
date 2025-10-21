@@ -203,7 +203,8 @@ TEST_F(TestSortedList, ComplexSearch) {
 	EXPECT_EQ((*it).data(), "a");
 	EXPECT_EQ((*it.next()).data(), "b");
 	EXPECT_EQ((*it.next()).data(), "c");
-	EXPECT_EQ((*it.next()).data(), "");
+
+	EXPECT_THROW((*it.next()).data(), std::runtime_error);
 
 	it = list.begin();
 	TestSearchClass a = *it;

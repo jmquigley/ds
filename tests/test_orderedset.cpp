@@ -171,7 +171,8 @@ TEST_F(TestOrderedSet, ComplexTypeSearch) {
 	EXPECT_EQ((*it).data(), "a");
 	EXPECT_EQ((*it.next()).data(), "b");
 	EXPECT_EQ((*it.next()).data(), "c");
-	EXPECT_EQ((*it.next()).data(), "");
+
+	EXPECT_THROW((*it.next()).data(), std::runtime_error);
 
 	match = set.find(TestSearchClass("a"));
 
@@ -215,25 +216,15 @@ TEST_F(TestOrderedSet, Iterator) {
 		std::cout << "it: " << it << std::endl;
 
 		switch (i) {
-			case 0:
-				EXPECT_EQ(it, 1);
-				break;
+			case 0: EXPECT_EQ(it, 1); break;
 
-			case 1:
-				EXPECT_EQ(it, 2);
-				break;
+			case 1: EXPECT_EQ(it, 2); break;
 
-			case 2:
-				EXPECT_EQ(it, 3);
-				break;
+			case 2: EXPECT_EQ(it, 3); break;
 
-			case 3:
-				EXPECT_EQ(it, 4);
-				break;
+			case 3: EXPECT_EQ(it, 4); break;
 
-			case 4:
-				EXPECT_EQ(it, 5);
-				break;
+			case 4: EXPECT_EQ(it, 5); break;
 		}
 
 		i++;

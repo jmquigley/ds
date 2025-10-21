@@ -59,7 +59,7 @@ TEST_F(TestList, Constructors) {
 	EXPECT_EQ(*it1.next(), 3);
 	EXPECT_EQ(*it1.next(), 4);
 	EXPECT_EQ(*it1.next(), 5);
-	EXPECT_EQ(*it1.next(), 0);
+	EXPECT_THROW(*it1.next(), std::runtime_error);
 
 	// Copy constructor
 	ds::List<int> l2(l1);
@@ -378,7 +378,8 @@ TEST_F(TestList, Iterator) {
 	EXPECT_EQ(*it1.next(), 3);
 	EXPECT_EQ(*it1.next(), 4);
 	EXPECT_EQ(*it1.next(), 5);
-	EXPECT_EQ(*it1.next(), 0);
+
+	EXPECT_THROW(*it1.next(), std::runtime_error);
 
 	list.clear();
 };
@@ -421,7 +422,8 @@ TEST_F(TestList, IteratorReverse) {
 	EXPECT_EQ(*it1.previous(), 3);
 	EXPECT_EQ(*it1.previous(), 2);
 	EXPECT_EQ(*it1.previous(), 1);
-	EXPECT_EQ(*it1.previous(), 0);
+
+	EXPECT_THROW(*it1.previous(), std::runtime_error);
 
 	list.clear();
 }

@@ -3,6 +3,7 @@
 #include <ds/BaseIterator.hpp>
 #include <ds/Node.hpp>
 #include <iostream>
+#include <stdexcept>
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
 // NOLINTBEGIN(readability-magic-numbers)
@@ -75,10 +76,22 @@ TEST_F(TestIterator, CopyConstructor) {
 	validateRootIterator(it2);
 }
 
+TEST_F(TestIterator, BadCopyConstructor) {
+	LocalIterator it1;
+	LocalIterator it2(it1);
+	EXPECT_TRUE(it1 == it2);
+}
+
 TEST_F(TestIterator, MoveConstructor) {
 	LocalIterator it1(root);
 	LocalIterator it2(std::move(it1));
 	validateRootIterator(it2);
+	EXPECT_TRUE(it1.lp().expired());
+}
+
+TEST_F(TestIterator, BadMoveConstructor) {
+	LocalIterator it1;
+	LocalIterator it2(std::move(it1));
 	EXPECT_TRUE(it1.lp().expired());
 }
 
@@ -97,7 +110,40 @@ TEST_F(TestIterator, AssignmentOperators) {
 	EXPECT_TRUE(it3.lp().expired());
 }
 
-TEST_F(TestIterator, CompareIterators) {
+TEST_F(TestIterator, DeepCopy) {
+	LocalIterator it(root);
+	auto itc = *it.deepcopy().get();
+
+	validateRootIterator(it);
+	validateRootIterator(itc);
+}
+
+TEST_F(TestIterator, Each) {
+	LocalIterator itr(root);
+
+	itr.each([&](size_t index, auto &it) {
+		if (index == 0) {
+			EXPECT_EQ(*it, 1);
+		} else if (index == 1) {
+			EXPECT_EQ(*it, 2);
+		} else if (index == 2) {
+			EXPECT_EQ(*it, 3);
+		}
+	});
+}
+
+TEST_F(TestIterator, BadEach) {
+	LocalIterator itr;
+	itr.each([&](size_t index, auto &it) { EXPECT_TRUE(false); });
+}
+
+TEST_F(TestIterator, CallOperator) {
+	LocalIterator it;
+	it(root);
+	validateRootIterator(it);
+}
+
+TEST_F(TestIterator, Compare) {
 	LocalIterator it1(root);
 	LocalIterator it2(root);
 
@@ -105,7 +151,7 @@ TEST_F(TestIterator, CompareIterators) {
 	EXPECT_FALSE(it1 != it2);
 }
 
-TEST_F(TestIterator, CompareIteratorsOpposite) {
+TEST_F(TestIterator, CompareOpposite) {
 	LocalIterator it1(n1);
 	LocalIterator it2(n2);
 
@@ -113,7 +159,19 @@ TEST_F(TestIterator, CompareIteratorsOpposite) {
 	EXPECT_TRUE(it1 != it2);
 }
 
-TEST_F(TestIterator, IteratorTestIncrement) {
+TEST_F(TestIterator, Boolean) {
+	// simple logic truth
+	LocalIterator it1(root);
+
+	EXPECT_TRUE(it1);
+	EXPECT_FALSE(!it1);
+
+	// and
+	LocalIterator it2(root);
+	EXPECT_TRUE(it1 && it2);
+}
+
+TEST_F(TestIterator, Increment) {
 	LocalIterator it(root);
 
 	std::cout << "(1): " << *it << std::endl;
@@ -126,7 +184,13 @@ TEST_F(TestIterator, IteratorTestIncrement) {
 	EXPECT_EQ(*it, 3);
 }
 
-TEST_F(TestIterator, IteratorTestDecrement) {
+TEST_F(TestIterator, BadIncrement) {
+	LocalIterator it;
+	EXPECT_THROW(it++, std::runtime_error);
+	EXPECT_THROW(++it, std::runtime_error);
+}
+
+TEST_F(TestIterator, Decrement) {
 	LocalIterator it(root->getRight()->getRight());
 
 	std::cout << "(1): " << *it << std::endl;
@@ -139,9 +203,33 @@ TEST_F(TestIterator, IteratorTestDecrement) {
 	EXPECT_EQ(*it, 1);
 }
 
+TEST_F(TestIterator, BadDecrement) {
+	LocalIterator it;
+	EXPECT_THROW(it--, std::runtime_error);
+	EXPECT_THROW(--it, std::runtime_error);
+}
+
+TEST_F(TestIterator, ForLoop) {
+	LocalIterator itb(root);
+	LocalIterator ite;
+	int i = 0;
+
+	for (auto it = itb; it != ite; ++it) {
+		if (i == 0) {
+			EXPECT_EQ(*it, 1);
+		} else if (i == 1) {
+			EXPECT_EQ(*it, 2);
+		} else if (i == 2) {
+			EXPECT_EQ(*it, 3);
+		}
+
+		i++;
+	}
+}
+
 TEST_F(TestIterator, Empty) {
 	LocalIterator it;
-	EXPECT_EQ(*it, 0);
+	EXPECT_THROW(*it, std::runtime_error);
 }
 
 // NOLINTEND(readability-magic-numbers)
