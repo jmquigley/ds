@@ -5,7 +5,6 @@
 #include <ds/helpers.hpp>
 #include <ds/property.hpp>
 #include <limits>
-#include <vector>
 
 namespace ds {
 
@@ -35,7 +34,7 @@ private:
 	 *
 	 * @returns `boolean` true if in an overflow condition, otherwise false.
 	 */
-	inline bool overflow() {
+	bool overflow() {
 		return this->_size >= this->_maxSize;
 	}
 
@@ -54,20 +53,30 @@ public:
 	/**
 	 * @brief Default constructor that initializes an empty Deque.
 	 */
-	Deque() : Queue<T>() {}
+	constexpr Deque() : Queue<T>() {}
 
 	/**
 	 * @brief Constructor to set the maximum size of the Deque
 	 * @param maxSize (`size_t`) the maximum size of the queue
 	 */
-	Deque(size_t maxSize) : Queue<T>(), _maxSize(maxSize) {}
+	constexpr Deque(size_t maxSize) : Queue<T>(), _maxSize(maxSize) {}
 
 	/**
 	 * @brief the copy constructor for the Deque class
 	 * @param dq (`Deque<T>`) the deque object to copy
 	 */
-	Deque(Deque<T> &dq) : Deque() {
-		this->operator=(dq);
+	constexpr Deque(const Deque<T> &dq) : Deque() {
+		List<T>::copy(dq);
+	}
+
+	/**
+	 * @brief Move constructor for the Deque class
+	 * @param dq The deque object to move from
+	 * @details Transfers ownership of resources from the given deque to this
+	 * new instance leaving the source deque in a valid but unspecified state
+	 */
+	constexpr Deque(const Deque<T> &&dq) noexcept : Deque() {
+		List<T>::move(std::move(dq));
 	}
 
 	/**
@@ -102,9 +111,22 @@ public:
 	 * @param dq (`Deque<T> &`) a reference to teh deque to copy
 	 * @returns a reference to the this pointer for the object
 	 */
-	Deque<T> &operator=(Deque<T> &dq) {
+	auto operator=(const Deque<T> &dq) -> Deque<T> & {
 		this->_maxSize = dq._maxSize;
 		Queue<T>::operator=(dq);
+		return *this;
+	}
+
+	/**
+	 * @brief Move assignment operator for the Deque class
+	 * @param dq The deque object to move from
+	 * @return A reference to this deque after assignment
+	 * @details Transfers ownership of resources from the given deque to this
+	 * instance, leaving the source deque in a valid but unspecified state
+	 */
+	auto operator=(Deque &&dq) noexcept -> Deque<T> & {
+		this->_maxSize = dq._maxSize;
+		Queue<T>::operator=(std::move(dq));
 		return *this;
 	}
 
@@ -113,7 +135,7 @@ public:
 	 * @param data (`T`) the data element to add to the deque
 	 * @return a reference to the Deque
 	 */
-	virtual Deque<T> &operator+=(const T data) override {
+	auto operator+=(const T data) -> Deque<T> & override {
 		this->enqueue(data);
 		return *this;
 	}
@@ -122,7 +144,7 @@ public:
 	 * @brief deletes everything from the current deque and resets it to its
 	 * initialized state.
 	 */
-	inline void clear() override {
+	auto clear() -> void override {
 		Queue<T>::clear();
 	}
 
@@ -131,7 +153,7 @@ public:
 	 * and acts if one is detected.
 	 * @param data (``) the data item to add to the queue.
 	 */
-	void enqueue(T data) {
+	auto enqueue(T data) -> void {
 		if (overflow()) {
 			Queue<T>::dequeue();
 		}
@@ -143,7 +165,7 @@ public:
 	 * @brief removes the last item in the deque
 	 * @returns the last `T` data element in the list
 	 */
-	T popBack() {
+	auto popBack() -> T {
 		return Queue<T>::removeAt(as_integer(Position::BACK));
 	}
 
@@ -151,7 +173,7 @@ public:
 	 * @brief removes the first item in the Deque
 	 * @returns the first `T` data element in the Deque
 	 */
-	T popFront() {
+	auto popFront() -> T {
 		return Queue<T>::dequeue();
 	}
 
@@ -159,7 +181,7 @@ public:
 	 * @brief places an item at the end of the Deque
 	 * @param data (`T`) element to add to the Deque
 	 */
-	void pushBack(T data) {
+	auto pushBack(T data) -> void {
 		if (overflow()) {
 			Queue<T>::dequeue();
 		}
@@ -171,7 +193,7 @@ public:
 	 * @brief places an item at the end of the front of the Deque
 	 * @param data (`T`) element to add to the Deque
 	 */
-	void pushFront(T data) {
+	auto pushFront(T data) -> void {
 		if (overflow()) {
 			Queue<T>::dequeue();
 		}

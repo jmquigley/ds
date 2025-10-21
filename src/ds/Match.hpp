@@ -1,6 +1,5 @@
 #pragma once
 
-#include <any>
 #include <ds/BaseNode.hpp>
 #include <ds/Node.hpp>
 #include <ds/Path.hpp>
@@ -26,7 +25,7 @@ namespace ds {
  * TreeNode)
  */
 template<typename T, template<class> class C>
-class Match : public Replicate<T, Match<T, C>> {
+class Match : private Replicate<T, Match<T, C>> {
 	/// @brief The data value found during the search operation
 	PROPERTY_WITH_DEFAULT_NO_CONST(data, Data, T, {});
 
@@ -42,19 +41,63 @@ class Match : public Replicate<T, Match<T, C>> {
 
 private:
 
-	/**
-	 * @brief Creates a deep copy of this Match object
-	 *
-	 * @return std::shared_ptr<Match<T, C>> A shared pointer containing the copy
-	 */
-	std::shared_ptr<Match<T, C>> deepcopy() noexcept override {
-		auto copy = std::make_shared<Match<T, C>>();
-		copy->_data = this->_data;
-		copy->_found = this->_found;
-		copy->_ptr = this->_ptr;
-		copy->_search = this->_search;
+public:
 
-		return copy;
+	/**
+	 * @brief Default constructor
+	 *
+	 * Initializes a Match object with default values indicating no match found
+	 */
+	constexpr Match() = default;
+
+	constexpr ~Match() override = default;
+
+	/**
+	 * @brief Copy constructor for the Match object
+	 *
+	 * @param match The Match object to copy
+	 */
+	constexpr Match(Match<T, C> &match) noexcept
+		: _data(match._data),
+		  _found(match._found),
+		  _ptr(match._ptr),
+		  _search(match._search) {
+		this->copy(match);
+	}
+
+	/**
+	 * @brief Move constructor for the Match object
+	 *
+	 * @param match The Match object to move from
+	 */
+	constexpr Match(Match<T, C> &&match) noexcept
+		: _data(std::move(match._data)),
+		  _found(std::move(match._found)),
+		  _ptr(std::move(match._ptr)),
+		  _search(std::move(match._search)) {
+		move(std::move(match));
+	}
+
+	/**
+	 * @brief Copy assignment operator
+	 *
+	 * @param other The Match object to copy from
+	 * @return Match<T, C>& Reference to this object after copying
+	 */
+	auto operator=(const Match<T, C> &other) noexcept -> Match<T, C> & {
+		copy(other);
+		return *this;
+	}
+
+	/**
+	 * @brief Move assignment operator
+	 *
+	 * @param other The Match object to move from
+	 * @return Match<T, C>& Reference to this object after moving
+	 */
+	auto operator=(Match<T, C> &&other) noexcept -> Match<T, C> & {
+		move(std::move(other));
+		return *this;
 	}
 
 	/**
@@ -63,7 +106,7 @@ private:
 	 * @param other The Match object to copy from
 	 * @return Match<T, C>& Reference to this object after copying
 	 */
-	Match<T, C> &copy(const Match<T, C> &other) noexcept override {
+	auto copy(const Match<T, C> &other) noexcept -> Match<T, C> & override {
 		if (this != &other) {
 			this->_data = other._data;
 			this->_found = other._found;
@@ -74,12 +117,27 @@ private:
 	}
 
 	/**
+	 * @brief Creates a deep copy of this Match object
+	 *
+	 * @return std::shared_ptr<Match<T, C>> A shared pointer containing the copy
+	 */
+	auto deepcopy() noexcept -> std::shared_ptr<Match<T, C>> override {
+		auto copy = std::make_shared<Match<T, C>>();
+		copy->_data = this->_data;
+		copy->_found = this->_found;
+		copy->_ptr = this->_ptr;
+		copy->_search = this->_search;
+
+		return copy;
+	}
+
+	/**
 	 * @brief Moves data from another Match object
 	 *
 	 * @param other The Match object to move from
 	 * @return Match<T, C>& Reference to this object after moving
 	 */
-	Match<T, C> &move(Match<T, C> &&other) noexcept override {
+	auto move(Match<T, C> &&other) noexcept -> Match<T, C> & override {
 		if (this != &other) {
 			this->_data = std::move(other._data);
 			this->_found = std::move(other._found);
@@ -94,71 +152,11 @@ private:
 		return *this;
 	}
 
-public:
-
-	/**
-	 * @brief Default constructor
-	 *
-	 * Initializes a Match object with default values indicating no match found
-	 */
-	Match() {}
-
-	/**
-	 * @brief Copy constructor for the Match object
-	 *
-	 * @param match The Match object to copy
-	 */
-	Match(Match<T, C> &match) noexcept
-		: _data(match._data),
-		  _found(match._found),
-		  _ptr(match._ptr),
-		  _search(match._search) {
-		this->copy(match);
-	}
-
-	/**
-	 * @brief Move constructor for the Match object
-	 *
-	 * @param match The Match object to move from
-	 */
-	Match(Match<T, C> &&match) noexcept
-		: _data(std::move(match._data)),
-		  _found(std::move(match._found)),
-		  _ptr(std::move(match._ptr)),
-		  _search(std::move(match._search)) {
-		move(std::move(match));
-	}
-
-	/**
-	 * @brief Destructor for Match
-	 */
-	virtual ~Match() {}
-
-	/**
-	 * @brief Copy assignment operator
-	 *
-	 * @param other The Match object to copy from
-	 * @return Match<T, C>& Reference to this object after copying
-	 */
-	Match<T, C> &operator=(const Match<T, C> &other) noexcept {
-		return copy(other);
-	}
-
-	/**
-	 * @brief Move assignment operator
-	 *
-	 * @param other The Match object to move from
-	 * @return Match<T, C>& Reference to this object after moving
-	 */
-	Match<T, C> &operator=(Match<T, C> &&other) noexcept {
-		return move(std::move(other));
-	}
-
 	/**
 	 * @brief Retrieves the pointer to the node for this match object.
 	 * @returns a `std::shared_ptr` to the node type object for this match
 	 */
-	std::shared_ptr<C<T>> pointer() {
+	auto pointer() -> std::shared_ptr<C<T>> {
 		return this->_ptr.lock();
 	}
 
@@ -166,7 +164,7 @@ public:
 	 * @brief Retrieves the value stored within the node (reference)
 	 * @returns A reference to the value in the node that this match has found.
 	 */
-	T &reference() {
+	auto reference() -> T & {
 		if (!this->_found) {
 			throw std::runtime_error("Cannot reference a failed match");
 		}
