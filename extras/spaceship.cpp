@@ -21,7 +21,6 @@ public:
 
 	std::strong_ordering operator<=>(const B &other) const {
 		std::strong_ordering order = std::strong_ordering::greater;
-		;
 
 		if (x < other.x) {
 			order = std::strong_ordering::less;

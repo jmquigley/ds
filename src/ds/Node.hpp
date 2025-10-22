@@ -4,7 +4,6 @@
 #include <ds/BaseNodeBuilder.hpp>
 #include <memory>
 #include <utility>
-#include <vector>
 
 namespace ds {
 
@@ -28,7 +27,7 @@ public:
 	 * Creates an empty node with default-initialized data and null child
 	 * pointers.
 	 */
-	Node() : BaseNode<T, Node>() {}
+	constexpr Node() : BaseNode<T, Node>() {}
 
 	/**
 	 * @brief Constructor with data initialization
@@ -38,7 +37,21 @@ public:
 	 *
 	 * @param data The data to store in this node
 	 */
-	Node(T data) : BaseNode<T, Node>(data) {}
+	constexpr Node(T data) : BaseNode<T, Node>(data) {}
+
+	/**
+	 * @brief Constructor for a node initialization without flags
+	 *
+	 * Creates a node with all fields explicitly specified, except flags,
+	 * including left and right child nodes, and data value.
+	 *
+	 * @param left Shared pointer to left child node
+	 * @param right Shared pointer to right child node
+	 * @param data The data to store in this node
+	 */
+	constexpr Node(const std::shared_ptr<Node<T>> &left,
+				   const std::shared_ptr<Node<T>> &right, T data)
+		: BaseNode<T, Node>(left, right, data) {}
 
 	/**
 	 * @brief Comprehensive constructor for a complete node initialization
@@ -51,8 +64,9 @@ public:
 	 * @param flags Node flags for additional properties
 	 * @param data The data to store in this node
 	 */
-	Node(const std::shared_ptr<Node<T>> &left,
-		 const std::shared_ptr<Node<T>> &right, ByteFlag flags, T data)
+	constexpr Node(const std::shared_ptr<Node<T>> &left,
+				   const std::shared_ptr<Node<T>> &right, ByteFlag flags,
+				   T data)
 		: BaseNode<T, Node>(left, right, flags, data) {}
 
 	/**
@@ -63,7 +77,7 @@ public:
 	 *
 	 * @param other The node to copy from
 	 */
-	Node(const Node<T> &other) : BaseNode<T, Node>(other) {}
+	constexpr Node(const Node<T> &other) : BaseNode<T, Node>(other) {}
 
 	/**
 	 * @brief Move constructor for the Node class
@@ -73,7 +87,8 @@ public:
 	 *
 	 * @param other The node to move resources from
 	 */
-	Node(Node<T> &&other) noexcept : BaseNode<T, Node>(std::move(other)) {}
+	constexpr Node(Node<T> &&other) noexcept
+		: BaseNode<T, Node>(std::move(other)) {}
 
 	/**
 	 * @brief Node destructor
@@ -92,7 +107,7 @@ public:
 	 * @param other The node to copy from
 	 * @return Reference to this node after assignment
 	 */
-	Node<T> &operator=(const Node<T> &other) {
+	auto operator=(const Node<T> &other) -> Node<T> & {
 		BaseNode<T, Node>::operator=(other);
 		return *this;
 	}
@@ -105,7 +120,7 @@ public:
 	 * @param other The node to move resources from
 	 * @return Reference to this node after assignment
 	 */
-	Node<T> &operator=(Node<T> &&other) noexcept {
+	auto operator=(Node<T> &&other) noexcept -> Node<T> & {
 		BaseNode<T, Node>::operator=(std::move(other));
 		return *this;
 	}

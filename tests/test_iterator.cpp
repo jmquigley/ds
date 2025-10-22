@@ -110,7 +110,7 @@ TEST_F(TestIterator, AssignmentOperators) {
 	EXPECT_TRUE(it3.lp().expired());
 }
 
-TEST_F(TestIterator, DeepCopy) {
+TEST_F(TestIterator, Replication) {
 	LocalIterator it(root);
 	auto itc = *it.deepcopy().get();
 
@@ -149,14 +149,12 @@ TEST_F(TestIterator, Compare) {
 
 	EXPECT_TRUE(it1 == it2);
 	EXPECT_FALSE(it1 != it2);
-}
 
-TEST_F(TestIterator, CompareOpposite) {
-	LocalIterator it1(n1);
-	LocalIterator it2(n2);
+	LocalIterator it3(n1);
+	LocalIterator it4(n2);
 
-	EXPECT_FALSE(it1 == it2);
-	EXPECT_TRUE(it1 != it2);
+	EXPECT_FALSE(it3 == it4);
+	EXPECT_TRUE(it3 != it4);
 }
 
 TEST_F(TestIterator, Boolean) {

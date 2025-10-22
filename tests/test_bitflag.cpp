@@ -44,19 +44,19 @@ TEST_F(TestBitFlag, Create) {
 	EXPECT_EQ(flag.get(), 0);
 };
 
-TEST_F(TestBitFlag, CopyConstrutor) {
+TEST_F(TestBitFlag, ParameterizedConstructor) {
+	// Parameterized constructor
+	ds::BitFlag bf(128);  // 1000 0000
+	EXPECT_TRUE(bf.get() == 128);
+}
+
+TEST_F(TestBitFlag, CopyConstructor) {
 	// Copy constructor
 	ds::BitFlag bf1(123);  // 0111 1011
 	ds::BitFlag bf2(bf1);
 
 	EXPECT_TRUE(bf1 == bf2);
 	EXPECT_FALSE(bf1 != bf2);
-}
-
-TEST_F(TestBitFlag, ParameterizedConstructor) {
-	// Parameterized constructor
-	ds::BitFlag bf(128);  // 1000 0000
-	EXPECT_TRUE(bf.get() == 128);
 }
 
 TEST_F(TestBitFlag, MoveConstructor) {
@@ -93,6 +93,32 @@ TEST_F(TestBitFlag, AssignmentOperators) {
 	EXPECT_EQ(bf1, 24);
 }
 
+TEST_F(TestBitFlag, CallOperator) {
+	// literal
+	ds::BitFlag bf1;
+	EXPECT_EQ(bf1.get(), 0);
+
+	bf1(42);  // 0010 1010
+	EXPECT_EQ(bf1.get(), 42);
+
+	// object
+	ds::BitFlag bf2;
+	EXPECT_EQ(bf2.get(), 0);
+	bf2(bf1);
+	EXPECT_EQ(bf2.get(), 42);
+}
+
+TEST_F(TestBitFlag, Compare) {
+	ds::BitFlag bf1(42);
+	ds::BitFlag bf2(123);
+
+	EXPECT_TRUE(bf1 == bf1);
+	EXPECT_FALSE(bf1 == bf2);
+
+	EXPECT_TRUE(bf1 != bf2);
+	EXPECT_FALSE(bf1 != bf1);
+}
+
 TEST_F(TestBitFlag, Boolean) {
 	ds::BitFlag bf1(42);
 	EXPECT_TRUE(bf1);
@@ -101,6 +127,30 @@ TEST_F(TestBitFlag, Boolean) {
 
 	ds::BitFlag bf2;
 	EXPECT_FALSE(bf2);
+}
+
+TEST_F(TestBitFlag, BitwiseOperators) {
+	ds::ByteFlag bf1(42);  // 0010 1010
+	ds::ByteFlag bf2(23);  // 0001 0111
+	ds::ByteFlag bf3;
+
+	bf3 = bf1 & bf2;  // 0000 0010 (2)
+	EXPECT_EQ(bf3.get(), 2);
+
+	bf3 = bf1 | bf2;  // 0011 1111 (63)
+	EXPECT_EQ(bf3.get(), 63);
+
+	bf3 = bf1 ^ bf2;  // 0011 1101 (61)
+	EXPECT_EQ(bf3.get(), 61);
+
+	bf3 = ~bf1;	 // 1101 0101 (213)
+	EXPECT_EQ(bf3.get(), 213);
+
+	bf3 = bf1 << 1;	 // 0101 0100 (84)
+	EXPECT_EQ(bf3.get(), 84);
+
+	bf3 = bf1 >> 1;	 // 0001 0101 (21)
+	EXPECT_EQ(bf3.get(), 21);
 }
 
 TEST_F(TestBitFlag, Replication) {
@@ -127,30 +177,6 @@ TEST_F(TestBitFlag, Replication) {
 
 	EXPECT_EQ(bf2, 0);
 	EXPECT_EQ(bf3, 42);
-}
-
-TEST_F(TestBitFlag, BitwiseOperators) {
-	ds::ByteFlag bf1(42);  // 0010 1010
-	ds::ByteFlag bf2(23);  // 0001 0111
-	ds::ByteFlag bf3;
-
-	bf3 = bf1 & bf2;  // 0000 0010 (2)
-	EXPECT_EQ(bf3.get(), 2);
-
-	bf3 = bf1 | bf2;  // 0011 1111 (63)
-	EXPECT_EQ(bf3.get(), 63);
-
-	bf3 = bf1 ^ bf2;  // 0011 1101 (61)
-	EXPECT_EQ(bf3.get(), 61);
-
-	bf3 = ~bf1;	 // 1101 0101 (213)
-	EXPECT_EQ(bf3.get(), 213);
-
-	bf3 = bf1 << 1;	 // 0101 0100 (84)
-	EXPECT_EQ(bf3.get(), 84);
-
-	bf3 = bf1 >> 1;	 // 0001 0101 (21)
-	EXPECT_EQ(bf3.get(), 21);
 }
 
 TEST_F(TestBitFlag, ToString) {

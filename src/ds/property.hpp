@@ -28,6 +28,10 @@ public:                                        \
                                                \
 	auto variable() noexcept -> dtype & {      \
 		return this->_##variable;              \
+	}                                          \
+                                               \
+	auto const##fn() const noexcept -> dtype { \
+		return this->_##variable;              \
 	}
 
 // Creates a setter function for the given variable

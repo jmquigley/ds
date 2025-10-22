@@ -1,5 +1,6 @@
 #pragma once
 
+#include <compare>
 #include <ds/BaseBitFlag.hpp>
 #include <ds/BaseNodeBuilder.hpp>
 #include <ds/Replicate.hpp>
@@ -75,7 +76,7 @@ public:
 	 *
 	 * Initializes the flags, and left, and right to nullptr,
 	 */
-	BaseNode() : _left(nullptr), _right(nullptr) {}
+	constexpr BaseNode() : _left(nullptr), _right(nullptr) {}
 
 	/**
 	 * @brief Constructor for Node with initial data.
@@ -83,7 +84,20 @@ public:
 	 * Calls the main constructor with left, and right as nullptr.
 	 * @param data The data to be stored in the node.
 	 */
-	BaseNode(T data) : BaseNode(nullptr, nullptr, ByteFlag(), data) {}
+	constexpr BaseNode(T data) : BaseNode(nullptr, nullptr, ByteFlag(), data) {}
+
+	/**
+	 * @brief Full constructor for Node.
+	 *
+	 * Initializes left, right, and data.
+	 *
+	 * @param left A pointer to the left child node. Can be nullptr.
+	 * @param right A pointer to the right child node. Can be nullptr.
+	 * @param data The data to be stored in the node.
+	 */
+	constexpr BaseNode(std::shared_ptr<C<T>> left, std::shared_ptr<C<T>> right,
+					   T data)
+		: BaseNode(left, right, ByteFlag(), data) {}
 
 	/**
 	 * @brief Full constructor for Node.
@@ -95,8 +109,8 @@ public:
 	 * @param flags initial internal flag settings for the new node
 	 * @param data The data to be stored in the node.
 	 */
-	BaseNode(std::shared_ptr<C<T>> left, std::shared_ptr<C<T>> right,
-			 ByteFlag flags, T data)
+	constexpr BaseNode(std::shared_ptr<C<T>> left, std::shared_ptr<C<T>> right,
+					   ByteFlag flags, T data)
 		: _data(data),
 		  _flags(std::move(flags)),
 		  _left(std::move(left)),
@@ -111,7 +125,7 @@ public:
 	 *
 	 * @param other The source Node object to move resources from
 	 */
-	BaseNode(const C<T> &other) {
+	constexpr BaseNode(const C<T> &other) {
 		this->copy(other);
 	}
 
@@ -126,7 +140,7 @@ public:
 	 * @param other (`Node<T>`) The Node object to move from (will be left in a
 	 * valid but unspecified state)
 	 */
-	BaseNode(C<T> &&other) {
+	constexpr BaseNode(C<T> &&other) noexcept {
 		this->move(std::move(other));
 	}
 
@@ -142,7 +156,35 @@ public:
 	 * @param other (`BaseNode &`) the other object to compare
 	 * @return an ordering class for the comparison
 	 */
-	auto operator<=>(const BaseNode &other) const = default;
+	std::strong_ordering operator<=>(const BaseNode &other) const {
+		std::strong_ordering order = std::strong_ordering::greater;
+
+		if (this->_data < other.constData()) {
+			order = std::strong_ordering::less;
+		} else if (this->_data == other.constData()) {
+			order = std::strong_ordering::equal;
+		}
+
+		return order;
+	}
+
+	/**
+	 * @brief Checks if the data of two given nodes are equal
+	 * @param other (`BaseNode &`) the node to compare against
+	 * @return true if both nodes have the same data, otherwise false
+	 */
+	constexpr auto operator==(const BaseNode &other) const noexcept -> bool {
+		return this->_data == other.constData();
+	}
+
+	/**
+	 * @brief Checks if the data of two given nodes are not equal
+	 * @param other (`BaseNode &`) the node to compare against
+	 * @return true if both nodes do not have the same data, otherwise false
+	 */
+	constexpr auto operator!=(const BaseNode &other) const noexcept -> bool {
+		return this->_data != other.constData();
+	}
 
 	/**
 	 * @brief Overloads the stream insertion operator for Node objects.
@@ -161,7 +203,7 @@ public:
 	/**
 	 * @brief Copy assignment operator.
 	 *
-	 * Assigns the contents of another node to this node using deep copying.
+	 * Assigns the contents of another node to this node using copying.
 	 * This operator creates a new deep copy of the right-hand side node,
 	 * maintaining the unique identity of this node while adopting all data
 	 * and relationships from the source node.
@@ -200,12 +242,23 @@ public:
 	}
 
 	/**
+	 * @brief Function call operator for BaseNode objects
+	 * @param other (`const C<T> &`) The parameter passed to this function call
+	 * operator
+	 * @return a reference to this object
+	 */
+	auto operator()(const C<T> &other) -> BaseNode & {
+		return operator=(other);
+	}
+
+	/**
 	 * @brief Clears the node's identifiers and pointers, then re-initializes a
 	 * new ID.
 	 *
 	 * Sets right, left to nullptr,
 	 */
 	auto clear() -> void {
+		this->_data = {};
 		this->_right.reset();
 		this->_left.reset();
 	}
@@ -313,19 +366,19 @@ public:
 	}
 
 	/**
-	 * Sets this node's color to red.
-	 * In the Red-Black tree, red is represented by unsetting the Color flag.
-	 */
-	auto setRed() -> void {
-		this->_flags.unset(static_cast<BYTE>(NodeFlag::Color));
-	}
-
-	/**
 	 * Sets this node's color to black.
 	 * In the Red-Black tree, black is represented by setting the Color flag.
 	 */
 	auto setBlack() -> void {
 		this->_flags.set(static_cast<BYTE>(NodeFlag::Color));
+	}
+
+	/**
+	 * Sets this node's color to red.
+	 * In the Red-Black tree, red is represented by unsetting the Color flag.
+	 */
+	auto setRed() -> void {
+		this->_flags.unset(static_cast<BYTE>(NodeFlag::Color));
 	}
 
 	/**
