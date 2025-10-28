@@ -65,6 +65,12 @@ TEST_F(TestBitFlag, MoveConstructor) {
 	EXPECT_TRUE(bf2.get() == 123);
 };
 
+TEST_F(TestBitFlag, InitializationListConstructor) {
+	ds::BitFlag bf {0, 0, 1, 0, 1, 0, 1, 0};  // 42
+	std::cout << "bf: " << bf.get() << std::endl;
+	EXPECT_TRUE(bf.get() == 42);
+}
+
 TEST_F(TestBitFlag, AssignmentOperators) {
 	// assignment by object
 	ds::BitFlag bf1(123);  // 0111 1011
@@ -118,6 +124,8 @@ TEST_F(TestBitFlag, Compare) {
 	EXPECT_TRUE(bf1 != bf2);
 	EXPECT_FALSE(bf1 != bf1);
 }
+
+// No Logic <, >, <=, or >= tests
 
 TEST_F(TestBitFlag, Boolean) {
 	ds::BitFlag bf1(42);
@@ -215,6 +223,8 @@ TEST_F(TestBitFlag, Each) {
 	});
 }
 
+// No Iterator tests
+
 TEST_F(TestBitFlag, Clear) {
 	ds::ByteFlag bf(42);
 	EXPECT_EQ(bf.get(), 42);  // 0010 1010
@@ -262,7 +272,7 @@ TEST_F(TestBitFlag, At) {
 	EXPECT_THROW(bf[999], std::out_of_range);
 };
 
-TEST_F(TestBitFlag, HasABit) {
+TEST_F(TestBitFlag, Search) {
 	ds::BitFlag bf(3);	// 0000 0011
 
 	EXPECT_TRUE(bf.has(TestFlags::Color | TestFlags::State));

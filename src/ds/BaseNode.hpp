@@ -257,7 +257,7 @@ public:
 	 *
 	 * Sets right, left to nullptr,
 	 */
-	auto clear() -> void {
+	auto clear() noexcept -> void {
 		this->_data = {};
 		this->_right.reset();
 		this->_left.reset();
@@ -306,7 +306,7 @@ public:
 	 * @brief Returns the current color enumeration setting for this node
 	 * @returns a `NodeColor` enum reference to Red or Black
 	 */
-	auto getColor() -> NodeColor {
+	constexpr auto getColor() noexcept -> NodeColor {
 		return this->isRed() ? NodeColor::Red : NodeColor::Black;
 	}
 
@@ -314,7 +314,7 @@ public:
 	 * Checks if this node is black.
 	 * @return true if the node is black, false otherwise
 	 */
-	auto isBlack() const -> bool {
+	constexpr auto isBlack() const noexcept -> bool {
 		return _flags.at(0) == 1;
 	}
 
@@ -322,7 +322,7 @@ public:
 	 * Checks if this node is red.
 	 * @return true if the node is red, false otherwise
 	 */
-	auto isRed() const -> bool {
+	constexpr auto isRed() const noexcept -> bool {
 		return _flags.at(0) == 0;
 	}
 

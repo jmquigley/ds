@@ -6,6 +6,7 @@
 #include <ds/Replicate.hpp>
 #include <ds/constants.hpp>
 #include <ds/property.hpp>
+#include <initializer_list>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -55,6 +56,10 @@ namespace ds {
  *
  * // Get the raw value
  * unsigned char rawValue = flags.get();  // Will be 0x04 (EXECUTE flag)
+ *
+ * // Initialize with a new bit pattern
+ * ds::BitFlag flags {0, 0, 1, 0, 1, 0, 1, 0};  // 42
+ *
  */
 template<typename T>
 class BaseBitFlag : public Replicate<T, BaseBitFlag<T>> {
@@ -121,6 +126,22 @@ public:
 	 */
 	constexpr BaseBitFlag(BaseBitFlag &&bitFlag) noexcept
 		: _flag(std::move(bitFlag._flag)) {}
+
+	/**
+	 * @brief initializes the bit flag with a base bit pattern.
+	 * Each bit is shifted into the bit pattern from left to right.
+	 * @code
+	 *     ds::BitFlag bf {0, 0, 1, 0, 1, 0, 1, 0}; // 0010 1010 (42)
+	 * @endcode
+	 * @param il (`std::initailizer_list`) a list of bit to set from MSB to LSB
+	 */
+	constexpr BaseBitFlag(const std::initializer_list<unsigned short int> &il)
+		: BaseBitFlag() {
+		for (const auto &it: il) {
+			this->_flag <<= 1;
+			this->_flag |= (it == 0) ? 0 : 1;
+		}
+	}
 
 	/**
 	 * @brief Bit flag destructor
