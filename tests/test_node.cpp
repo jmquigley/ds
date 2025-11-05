@@ -99,6 +99,8 @@ TEST_F(TestNode, MoveConstructor) {
 	EXPECT_EQ(node3.right(), nullptr);
 }
 
+// No initializer_list constructor for BaseNode
+
 TEST_F(TestNode, AssignmentOperators) {
 	ds::Node<int> node;
 	node = 42;
@@ -182,6 +184,44 @@ TEST_F(TestNode, Logical) {
 	EXPECT_TRUE(n2 >= n2);
 }
 
+TEST_F(TestNode, Boolean) {
+	ds::Node<int> node;
+
+	EXPECT_FALSE(node);
+	EXPECT_TRUE(!node);
+	node(42);
+	EXPECT_TRUE(node);
+	EXPECT_FALSE(!node);
+}
+
+// No bitwise operations in the BaseNode
+
+TEST_F(TestNode, Replication) {
+	ds::Node<int> node;
+	ds::Node<int> node1(42);
+
+	// Copy
+	node.copy(node1);
+	EXPECT_EQ(node.data(), 42);
+	EXPECT_EQ(node1.data(), 42);
+
+	// Deepcopy
+	node1(42);
+	EXPECT_EQ(node1.data(), 42);
+	EXPECT_TRUE(node1.isRed());
+
+	std::shared_ptr<ds::Node<int>> node2 = node1.deepcopy();
+
+	EXPECT_EQ(node2->data(), 42);
+	EXPECT_TRUE(node2->isRed());
+	EXPECT_TRUE(&node1 != node2.get());
+
+	// Move
+	ds::Node<int> node3;
+	node3.move(std::move(node));
+	EXPECT_EQ(node2->data(), 42);
+}
+
 TEST_F(TestNode, ToString) {
 	ds::Node<int> node(42);
 
@@ -193,6 +233,9 @@ TEST_F(TestNode, ToString) {
 
 	EXPECT_EQ(node.str(), result);
 }
+
+// No "each" method in BaseNode
+// No "Iterator" base class in BaseNode
 
 TEST_F(TestNode, Clear) {
 	std::shared_ptr<ds::Node<int>> node;
@@ -213,18 +256,8 @@ TEST_F(TestNode, Clear) {
 	EXPECT_EQ(node->getLeft(), nullptr);
 }
 
-TEST_F(TestNode, DeepCopy) {
-	ds::Node<int> node1(42);
-
-	EXPECT_EQ(node1.data(), 42);
-	EXPECT_TRUE(node1.isRed());
-
-	std::shared_ptr<ds::Node<int>> node2 = node1.deepcopy();
-
-	EXPECT_EQ(node2->data(), 42);
-	EXPECT_TRUE(node2->isRed());
-	EXPECT_TRUE(&node1 != node2.get());
-}
+// No "at" method in BaseNode
+// No "search" method in BaseNode
 
 TEST_F(TestNode, Dereference) {
 	ds::Node<int> node(1);

@@ -252,6 +252,14 @@ public:
 	}
 
 	/**
+	 * @brief Boolean conversion operator
+	 * @return true if the node data is true, false otherwise
+	 */
+	constexpr explicit operator bool() const {
+		return bool(this->_data);
+	}
+
+	/**
 	 * @brief Clears the node's identifiers and pointers, then re-initializes a
 	 * new ID.
 	 *
