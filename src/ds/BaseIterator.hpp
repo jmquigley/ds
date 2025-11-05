@@ -136,6 +136,27 @@ public:
 	}
 
 	/**
+	 * @brief The spaceship operator for comparing the contents between two
+	 * iterators
+	 * @param other The right hand side of the iterator to compare with
+	 * @return true if both iterator values are the same, otherwise false.
+	 */
+	constexpr auto operator<=>(const BaseIterator &other) const {
+		std::strong_ordering order = std::strong_ordering::greater;
+
+		auto lhs = *(_lp.lock());
+		auto rhs = *(other.lp().lock());
+
+		if (lhs < rhs) {
+			order = std::strong_ordering::less;
+		} else if (lhs == rhs) {
+			order = std::strong_ordering::equal;
+		}
+
+		return order;
+	}
+
+	/**
 	 * @brief Equality comparison operator.
 	 *
 	 * Determines if two iterators point to the same node.
@@ -187,6 +208,13 @@ public:
 	}
 
 	/**
+	 * @brief A convenience operator to call the clear function.
+	 */
+	constexpr auto operator~() noexcept -> void {
+		this->clear();
+	}
+
+	/**
 	 * @brief Stream insertion operator.
 	 *
 	 * Outputs a string representation of the iterator to an output stream.
@@ -198,6 +226,14 @@ public:
 	friend auto operator<<(std::ostream &st, const BaseIterator &it)
 		-> std::ostream & {
 		return st << it._lp.lock();
+	}
+
+	/**
+	 * @brief resets the internal state of the iterator.  After this call
+	 * the iterator does not contain a reference to any iterable container.
+	 */
+	auto clear() -> void {
+		this->_lp.reset();
 	}
 
 	/**
@@ -310,6 +346,19 @@ public:
 		}
 
 		return *this;
+	}
+
+	/**
+	 * @brief Checks if the iterator is valid by confirming the object pointer
+	 * for the collection it is iterating through.
+	 * @return true if the iterator is valid, otherwise false.
+	 */
+	auto valid() -> bool {
+		try {
+			return _lp.use_count() > 0;
+		} catch (...) {
+			return false;
+		}
 	}
 };
 }  // namespace ds
